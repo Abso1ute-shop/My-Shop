@@ -3,68 +3,94 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
 <title>Abso1ute Shop — одежда и аксессуары</title>
 <meta name="description" content="Одежда и аксессуары из Китая с доставкой по Узбекистану. Заказ через Telegram.">
+<link rel="icon" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f6f6f4;--card:#fff;--ink:#161616;--mute:#76767a;--line:#e3e3e0;--r:14px}
-@media (prefers-color-scheme:dark){:root{--bg:#121212;--card:#1b1b1b;--ink:#f2f2f0;--mute:#8d8d92;--line:#2c2c2c}}
+:root{--ink:#0b0b0b;--paper:#fff;--soft:#f2f2f2;--mute:#6a6a6a;--disp:"Oswald","Arial Narrow",Impact,sans-serif}
 *{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
-body{background:var(--bg);color:var(--ink);font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding-bottom:env(safe-area-inset-bottom)}
-svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
-button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
-button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
-header{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:calc(10px + env(safe-area-inset-top)) 16px 10px}
-.bar{max-width:1100px;margin:auto;display:flex;align-items:center;gap:10px}
-.logo{font-weight:700;font-size:18px;letter-spacing:-.02em;margin-right:auto}
-.ib{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;position:relative}
-.ib:hover{background:var(--line)}
-.badge{position:absolute;top:3px;right:2px;min-width:18px;height:18px;border-radius:9px;background:var(--ink);color:var(--bg);font-size:11px;font-weight:600;display:grid;place-items:center;padding:0 5px}
-.badge:empty{display:none}
-.search{max-width:1100px;margin:8px auto 0;position:relative}
-.search svg{position:absolute;left:14px;top:12px;width:20px;height:20px;color:var(--mute)}
-.search input{width:100%;height:44px;border-radius:22px;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:0 16px 0 42px;font:inherit}
-.chips{max-width:1100px;margin:10px auto 0;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+html{scroll-padding-top:70px}
+body{background:var(--paper);color:var(--ink);font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+button,input,select{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+
+/* двойная рамка, как на логотипе */
+.frame{position:relative;border:1.5px solid var(--ink);background:var(--paper)}
+.frame::after{content:"";position:absolute;inset:3px;border:1px solid var(--ink);pointer-events:none}
+
+header{position:sticky;top:0;z-index:5;background:var(--paper);border-bottom:1.5px solid var(--ink);padding:env(safe-area-inset-top) 16px 0}
+.top{max-width:1000px;margin:auto;height:56px;display:flex;align-items:center;justify-content:space-between}
+.brand{font:700 24px/1 var(--disp);letter-spacing:.04em}
+.brand small{font:500 12px var(--disp);letter-spacing:.5em;margin-left:8px;color:var(--mute)}
+.tg{width:44px;height:44px;display:grid;place-items:center;color:var(--ink)}
+
+main{max-width:1000px;margin:auto;padding:0 16px}
+.view{display:none}
+.view.on{display:block}
+h2{font:700 28px/1.1 var(--disp);letter-spacing:.03em;margin:22px 0 14px}
+
+.hero{display:grid;place-items:center;padding:18px 0 6px}
+.hero img{width:min(210px,56vw);height:auto;display:block}
+.hero p{font:500 13px var(--disp);letter-spacing:.35em;margin-top:6px}
+
+.search{position:relative;margin:14px 0 12px}
+.search svg{position:absolute;left:14px;top:13px;width:20px;height:20px}
+.search input{width:100%;height:46px;border:1.5px solid var(--ink);background:var(--paper);padding:0 14px 0 44px;border-radius:0}
+.search input::placeholder{color:var(--mute)}
+.chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
 .chips::-webkit-scrollbar{display:none}
-.chip{height:36px;padding:0 16px;border-radius:18px;border:1px solid var(--line);background:var(--card);white-space:nowrap}
-.chip[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-main{max-width:1100px;margin:auto;padding:16px}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.chip{height:38px;padding:0 18px;border:1.5px solid var(--ink);white-space:nowrap;font:500 15px var(--disp);letter-spacing:.06em}
+.chip[aria-pressed=true]{background:var(--ink);color:var(--paper)}
+
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:14px}
 @media(min-width:700px){.grid{grid-template-columns:repeat(3,1fr);gap:16px}}
 @media(min-width:960px){.grid{grid-template-columns:repeat(4,1fr)}}
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column}
-.pic{aspect-ratio:4/5;background:var(--line);display:grid;place-items:center;color:var(--mute);overflow:hidden}
-.pic svg{width:44px;height:44px;stroke-width:1.2}
-.pic img{width:100%;height:100%;object-fit:cover}
-.info{padding:10px 12px 12px;display:flex;flex-direction:column;gap:6px;flex:1}
-.name{font-weight:550;line-height:1.3}
+.card{display:flex;flex-direction:column}
+.card img{width:100%;aspect-ratio:4/5;object-fit:cover;display:block;border-bottom:1.5px solid var(--ink)}
+.info{padding:14px 14px 14px;display:flex;flex-direction:column;gap:6px;flex:1}
+.name{font:500 18px/1.2 var(--disp);letter-spacing:.02em}
 .price{color:var(--mute)}
-.row{display:flex;gap:8px;margin-top:auto;align-items:center}
-.row select{flex:1;min-width:0;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:0 8px;font:inherit}
-.add{width:40px;height:40px;border-radius:10px;background:var(--ink);color:var(--bg);display:grid;place-items:center}
-.add:active{transform:scale(.94)}
-.empty{text-align:center;color:var(--mute);padding:60px 0}
-.more{display:block;margin:20px auto;height:44px;padding:0 28px;border-radius:22px;border:1px solid var(--line);background:var(--card)}
-footer{max-width:1100px;margin:20px auto 40px;padding:0 16px;color:var(--mute);display:flex;gap:18px;flex-wrap:wrap;align-items:center}
-footer a{color:inherit;display:inline-flex;gap:8px;align-items:center;text-decoration:none;min-height:44px}
-.veil{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .2s;z-index:8}
-.veil.on{opacity:1;pointer-events:auto}
-.sheet{position:fixed;right:0;top:0;bottom:0;width:min(420px,100%);background:var(--bg);z-index:9;transform:translateX(100%);transition:transform .25s;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)}
-.sheet.on{transform:none}
-.sh{display:flex;align-items:center;justify-content:space-between;padding:8px 8px 8px 20px;border-bottom:1px solid var(--line);font-weight:600;font-size:17px}
-.items{flex:1;overflow-y:auto;padding:8px 16px}
-.it{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
-.it .t{flex:1;min-width:0}
-.it small{color:var(--mute);display:block}
-.qty{display:flex;align-items:center;gap:2px}
-.qty button{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line)}
+.row{display:flex;gap:8px;margin-top:auto;padding-top:8px;align-items:center}
+.row select{flex:1;min-width:0;height:42px;border:1.5px solid var(--ink);background:var(--paper);padding:0 8px;border-radius:0}
+.row .sp{flex:1}
+.add{width:42px;height:42px;background:var(--ink);color:var(--paper);display:grid;place-items:center}
+.add:active{transform:scale(.93)}
+.empty{text-align:center;color:var(--mute);padding:48px 0}
+.more{display:block;margin:22px auto;height:46px;padding:0 30px;border:1.5px solid var(--ink);font:500 16px var(--disp);letter-spacing:.06em}
+
+/* корзина */
+.it{display:flex;gap:12px;align-items:center;padding:14px 0;border-bottom:1px solid var(--ink)}
+.it .t{flex:1;min-width:0;font:500 18px/1.2 var(--disp)}
+.it small{display:block;color:var(--mute);font:400 14px/1.4 -apple-system,sans-serif;margin-top:2px}
+.qty{display:flex;align-items:center}
+.qty button{width:36px;height:36px;border:1.5px solid var(--ink);display:grid;place-items:center}
 .qty svg{width:16px;height:16px}
-.qty span{min-width:22px;text-align:center}
-.foot{padding:14px 16px calc(14px + env(safe-area-inset-bottom));border-top:1px solid var(--line);display:grid;gap:10px}
-.sum{display:flex;justify-content:space-between;font-weight:600;font-size:17px}
-.order{height:50px;border-radius:25px;background:var(--ink);color:var(--bg);display:flex;align-items:center;justify-content:center;gap:10px;font-weight:600;text-decoration:none}
-.order[aria-disabled=true]{opacity:.35;pointer-events:none}
-.note{color:var(--mute);font-size:13px;text-align:center}
-.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:22px;opacity:0;transition:.2s;z-index:20;pointer-events:none}
+.qty span{min-width:30px;text-align:center;font:500 17px var(--disp)}
+.sum{display:flex;justify-content:space-between;font:700 22px var(--disp);margin:20px 0 14px;letter-spacing:.02em}
+.order{height:54px;background:var(--ink);color:var(--paper);display:flex;align-items:center;justify-content:center;gap:10px;font:500 18px var(--disp);letter-spacing:.08em;text-decoration:none}
+.order[aria-disabled=true]{opacity:.25;pointer-events:none}
+.note{color:var(--mute);font-size:13px;text-align:center;margin-top:10px}
+
+/* профиль */
+.form{display:grid;gap:14px;padding:22px 20px}
+label{display:grid;gap:6px;font:500 15px var(--disp);letter-spacing:.06em}
+label input{height:46px;border:1.5px solid var(--ink);padding:0 12px;border-radius:0;background:var(--paper);font:400 16px -apple-system,sans-serif;letter-spacing:0}
+.link{display:flex;align-items:center;gap:12px;margin-top:16px;padding:16px 20px;text-decoration:none;color:var(--ink);font:500 18px var(--disp);letter-spacing:.04em}
+
+/* нижнее меню */
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:10;background:var(--paper);border-top:1.5px solid var(--ink);display:grid;grid-template-columns:repeat(3,1fr);padding-bottom:env(safe-area-inset-bottom)}
+.tab{height:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font:500 13px var(--disp);letter-spacing:.1em;position:relative;color:var(--mute)}
+.tab[aria-selected=true]{color:var(--ink)}
+.tab[aria-selected=true]::before{content:"";position:absolute;top:-1.5px;left:28%;right:28%;height:3px;background:var(--ink)}
+.badge{position:absolute;top:6px;left:calc(50% + 8px);min-width:18px;height:18px;padding:0 5px;background:var(--ink);color:var(--paper);font:500 12px/18px var(--disp);text-align:center;border-radius:9px}
+.badge:empty{display:none}
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translate(-50%,16px);background:var(--ink);color:var(--paper);padding:10px 18px;font:500 15px var(--disp);letter-spacing:.06em;opacity:0;transition:.2s;z-index:20;pointer-events:none}
 .toast.on{opacity:1;transform:translate(-50%,0)}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -72,45 +98,56 @@ footer a{color:inherit;display:inline-flex;gap:8px;align-items:center;text-decor
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
 <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+<symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5"/><rect x="13.5" y="4" width="6.5" height="6.5"/><rect x="4" y="13.5" width="6.5" height="6.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5"/></symbol>
 <symbol id="i-bag" viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></symbol>
+<symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c1-4 4-6 8-6s7 2 8 6"/></symbol>
 <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
 <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
-<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
 <symbol id="i-tg" viewBox="0 0 24 24"><path d="M21 4 3 11l5.5 2L10 19l3-3.5 4.5 3.5z"/><path d="m8.5 13 8-5.5"/></symbol>
-<symbol id="i-hanger" viewBox="0 0 24 24"><path d="M12 8a2.5 2.5 0 1 0-2.5-2.5"/><path d="M12 8v2l9 6a1.5 1.5 0 0 1-.8 2.7H3.8A1.5 1.5 0 0 1 3 16l9-6"/></symbol>
 </svg>
 
 <header>
-  <div class="bar">
-    <span class="logo">Abso1ute Shop</span>
-    <a class="ib" href="https://t.me/Abso1ute_Shop" target="_blank" rel="noopener" aria-label="Наш Telegram-канал"><svg><use href="#i-tg"/></svg></a>
-    <button class="ib" id="openCart" aria-label="Корзина"><svg><use href="#i-bag"/></svg><span class="badge" id="count"></span></button>
+  <div class="top">
+    <span class="brand">ABSO1UTE<small>SHOP</small></span>
+    <a class="tg" href="https://t.me/Abso1ute_Shop" target="_blank" rel="noopener" aria-label="Наш Telegram-канал"><svg><use href="#i-tg"/></svg></a>
   </div>
-  <div class="search"><svg><use href="#i-search"/></svg><input id="q" type="search" placeholder="Поиск товаров" aria-label="Поиск товаров"></div>
-  <div class="chips" id="chips"></div>
 </header>
 
 <main>
-  <div class="grid" id="grid"></div>
-  <p class="empty" id="empty" hidden>Ничего не найдено. Попробуйте другой запрос.</p>
-  <button class="more" id="more" hidden>Показать ещё</button>
-</main>
+  <section class="view on" id="v-catalog">
+    <div class="hero"><img src="logo.png" alt="Abso1ute Shop" onerror="this.parentNode.remove()"><p>MMXXI · UZ</p></div>
+    <div class="search"><svg><use href="#i-search"/></svg><input id="q" type="search" placeholder="Поиск товаров" aria-label="Поиск товаров"></div>
+    <div class="chips" id="chips"></div>
+    <div class="grid" id="grid"></div>
+    <p class="empty" id="empty" hidden>Ничего не найдено. Попробуйте другой запрос.</p>
+    <button class="more" id="more" hidden>Показать ещё</button>
+  </section>
 
-<footer>
-  <a href="https://t.me/Abso1ute_Shop" target="_blank" rel="noopener"><svg><use href="#i-tg"/></svg>@Abso1ute_Shop</a>
-  <span>Заказ из Китая · доставка по Узбекистану</span>
-</footer>
-
-<div class="veil" id="veil"></div>
-<aside class="sheet" id="sheet" aria-label="Корзина" aria-hidden="true">
-  <div class="sh">Корзина<button class="ib" id="closeCart" aria-label="Закрыть"><svg><use href="#i-x"/></svg></button></div>
-  <div class="items" id="items"></div>
-  <div class="foot">
+  <section class="view" id="v-cart">
+    <h2>Корзина</h2>
+    <div id="items"></div>
     <div class="sum"><span>Итого</span><span id="total">0 сум</span></div>
     <a class="order" id="order" href="#" target="_blank" rel="noopener" aria-disabled="true"><svg><use href="#i-tg"/></svg>Оформить в Telegram</a>
     <p class="note">Откроется чат с готовым списком заказа. Осталось нажать «Отправить».</p>
-  </div>
-</aside>
+  </section>
+
+  <section class="view" id="v-profile">
+    <h2>Профиль</h2>
+    <div class="form frame">
+      <label>Имя<input id="p-name" autocomplete="name" placeholder="Как к вам обращаться"></label>
+      <label>Телефон<input id="p-phone" type="tel" autocomplete="tel" placeholder="+998"></label>
+      <label>Адрес доставки<input id="p-addr" autocomplete="street-address" placeholder="Город, улица, дом"></label>
+      <p class="note" style="margin:0;text-align:left">Данные хранятся только на вашем телефоне и добавляются в текст заказа.</p>
+    </div>
+    <a class="link frame" href="https://t.me/Abso1ute_Shop" target="_blank" rel="noopener"><svg><use href="#i-tg"/></svg>Наш Telegram-канал</a>
+  </section>
+</main>
+
+<nav class="tabs" role="tablist" aria-label="Разделы">
+  <button class="tab" role="tab" data-v="catalog" aria-selected="true"><svg><use href="#i-grid"/></svg>Каталог</button>
+  <button class="tab" role="tab" data-v="cart" aria-selected="false"><svg><use href="#i-bag"/></svg>Корзина<span class="badge" id="count"></span></button>
+  <button class="tab" role="tab" data-v="profile" aria-selected="false"><svg><use href="#i-user"/></svg>Профиль</button>
+</nav>
 <div class="toast" id="toast" role="status"></div>
 
 <script>
@@ -121,7 +158,7 @@ const PER_PAGE = 24;          // сколько товаров показыва�
 /* ===== ТОВАРЫ =====
    Образцы. Замените на свои: id — уникальный номер, cat — категория,
    price — цена в сумах (число), sizes — размеры (или [] если без размера),
-   img — ссылка на фото, например "img/1.jpg" (можно оставить ""). */
+   img — путь к фото, например "img/1.jpg" (или "" — тогда без фото). */
 const PRODUCTS = [
  {id:1,name:"Худи оверсайз",cat:"Одежда",price:289000,sizes:["S","M","L","XL"],img:""},
  {id:2,name:"Футболка базовая",cat:"Одежда",price:119000,sizes:["S","M","L","XL"],img:""},
@@ -137,14 +174,23 @@ const PRODUCTS = [
 
 /* ===== КОД САЙТА (менять не нужно) ===== */
 const $ = id => document.getElementById(id);
-const fmt = n => n.toLocaleString("ru-RU").replace(/\u00a0/g," ") + " сум";
-let cat = "Все", query = "", shown = PER_PAGE, cart = [];
-try { cart = JSON.parse(localStorage.getItem("cart") || "[]"); } catch(e) {}
-const save = () => { try { localStorage.setItem("cart", JSON.stringify(cart)); } catch(e) {} };
+const fmt = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g," ") + " сум";
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const load = (k,d) => { try { return JSON.parse(localStorage.getItem(k)) || d; } catch(e) { return d; } };
+const store = (k,v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} };
+let cat = "Все", query = "", shown = PER_PAGE, cart = load("cart", []), prof = load("profile", {});
 
-function toast(t){ const el=$("toast"); el.textContent=t; el.classList.add("on"); clearTimeout(toast.t); toast.t=setTimeout(()=>el.classList.remove("on"),1600); }
+function toast(t){ const el=$("toast"); el.textContent=t; el.classList.add("on"); clearTimeout(toast.t); toast.t=setTimeout(()=>el.classList.remove("on"),1500); }
 
+/* вкладки */
+function go(v){
+  document.querySelectorAll(".view").forEach(s => s.classList.toggle("on", s.id==="v-"+v));
+  document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", t.dataset.v===v));
+  window.scrollTo(0,0);
+}
+document.querySelector(".tabs").onclick = e => { const t=e.target.closest(".tab"); if(t) go(t.dataset.v); };
+
+/* каталог */
 function chips(){
   const cats = ["Все", ...new Set(PRODUCTS.map(p => p.cat))];
   $("chips").innerHTML = cats.map(c => `<button class="chip" aria-pressed="${c===cat}" data-c="${esc(c)}">${esc(c)}</button>`).join("");
@@ -156,13 +202,13 @@ $("more").onclick = () => { shown += PER_PAGE; render(); };
 function render(){
   const list = PRODUCTS.filter(p => (cat==="Все"||p.cat===cat) && p.name.toLowerCase().includes(query));
   $("grid").innerHTML = list.slice(0,shown).map(p => `
-   <article class="card">
-    <div class="pic">${p.img ? `<img src="${esc(p.img)}" alt="${esc(p.name)}" loading="lazy">` : `<svg><use href="#i-hanger"/></svg>`}</div>
+   <article class="card frame">
+    ${p.img ? `<img src="${esc(p.img)}" alt="${esc(p.name)}" loading="lazy">` : ""}
     <div class="info">
      <div class="name">${esc(p.name)}</div>
      <div class="price">${fmt(p.price)}</div>
      <div class="row">
-      ${p.sizes.length ? `<select aria-label="Размер">${p.sizes.map(s=>`<option>${esc(s)}</option>`).join("")}</select>` : `<span style="flex:1"></span>`}
+      ${p.sizes.length ? `<select aria-label="Размер">${p.sizes.map(s=>`<option>${esc(s)}</option>`).join("")}</select>` : `<span class="sp"></span>`}
       <button class="add" data-id="${p.id}" aria-label="Добавить в корзину"><svg><use href="#i-plus"/></svg></button>
      </div>
     </div>
@@ -172,50 +218,49 @@ function render(){
 }
 $("grid").onclick = e => {
   const b = e.target.closest(".add"); if(!b) return;
-  const id = +b.dataset.id, sel = b.parentElement.querySelector("select");
-  const size = sel ? sel.value : "";
+  const id = +b.dataset.id, sel = b.parentElement.querySelector("select"), size = sel ? sel.value : "";
   const f = cart.find(i => i.id===id && i.size===size);
   f ? f.q++ : cart.push({id,size,q:1});
-  save(); drawCart(); toast("Добавлено в корзину");
+  store("cart", cart); drawCart(); toast("Добавлено в корзину");
 };
 
+/* корзина */
 function drawCart(){
   const rows = cart.map(i => ({...i, p: PRODUCTS.find(p => p.id===i.id)})).filter(r => r.p);
   const n = rows.reduce((s,r)=>s+r.q,0), sum = rows.reduce((s,r)=>s+r.q*r.p.price,0);
   $("count").textContent = n || "";
   $("total").textContent = fmt(sum);
-  $("items").innerHTML = rows.length ? rows.map((r,k) => `
+  $("items").innerHTML = rows.length ? rows.map(r => `
    <div class="it">
     <div class="t">${esc(r.p.name)}<small>${r.size ? "Размер: "+esc(r.size)+" · " : ""}${fmt(r.p.price)}</small></div>
     <div class="qty">
-     <button data-k="${k}" data-d="-1" aria-label="Меньше"><svg><use href="#i-minus"/></svg></button>
+     <button data-id="${r.id}" data-size="${esc(r.size)}" data-d="-1" aria-label="Меньше"><svg><use href="#i-minus"/></svg></button>
      <span>${r.q}</span>
-     <button data-k="${k}" data-d="1" aria-label="Больше"><svg><use href="#i-plus"/></svg></button>
+     <button data-id="${r.id}" data-size="${esc(r.size)}" data-d="1" aria-label="Больше"><svg><use href="#i-plus"/></svg></button>
     </div>
-   </div>`).join("") : `<p class="empty">Корзина пуста</p>`;
+   </div>`).join("") : `<p class="empty">Корзина пуста. Выберите товары в каталоге.</p>`;
   const o = $("order");
   if(rows.length){
-    const text = "Здравствуйте! Хочу заказать:\n" + rows.map((r,k)=>`${k+1}. ${r.p.name}${r.size?" ("+r.size+")":""} × ${r.q} — ${fmt(r.q*r.p.price)}`).join("\n") + `\n\nИтого: ${fmt(sum)}`;
+    let text = "Здравствуйте! Хочу заказать:\n" + rows.map((r,k)=>`${k+1}. ${r.p.name}${r.size?" ("+r.size+")":""} × ${r.q} — ${fmt(r.q*r.p.price)}`).join("\n") + `\n\nИтого: ${fmt(sum)}`;
+    const info = [prof.name && "Имя: "+prof.name, prof.phone && "Телефон: "+prof.phone, prof.addr && "Адрес: "+prof.addr].filter(Boolean);
+    if(info.length) text += "\n\n" + info.join("\n");
     o.href = `https://t.me/${TG}?text=${encodeURIComponent(text)}`;
     o.removeAttribute("aria-disabled");
   } else { o.href = "#"; o.setAttribute("aria-disabled","true"); }
 }
 $("items").onclick = e => {
-  const b = e.target.closest("button[data-k]"); if(!b) return;
-  const r = cart.filter(i => PRODUCTS.some(p => p.id===i.id))[+b.dataset.k];
+  const b = e.target.closest("button[data-id]"); if(!b) return;
+  const r = cart.find(i => i.id===+b.dataset.id && i.size===b.dataset.size); if(!r) return;
   r.q += +b.dataset.d;
   if(r.q <= 0) cart = cart.filter(i => i !== r);
-  save(); drawCart();
+  store("cart", cart); drawCart();
 };
 
-function openCart(on){
-  $("sheet").classList.toggle("on", on);
-  $("veil").classList.toggle("on", on);
-  $("sheet").setAttribute("aria-hidden", !on);
-}
-$("openCart").onclick = () => openCart(true);
-$("closeCart").onclick = $("veil").onclick = () => openCart(false);
-document.onkeydown = e => { if(e.key==="Escape") openCart(false); };
+/* профиль */
+[["p-name","name"],["p-phone","phone"],["p-addr","addr"]].forEach(([id,k]) => {
+  $(id).value = prof[k] || "";
+  $(id).oninput = e => { prof[k] = e.target.value.trim(); store("profile", prof); drawCart(); };
+});
 
 chips(); render(); drawCart();
 </script>
