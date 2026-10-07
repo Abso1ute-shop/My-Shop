@@ -307,25 +307,45 @@ header{justify-content:space-between!important}
 @keyframes bpulse{0%{transform:scale(.9);opacity:.35}100%{transform:scale(1.25);opacity:0}}
 @keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
 @keyframes bglow{50%{opacity:.2}}
-.dots{display:inline-flex;gap:3px;margin-left:6px;vertical-align:middle}.dots i{width:5px;height:5px;border-radius:50%;background:var(--mut);animation:dt 1.2s infinite}.dots i:nth-child(2){animation-delay:.2s}.dots i:nth-child(3){animation-delay:.4s}
 @keyframes dt{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-4px);opacity:1}}
+#lo{background:#d92d20!important;color:#fff!important;font-weight:700;margin-top:22px!important;margin-bottom:6px}
+#lo:active{background:#b42318!important}
+.fqs{color:var(--mut);font-size:14px;margin:-4px 0 14px}
+.fql{display:flex;flex-direction:column;gap:10px}
+.fq{background:var(--pc);border-radius:20px;overflow:hidden;animation:fup .55s cubic-bezier(.22,1,.36,1) both;animation-delay:var(--d);transition:box-shadow .4s}
+.fq.open{box-shadow:0 8px 24px #0000001a}
+.fq-h{display:flex;align-items:center;gap:12px;width:100%;padding:16px;text-align:left;color:var(--fg)}
+.fq-n{flex:none;width:30px;height:30px;border-radius:50%;background:var(--fg);color:var(--bg);display:grid;place-items:center;font:700 14px Oswald,sans-serif;transition:transform .4s cubic-bezier(.22,1,.36,1)}
+.fq-t{flex:1;font-weight:600;font-size:15px;line-height:1.35}
+.fq-c{flex:none;width:22px;height:22px;stroke:var(--mut);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform .45s cubic-bezier(.22,1,.36,1)}
+.fq.open .fq-c{transform:rotate(180deg)}.fq.open .fq-n{transform:scale(1.1)}
+.fq-b{display:grid;grid-template-rows:0fr;transition:grid-template-rows .5s cubic-bezier(.22,1,.36,1)}
+.fq.open .fq-b{grid-template-rows:1fr}
+.fq-b>div{overflow:hidden}
+.fq-b p{color:var(--mut);font-size:14px;line-height:1.65;padding:0 16px 18px 58px;opacity:0;transform:translateY(-6px);transition:opacity .4s .08s,transform .45s cubic-bezier(.22,1,.36,1)}
+.fq.open .fq-b p{opacity:1;transform:none}
+button.perk{text-align:left;color:var(--fg);cursor:pointer;transition:transform .35s cubic-bezier(.22,1,.36,1)}button.perk:active{transform:scale(.96)}
+@media(min-width:861px){.perks{grid-template-columns:repeat(3,1fr)!important}}
+.hero{touch-action:pan-y;-webkit-user-select:none;user-select:none}
+.sl .btn{display:inline-block;width:max-content}
+.arr{top:auto!important;bottom:9px!important;transform:none!important;width:32px;height:32px;font-size:17px;line-height:30px;background:#ffffff24!important;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);transition:background .3s,transform .35s cubic-bezier(.22,1,.36,1)!important}
+.arr:active{background:#ffffff4d!important;transform:scale(.9)!important}
+#pv{left:16px!important;right:auto!important}#nx{right:16px!important;left:auto!important}
+.dots{bottom:20px!important}
+.sl{padding-bottom:58px!important}
+@media(max-width:860px){.hero{min-height:285px!important}}
 </style>
 </head>
 <body>
 <header>
  <button class="ib burger" id="burger" aria-label="Меню"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
- <a href="#home" class="logo">ABSO1UTE<small>_SHOP</small></a>
+ <a href="#home" class="logo">ABSO1UTE<small>SHOP</small></a>
  <nav id="nav">
   <a href="#home" class="on">Главная</a>
   <div class="dd" id="dd"><button id="ddb">Каталог ▾</button><div class="ddm" id="ddm"></div></div>
   
  </nav>
-<div class="hx">
-  <button class="hpill" data-c="fast" aria-label="Доставка 1 день"><svg viewBox="0 0 24 24"><path d="M2.5 6.5h11v10h-11zM13.5 10h4l3.5 3.2v3.3h-7.5"/><circle cx="7" cy="18.5" r="1.8"/><circle cx="17" cy="18.5" r="1.8"/></svg>1 день</button>
-  <button class="ib" id="hx2" aria-label="Поиск по фото"><svg viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></button>
-  <button class="ib" id="hx3" aria-label="Чат поддержки"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/></svg></button>
- </div>
- <div class="icons">
+<div class="icons">
   <button class="ib dk" id="bth" aria-label="Тема"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 4v16" /></svg></button>
   <button class="ib dk" id="bf2" aria-label="Избранное"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></button>
   <button class="ib dk" id="bt2" aria-label="Доставка за 1 день"><svg viewBox="0 0 24 24"><path d="M2 6h11v10H2zM13 10h4l4 3v3h-8M7 19a2 2 0 1 0 0-.01M17 19a2 2 0 1 0 0-.01"/></svg></button>
@@ -338,18 +358,17 @@ header{justify-content:space-between!important}
 <main id="home">
  <div class="hero" id="hero">
   <div class="deco"><i></i><i></i><i></i><span class="wm">ABSO1UTE</span></div>  <div class="sl on"><h1>Доставка 1 день <svg class="fl-i" viewBox="0 0 24 24"><path d="M12 2c1 4 6 6 6 12a6 6 0 0 1-12 0c0-3 2-4 3-6 0 2 1 3 2 3 0-3-1-5 1-9z"/></svg></h1><p>Доставка за день • Карго — 0 сум<br>Товары в наличии по всему Узбекистану</p><button class="btn" data-go="catalog">СМОТРЕТЬ КАТАЛОГ →</button></div>
-  <div class="sl"><div class="big">СКИДКА 5%</div><p>на все товары по промокоду <b>Opening</b></p><button class="btn" id="copyp">СКОПИРОВАТЬ ПРОМОКОД</button></div>
+  <div class="sl"><div class="big">СКИДКИ</div><p>Акции, скидки и промокоды — в нашем Telegram-канале</p><a class="btn" href="https://t.me/Abso1ute_Shop" target="_blank" rel="noopener">ПЕРЕЙТИ В TELEGRAM →</a></div>
   <div class="sl"><h1>Как заказать?</h1><p>Всего 5 простых шагов — от выбора товара до получения</p><button class="btn" id="howb">ЧИТАТЬ ИНСТРУКЦИЮ →</button></div>
   
-  <button class="arr" id="pv" style="left:14px">‹</button><button class="arr" id="nx" style="right:14px">›</button>
+    <button class="arr" id="pv" aria-label="Назад">‹</button><button class="arr" id="nx" aria-label="Вперёд">›</button>
   <div class="dots" id="dots"></div>
  </div>
 
  <div class="perks">
-  <div class="perk"><svg viewBox="0 0 24 24"><path d="M2.5 6.5h11v10h-11zM13.5 10h4l3.5 3.2v3.3h-7.5"/><circle cx="7" cy="18.5" r="1.8"/><circle cx="17" cy="18.5" r="1.8"/></svg><div>Доставка 1 день<small>Товары в наличии</small></div></div>
-  <div class="perk"><svg viewBox="0 0 24 24"><path d="M4 8l8-4 8 4v9l-8 4-8-4z"/><path d="M4 8l8 4 8-4M12 12v9"/></svg><div>Карго 0 сум<small>На товары в наличии</small></div></div>
   <div class="perk"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="m9 12 2 2 4-4"/></svg><div>Контроль качества<small>Проверяем каждый товар</small></div></div>
-  <div class="perk"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/></svg><div>Поддержка<small>Чат в профиле</small></div></div>
+  <button class="perk" id="pk2"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/></svg><div>Чат с поддержкой<small>24/7 поддержка</small></div></button>
+  <div class="perk"><svg viewBox="0 0 24 24"><path d="M21 3 3 10.5l6.5 2.5L12 19.5l2.5-4.5L21 3z"/><path d="m9.5 13 5-3.5"/></svg><div>Авиа доставка<small>5–7 дней</small></div></div>
  </div>
  <div class="hblk" id="hnew"><div class="hh"><h2>Новинки</h2><button data-c="new">Все ›</button></div><div class="hscroll" id="hng"></div></div>
  <div class="photo-cta"><div><b>Не нашли товар?</b><span>Загрузите фото — мы найдём такой же</span></div><button class="btn" id="ctac"><svg viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Поиск по фото</button></div>
@@ -429,7 +448,13 @@ $$("nav a").forEach(a=>a.onclick=()=>{$$("nav a").forEach(x=>x.classList.remove(
 const sl=$$(".sl");let si=0;
 sl.forEach((_,i)=>{const d=document.createElement("i");d.onclick=()=>show(i);$("#dots").appendChild(d)});
 function show(i){si=(i+sl.length)%sl.length;sl.forEach((s,j)=>s.classList.toggle("on",j===si));$$("#dots i").forEach((d,j)=>d.classList.toggle("on",j===si))}
-$("#pv").onclick=()=>show(si-1);$("#nx").onclick=()=>show(si+1);show(0);setInterval(()=>show(si+1),6000);
+show(0);let tm=setInterval(()=>show(si+1),6000);const rst=()=>{clearInterval(tm);tm=setInterval(()=>show(si+1),6000)};
+let sx=0,sy=0;const hr=$("#hero");
+$("#pv").onclick=()=>{show(si-1);rst()};$("#nx").onclick=()=>{show(si+1);rst()};
+const sw=(x,y)=>{const dx=x-sx,dy=y-sy;if(Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy)){show(si+(dx<0?1:-1));rst()}};
+hr.addEventListener("touchstart",e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY},{passive:true});
+hr.addEventListener("touchend",e=>sw(e.changedTouches[0].clientX,e.changedTouches[0].clientY),{passive:true});
+hr.addEventListener("mousedown",e=>{sx=e.clientX;sy=e.clientY});hr.addEventListener("mouseup",e=>sw(e.clientX,e.clientY));
 /* категории */
 $("#tiles").innerHTML=CATS.map(c=>`<div class="tile" data-c="${c[0]}"><h3>${c[1]}</h3><span>Смотреть все →</span></div>`).join("");
 $("#ddm").innerHTML=CATS.map(c=>`<button data-c="${c[0]}">${c[1]}</button>`).join("");
@@ -463,7 +488,7 @@ $("#co").onclick=()=>{if(!cart.length)return toast("Корзина пуста");
  $("#oko").onclick=async()=>{const v=id=>$("#"+id).value.trim(),n=v("on"),t=v("ot"),b=v("obt");if(!n||!t)return toast("Укажите имя и телефон");if(!btsOk(b))return toast("Выберите пункт BTS из списка");
   const items=cart.map(i=>{const p=PRODUCTS.find(x=>x.id===i.id);return p?`${p.name}${i.sz?" ("+i.sz+")":""} × ${i.q}`:""}).filter(Boolean).join(", ");
   const o={id:Date.now().toString().slice(-6),u:me,d:new Date().toLocaleString("ru-RU"),items,sum:total(),st:"Новый",n,t,c:b,a:"",k:v("ok"),pay:$("#op").value==="bal"?"Оплата с баланса":$("#op").value,useBal:$("#op").value==="bal"};
-  if(API){const r=await api("/order",o);if(!r||!r.ok)return toast(r&&r.err||"Не удалось отправить заказ — проверьте интернет");if(typeof r.bal==="number"){const x=getU();x[me].bal=r.bal;ls.s("users",x)}}
+  if(API){const r=await api("/order",o);if(!r)return toast("Нет связи с сервером. Попробуйте позже");if(!r.ok)return toast(r.err||"Не удалось отправить заказ");if(typeof r.bal==="number"){const x=getU();x[me].bal=r.bal;ls.s("users",x)}}
   const os=ls.g("orders",[]);os.push(o);ls.s("orders",os);cart=[];save();
   const txt=`Заказ №${o.id}\n${items}\nИтого: ${fmt(o.sum)}\n${n}, ${t}\nBTS: ${b}\n${o.pay}${o.k?"\n"+o.k:""}`;
   $("#ob").innerHTML=`<h3>Заказ №${o.id} принят ✅</h3><p style="line-height:1.6;margin-bottom:14px">Спасибо! Мы свяжемся с вами по номеру ${esc(t)} для подтверждения. Заказ сохранён в вашем профиле.</p><a class="btn d" style="display:block;text-align:center;width:100%" target="_blank" href="https://t.me/Abso1ute_Shop?text=${encodeURIComponent(txt)}">Ускорить: отправить в Telegram</a>`}
@@ -481,10 +506,11 @@ let me=ls.g("me",null);const getU=()=>ls.g("users",{});if(me&&!getU()[me])me=nul
 const API="https://abso1ute-shop.amirluckyyy.workers.dev";
 const CARDS=[{t:"VISA",n:"4916 9903 5153 0180",o:"AMIRXON ISROILOV"},{t:"HUMO",n:"9860 1606 2756 4299",o:"AMIRXON ISROILOV"}];
 let PV="",SYNC=false,PT=0;
-async function api(path,body){if(!API)return null;try{const t=ls.g("tok",null),r=await fetch(API+path,{method:body===undefined?"GET":"POST",headers:{"Content-Type":"application/json",...(t?{Authorization:"Bearer "+t}:{})},body:body===undefined?undefined:JSON.stringify(body)}),j=await r.json().catch(()=>null);if(r.status===401&&t){ls.s("tok",null);me=null;ls.s("me",null)}return j}catch(e){return null}}
+async function api(path,body){if(!API)return null;try{const t=ls.g("tok",null),r=await fetch(API+path,{method:body===undefined?"GET":"POST",headers:{"Content-Type":"application/json",...(t?{Authorization:"Bearer "+t}:{})},body:body===undefined?undefined:JSON.stringify(body)}),j=await r.json().catch(()=>null);if(r.status===401){ls.s("tok",null);me=null;ls.s("me",null)}return j}catch(e){return null}}
 async function syncMe(){if(!API||!ls.g("tok",null))return;const r=await api("/me");if(!r||!r.ok)return;SYNC=true;const x=getU();x[me]={...(x[me]||{}),...r.user};ls.s("users",x);ls.s("orders",ls.g("orders",[]).filter(o=>o.u!==me).concat((r.orders||[]).map(o=>({...o,u:me}))));SYNC=false}
 const _lss=ls.s;ls.s=(k,v)=>{_lss(k,v);if(k==="users"&&!SYNC&&API&&ls.g("tok",null)&&me&&v&&v[me]){clearTimeout(PT);PT=setTimeout(()=>{const u=v[me];api("/profile",{n:u.n,t:u.t,bts:u.bts,rc:u.rc,av:u.av,nt:u.nt,ad:u.ad})},700)}};
 const shrink=(f,cb)=>{const im=new Image();im.onload=()=>{const k=Math.min(1,900/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=im.width*k;c.height=im.height*k;c.getContext("2d").drawImage(im,0,0,c.width,c.height);cb(c.toDataURL("image/jpeg",.75))};im.src=URL.createObjectURL(f)};
+if(API&&me&&!ls.g("tok",null)){me=null;ls.s("me",null)}
 if(API)syncMe();
 const openPr=()=>{closeAll();drawAcc();$("#ovp").classList.add("on");syncMe().then(()=>{if(PV===""&&$("#ovp").classList.contains("on"))drawAcc()})};
 $("#bp").onclick=openPr;$("#bp2").onclick=openPr;
@@ -546,7 +572,7 @@ if(v==="balance"){const tops=(u.tops||[]).slice(-5).reverse(),stt={wait:"Ожи�
  set(`${bk}<h3>Баланс</h3><div class="pcard" style="text-align:center"><span style="color:#bbb;font-size:13px">Ваш баланс</span><b style="display:block;font:700 40px Oswald,sans-serif;margin-top:4px">${fmt(u.bal||0)}</b></div><p class="fl">Сумма пополнения, сум</p><input class="inp" id="tpa" type="number" inputmode="numeric" placeholder="Например, 100000"><p class="fl">Способ пополнения</p><div class="pm"><button class="on">Перевод на карту</button><button disabled>Payme<small>скоро</small></button></div><p style="line-height:1.5;margin:14px 0 10px"><b>Переведите сумму на одну из карт и обязательно прикрепите чек</b> — мы проверим его и пополним баланс.</p>${CARDS.map(c=>`<button class="card-c" data-cp="${c.n}"><span>${c.t}</span><b>${c.n}</b><small>${c.o}</small></button>`).join("")}<label class="btn" style="display:block;text-align:center;margin:0 0 10px;background:var(--pc);color:var(--fg);cursor:pointer">Прикрепить чек (обязательно)<input type="file" id="tpf" accept="image/*" hidden></label><div id="tpv"></div><button class="btn d" id="tps" style="width:100%;text-align:center">Отправить на проверку</button><button class="btn" id="tpr" style="width:100%;text-align:center;background:var(--pc);color:var(--fg)">Обновить баланс</button>${tops.length?'<p class="fl">Мои пополнения</p>'+tops.map(t=>`<div class="ord"><b>${fmt(t.amount)}</b> · ${stt[t.st]||""}<br>${esc(t.d||"")}</div>`).join(""):""}`);
  $$("#pbody [data-cp]").forEach(b=>b.onclick=()=>{navigator.clipboard?.writeText(b.dataset.cp.replace(/\s/g,""));toast("Номер карты скопирован")});
  $("#tpf").onchange=e=>{const f=e.target.files[0];if(f)shrink(f,d=>{img=d;$("#tpv").innerHTML=`<img class="cam-prev" src="${d}" alt="">`})};
- $("#tps").onclick=async()=>{const a=+$("#tpa").value;if(!API)return toast("Сервер ещё не подключён");if(!(a>=1000))return toast("Введите сумму от 1 000 сум");if(!img)return toast("Прикрепите фото чека");const r=await api("/topup",{amount:a,img});if(!r||!r.ok)return toast(r&&r.err||"Не удалось отправить. Проверьте интернет");await syncMe();toast("Чек отправлен — ожидайте подтверждения");drawAcc("balance")};
+ $("#tps").onclick=async()=>{const a=+$("#tpa").value;if(!API)return toast("Сервер ещё не подключён");if(!(a>=1000))return toast("Введите сумму от 1 000 сум");if(!img)return toast("Прикрепите фото чека");const r=await api("/topup",{amount:a,img});if(!r)return toast("Нет связи с сервером. Попробуйте позже");if(!r.ok){toast(r.err||"Не удалось отправить");if(!me)drawAuth("in");return}await syncMe();toast("Чек отправлен — ожидайте подтверждения");drawAcc("balance")};
  $("#tpr").onclick=async()=>{await syncMe();toast("Баланс обновлён");drawAcc("balance")};return}
 if(v==="orders"){const os=ls.g("orders",[]).filter(o=>o.u===me).reverse();set(`${bk}<h3>Мои заказы</h3>${os.length?os.map(o=>`<div class="ord"><b>№${o.id}</b> · ${o.d}<br>${esc(o.items)}<br><b>${fmt(o.sum)}</b> · ${o.st}</div>`).join(""):'<p style="color:var(--mut)">Заказов пока нет</p>'}`);return}
  if(v==="theme"){set(`${bk}<h3>Тема</h3>${[["dark","Чёрная"],["light","Белая"],["gray","Серая"]].map(t=>`<button class="row" data-th="${t[0]}"><span>${t[1]}</span><span>${document.documentElement.dataset.theme===t[0]?"✓":""}</span></button>`).join("")}`);$$("#pbody [data-th]").forEach(b=>b.onclick=()=>{setTheme(b.dataset.th);drawAcc("theme")});return}
@@ -554,12 +580,13 @@ if(v==="orders"){const os=ls.g("orders",[]).filter(o=>o.u===me).reverse();set(`$
  $("#aad").onclick=()=>{const t=$("#abt").value.trim();if(!btsOk(t))return toast("Выберите пункт BTS из списка");const x=getU();x[me].bts=t;ls.s("users",x);toast("Пункт BTS сохранён")};return}
 if(v==="about"){set(`${bk}<h3>О нас — ABSO1UTE SHOP</h3><p style="line-height:1.7;margin-bottom:10px">ABSO1UTE SHOP — онлайн-магазин одежды, обуви и аксессуаров с доставкой по всему Узбекистану.</p><p style="line-height:1.7;margin-bottom:10px">Мы помогаем находить и заказывать интересные товары из Китая по доступным ценам. Если нужного товара нет на сайте — вы можете воспользоваться поиском по фото, и мы постараемся найти его для вас.</p><div class="ord" style="line-height:1.9">✦ Большой выбор одежды, обуви и аксессуаров<br>✦ Заказ товаров из Китая<br>✦ Авто и авиа доставка<br>✦ Доставка в любую точку Узбекистана<br>✦ Товары в наличии с быстрой доставкой<br>✦ Удобный заказ через сайт</div><p style="line-height:1.7;margin:10px 0">Наша цель — сделать покупку качественных и стильных вещей максимально простой, удобной и доступной.</p><p style="font-weight:700;line-height:1.5">ABSO1UTE SHOP — найди то, что подходит именно тебе.</p>`);return}
 if(v==="faq"){const Q=[["Как сделать заказ?","Чтобы сделать заказ, выберите понравившийся товар, добавьте его в корзину и нажмите «Купить». Перед покупкой в профиле укажите адрес ПВЗ BTS, имя и номер телефона — после этого можно оформлять и оплачивать заказ."],["Можно ли найти любой товар?","Да, вы можете найти практически любой товар. В каталоге используйте поиск по фото товара (значок фотоаппарата рядом с поиском). Если мы сможем найти нужный товар, мы выставим его на сайт и сообщим вам."],["Сколько идёт доставка?","✦ Авто — 13–15 дней<br>✦ Авиа — 5–7 дней"],["Сколько стоит карго?","✦ Авто — 10 000 сум / 100 г<br>✦ Авиа — 15 000 сум / 100 г"],["Доставляете ли вы по всему Узбекистану?","Да, отправляем заказы в любую точку Узбекистана."],["Можно ли заказать товар, которого нет в наличии?","Да. Вы можете заказать товар из Китая, даже если его сейчас нет в наличии на сайте."],["Как правильно выбрать размер?","Так как товары едут из Китая, у них используется китайская размерная сетка, поэтому некоторые вещи могут быть маломерками. Рекомендуем выбирать на 1–2 размера больше обычного."],["Можно ли вернуть или обменять товар?","Возврат возможен, если ошибка произошла с нашей стороны: отправлен неправильный товар/размер или товар существенно не соответствует описанию."]];
- set(`${bk}<h3>Часто задаваемые вопросы</h3>${Q.map((q,i)=>`<details${i===0?" open":""}><summary>${i+1}. ${q[0]}</summary><p style="margin-top:8px;line-height:1.6">${q[1]}</p></details>`).join("")}`);return}
+ set(`${bk}<h3>Часто задаваемые вопросы</h3><p class="fqs">Нажмите на вопрос, чтобы увидеть ответ</p><div class="fql">${Q.map((q,i)=>`<div class="fq" style="--d:${(i*.06).toFixed(2)}s"><button class="fq-h"><span class="fq-n">${i+1}</span><span class="fq-t">${q[0]}</span><svg class="fq-c" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button><div class="fq-b"><div><p>${q[1]}</p></div></div></div>`).join("")}</div>`);
+ $$("#pbody .fq-h").forEach(b=>b.onclick=()=>b.parentElement.classList.toggle("open"));return}
 if(v==="sup"){const key="chat:"+(me||"guest"),draw=()=>{const c=$("#cl");if(!c)return;const l=ls.g(key,[]);c.innerHTML=l.length?l.map(m=>`<div class="msg ${m.f}">${esc(m.t)}</div>`).join(""):'<div class="msg bot">Здравствуйте! Напишите ваш вопрос.</div>'};
- set(`<div class="chatpg">${bk}<div class="cht"><h3>Чат с поддержкой</h3><a class="tgc" target="_blank" href="https://t.me/Abso1ute_Shop">Telegram</a></div><div class="botcard"><div class="botav"><i class="ant"></i><div class="face"><b></b><b></b></div></div><div><b>Поддержка ABSO1UTE</b><span>Подождите пару минут — модератор вам ответит<em class="dots"><i></i><i></i><i></i></em></span></div></div><div style="margin:10px 0 4px">${socHTML()}</div><div class="chat" id="cl"></div><div class="cin"><input class="inp" id="cm" placeholder="Напишите сообщение" autocomplete="off"><button class="snd" id="cs2" aria-label="Отправить"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div></div>`);draw();
+ set(`<div class="chatpg">${bk}<div class="cht"><h3>Чат с поддержкой</h3><a class="tgc" target="_blank" href="https://t.me/Abso1ute_Shop">Telegram</a></div><div class="botcard"><div class="botav"><i class="ant"></i><div class="face"><b></b><b></b></div></div><div><b>Поддержка ABSO1UTE</b><span>Подождите пару минут — модератор вам ответит</span></div></div><div class="chat" id="cl"></div><div class="cin"><input class="inp" id="cm" placeholder="Напишите сообщение" autocomplete="off"><button class="snd" id="cs2" aria-label="Отправить"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div></div>`);draw();
  const pull=()=>api("/chat").then(r=>{if(r&&r.msgs){ls.s(key,r.msgs);draw()}});if(API){pull();const iv=setInterval(()=>{if(!$("#cl")){clearInterval(iv);return}pull()},7000)}
  const send=()=>{const t=$("#cm").value.trim();if(!t)return;const l=ls.g(key,[]),lb=[...l].reverse().find(m=>m.a);l.push({f:"me",t});ls.s(key,l);$("#cm").value="";draw();$("#ovp").scrollTop=1e9;
-  if(API){api("/support",{text:t}).then(pull);return}
+  if(API){api("/support",{text:t}).then(r=>{if(!r)toast("Нет связи с сервером. Попробуйте позже");else if(!r.ok){toast(r.err||"Не удалось отправить");if(!me)drawAuth("in")}pull()});return}
   if(!lb||Date.now()-lb.ts>6e5)setTimeout(()=>{const x=ls.g(key,[]);x.push({f:"bot",a:1,ts:Date.now(),t:"Спасибо за сообщение! Пару минут — и модератор свяжется с вами."});ls.s(key,x);draw();$("#ovp").scrollTop=1e9},700)};
  $("#cs2").onclick=send;$("#cm").onkeydown=e=>{if(e.key==="Enter")send()};return}
 }
@@ -576,14 +603,13 @@ $("#bth").onclick=()=>{const o=["light","dark","gray"],n=o[(o.indexOf(document.d
 function openCam(){closeAll();let img="";
  $("#cbody").innerHTML=`<h3>Поиск по фото</h3><p style="color:var(--mut);line-height:1.5;margin-bottom:12px">Не нашли нужный товар? Загрузите его фото — мы постараемся найти такой же и добавить на сайт.</p><label class="btn d" style="display:block;text-align:center;margin:0;cursor:pointer">Сделать или выбрать фото<input type="file" id="cf" accept="image/*" hidden></label><div id="cpv"></div><textarea class="inp" id="cn" rows="2" placeholder="Комментарий: размер, цвет, бюджет (необязательно)" style="margin-top:10px"></textarea><button class="btn d" id="csd" style="width:100%;text-align:center">Отправить запрос</button>`;
  $("#cf").onchange=e=>{const f=e.target.files[0];if(!f)return;const im=new Image();im.onload=()=>{const k=Math.min(1,520/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=im.width*k;c.height=im.height*k;c.getContext("2d").drawImage(im,0,0,c.width,c.height);img=c.toDataURL("image/jpeg",.8);$("#cpv").innerHTML=`<img class="cam-prev" src="${img}" alt="">`};im.src=URL.createObjectURL(f)};
- $("#csd").onclick=async()=>{if(!img)return toast("Сначала добавьте фото");if(API){if(!me){closeAll();drawAuth("in");$("#ovp").classList.add("on");return toast("Войдите, чтобы отправить запрос")}const rr=await api("/photoreq",{img,note:$("#cn").value.trim()});if(!rr||!rr.ok)return toast(rr&&rr.err||"Не удалось отправить. Проверьте интернет")}const r=ls.g("photoreq",[]);r.push({u:me||"guest",d:new Date().toLocaleString("ru-RU"),n:$("#cn").value.trim()});ls.s("photoreq",r);
+ $("#csd").onclick=async()=>{if(!img)return toast("Сначала добавьте фото");if(API){if(!me){closeAll();drawAuth("in");$("#ovp").classList.add("on");return toast("Войдите, чтобы отправить запрос")}const rr=await api("/photoreq",{img,note:$("#cn").value.trim()});if(!rr)return toast("Нет связи с сервером. Попробуйте позже");if(!rr.ok)return toast(rr.err||"Не удалось отправить")}const r=ls.g("photoreq",[]);r.push({u:me||"guest",d:new Date().toLocaleString("ru-RU"),n:$("#cn").value.trim()});ls.s("photoreq",r);
   $("#cbody").innerHTML=`<h3>Запрос принят ✅</h3><p style="line-height:1.6;margin:10px 0 14px">Мы постараемся найти этот товар и сообщим вам. Чтобы ускорить поиск, отправьте это фото нам в Telegram.</p><a class="btn d" style="display:block;text-align:center" target="_blank" href="https://t.me/Abso1ute_Shop">Отправить фото в Telegram</a>`};
  $("#ovc").classList.add("on")}
-$("#cam").onclick=openCam;$("#hx2").onclick=openCam;$("#hx3").onclick=()=>{closeAll();drawAcc("sup");$("#ovp").classList.add("on")};$("#ctac").onclick=openCam;
+$("#cam").onclick=openCam;$("#pk2").onclick=()=>{closeAll();drawAcc("sup");$("#ovp").classList.add("on")};$("#ctac").onclick=openCam;
 
 $$(".bb[data-go]").forEach(b=>b.addEventListener("click",closeAll));
 $("#howb").onclick=()=>{closeAll();drawAcc("faq");$("#ovp").classList.add("on")};
-$("#copyp").onclick=()=>{navigator.clipboard?.writeText("Opening");toast("Промокод Opening скопирован")};
 $("#pa").onclick=()=>{if($("#pc").value.trim().toUpperCase()==="OPENING"){promo=true;save();toast("Промокод применён: −5%")}else toast("Неверный промокод")};
 /* свайп вправо закрывает корзину */
 let tx=0;document.addEventListener("touchstart",e=>tx=e.touches[0].clientX,{passive:true});document.addEventListener("touchend",e=>{if($("#dr").classList.contains("on")&&e.changedTouches[0].clientX-tx>90)closeAll()},{passive:true});
