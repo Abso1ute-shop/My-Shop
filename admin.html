@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>ABSO1UTE — админка</title>
+<style>
+:root{--bg:#0b0b0b;--cd:#161616;--ln:#262626;--fg:#f2f2f2;--mu:#8c8c8c;--ok:#35c26b;--no:#e5484d}
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--fg);font:15px/1.4 -apple-system,"Inter",system-ui,sans-serif;padding-bottom:40px}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input,select,textarea{font:inherit;color:var(--fg);background:var(--cd);border:1px solid var(--ln);border-radius:12px;padding:12px 14px;width:100%;outline:none;margin-bottom:10px}
+input:focus,select:focus,textarea:focus{border-color:#555}
+textarea{min-height:80px;resize:vertical}
+header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;position:sticky;top:0;background:#0b0b0bee;backdrop-filter:blur(12px);z-index:5;border-bottom:1px solid var(--ln)}
+header b{font-size:18px;letter-spacing:1px}
+.g{color:var(--mu);font-size:14px}
+nav{display:flex;gap:8px;padding:12px 16px;overflow-x:auto}
+nav button{padding:10px 16px;border-radius:20px;background:var(--cd);color:var(--mu);white-space:nowrap;font-weight:600;transition:.25s}
+nav button.on{background:#fff;color:#000}
+main{padding:0 16px;max-width:760px;margin:0 auto}
+.b{background:#fff;color:#000;border-radius:12px;padding:13px 18px;font-weight:700;width:100%;text-align:center;transition:transform .25s}
+.b:active{transform:scale(.97)}.b.s{background:var(--cd);color:var(--fg)}.b.r{background:var(--no);color:#fff}.b[disabled]{opacity:.5}
+.bar{display:flex;gap:10px;margin:4px 0 12px}.bar input{margin:0}.bar .b{width:auto;white-space:nowrap}
+.it,.card{background:var(--cd);border:1px solid var(--ln);border-radius:16px;padding:12px;margin-bottom:10px}
+.it{display:flex;gap:12px;align-items:center}
+.it img,.it .ph{width:64px;height:64px;border-radius:12px;object-fit:cover;background:#222;flex:none}
+.it .m{flex:1;min-width:0}.it .m b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mu{color:var(--mu);font-size:13px}
+.tg span{display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;background:#262626;margin:4px 4px 0 0}
+.ac{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.ac button{font-size:13px;color:var(--mu);padding:2px 0}.ac button.d{color:var(--no)}
+.sw{position:relative;width:44px;height:26px;display:block}.sw input{display:none}
+.sw i{position:absolute;inset:0;background:#333;border-radius:13px;transition:.25s}
+.sw i::after{content:"";position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.25s}
+.sw input:checked+i{background:var(--ok)}.sw input:checked+i::after{transform:translateX(18px)}
+.r{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.st{display:inline-block;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:700;background:#262626}
+.st.n{background:#2b2b00;color:#ffd84d}.st.p{background:#0d2a4a;color:#6cb6ff}.st.s{background:#2a1a4a;color:#b794ff}.st.d{background:#0f3320;color:var(--ok)}.st.c{background:#3a1416;color:var(--no)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.chips button{padding:8px 14px;border-radius:16px;background:var(--cd);color:var(--mu);font-size:14px;border:1px solid var(--ln)}
+.chips button.on{background:#fff;color:#000}
+.lg{max-width:340px;margin:18vh auto 0;padding:0 20px;text-align:center}.lg h1{font-size:30px;letter-spacing:3px}.lg p{color:var(--mu);margin:6px 0 20px}
+.sheet{position:fixed;inset:0;background:var(--bg);z-index:20;overflow:auto;padding:16px 16px 60px;animation:up .35s cubic-bezier(.22,1,.36,1)}
+.sheet .in{max-width:560px;margin:0 auto}
+@keyframes up{from{transform:translateY(30px);opacity:0}}
+.sheet h2{margin:6px 0 14px}.lb{font-size:13px;color:var(--mu);margin:4px 2px 6px;display:block}
+.tgl{display:flex;justify-content:space-between;align-items:center;padding:10px 2px}
+.ph-l{display:flex;gap:10px;overflow-x:auto;margin-bottom:12px;padding-bottom:4px}
+.ph-i{position:relative;flex:none;width:96px}.ph-i img{width:96px;height:110px;object-fit:cover;border-radius:12px}
+.ph-i .x{position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:50%;background:#000a;font-size:13px}
+.ph-i .mk{display:block;width:100%;font-size:12px;color:var(--mu);padding:4px 0}
+.ph-add{flex:none;width:96px;height:110px;border:1px dashed #444;border-radius:12px;display:grid;place-items:center;color:var(--mu);font-size:13px;text-align:center;cursor:pointer}
+.bal{font-size:22px;font-weight:700}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:#fff;color:#000;padding:12px 20px;border-radius:24px;font-weight:600;opacity:0;pointer-events:none;transition:.3s;z-index:50;max-width:90%;text-align:center}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.empty{text-align:center;color:var(--mu);padding:40px 0}
+.hint{background:var(--cd);border:1px solid var(--ln);border-radius:14px;padding:12px 14px;margin-bottom:12px;font-size:14px}.hint summary{cursor:pointer;color:var(--mu);font-weight:600}.hint p{margin:8px 0;color:var(--mu);line-height:1.5}.hint pre{background:#0b0b0b;border-radius:10px;padding:10px;white-space:pre-wrap;font:13px/1.5 ui-monospace,Menlo,monospace;color:#ddd}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="toast" id="toast"></div>
+<script>
+const API="https://abso1ute-shop.amirluckyyy.workers.dev";
+const $=s=>document.querySelector(s),$$=(s,c)=>[...(c||document).querySelectorAll(s)];
+const esc=x=>String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt=n=>Number(n||0).toLocaleString("ru-RU").replace(/\u00a0/g," ")+" сум";
+const CATN={top:"Верх",bottom:"Низ",shoes:"Обувь",acc:"Аксессуары"};
+const STS=["Новый","Подтверждён","Отправлен","Доставлен","Отменён"],STC={"Новый":"n","Подтверждён":"p","Отправлен":"s","Доставлен":"d","Отменён":"c"};
+const CLS="XS S M L XL 2XL 3XL 4XL 5XL".split(" "),SHS="36 37 38 39 40 41 42 43 44".split(" "),defSz=c=>c==="shoes"?SHS:c==="acc"?[]:CLS;
+let tok=localStorage.getItem("adm")||"",tab="prod",P=[],O=[],U=[],PR=[],ofl="all",q="";
+let tm;const toast=t=>{const e=$("#toast");e.textContent=t;e.classList.add("on");clearTimeout(tm);tm=setTimeout(()=>e.classList.remove("on"),2600)};
+
+async function call(path,body){
+ try{const r=await fetch(API+path,{method:body===undefined?"GET":"POST",cache:"no-store",headers:{"Content-Type":"application/json",Authorization:"Bearer "+tok},body:body===undefined?undefined:JSON.stringify(body)});
+  const j=await r.json().catch(()=>null);if(r.status===401){tok="";localStorage.removeItem("adm");login()}return j}catch(e){return null}
+}
+function login(){
+ $("#app").innerHTML=`<div class="lg"><h1>ABSO1UTE</h1><p>Админ-панель</p><input id="pw" type="password" placeholder="Пароль" autocomplete="current-password"><button class="b" id="go">Войти</button></div>`;
+ const go=async()=>{const r=await fetch(API+"/admin/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({pass:$("#pw").value})}).then(r=>r.json()).catch(()=>null);
+  if(!r)return toast("Нет связи с сервером");if(!r.ok)return toast(r.err||"Ошибка");tok=r.token;localStorage.setItem("adm",tok);start()};
+ $("#go").onclick=go;$("#pw").onkeydown=e=>{if(e.key==="Enter")go()};
+}
+function start(){
+ $("#app").innerHTML=`<header><b>АДМИНКА</b><button class="g" id="out">Выйти</button></header><nav><button data-t="prod">Товары</button><button data-t="ord">Заказы</button><button data-t="usr">Пользователи</button><button data-t="promo">Промокоды</button></nav><main id="v"></main>`;
+ $("#out").onclick=()=>{tok="";localStorage.removeItem("adm");login()};
+ $$("nav [data-t]").forEach(b=>b.onclick=()=>show(b.dataset.t));show(tab);
+}
+async function show(t){
+ tab=t;q="";$$("nav [data-t]").forEach(b=>b.classList.toggle("on",b.dataset.t===t));
+ $("#v").innerHTML='<div class="empty">Загрузка…</div>';
+ const r=await call(t==="prod"?"/admin/products":t==="ord"?"/admin/orders":t==="promo"?"/admin/promos":"/admin/users");
+ if(!r)return $("#v").innerHTML='<div class="empty">Нет связи с сервером</div>';
+ if(!r.ok)return $("#v").innerHTML='<div class="empty">'+esc(r.err||"Ошибка")+'</div>';
+ if(t==="prod")P=r.items;if(t==="ord")O=r.items;if(t==="usr")U=r.items;if(t==="promo")PR=r.items;
+ draw();
+}
+function draw(){tab==="prod"?dProd():tab==="ord"?dOrd():tab==="promo"?dPromo():dUsr()}
+
+/* ---------- товары ---------- */
+function dProd(){
+ const l=P.filter(p=>!q||p.name.toLowerCase().includes(q));
+ $("#v").innerHTML=`<div class="bar"><input id="sq" placeholder="Поиск товара" value="${esc(q)}"><button class="b" id="add">+ Добавить товар</button></div><details class="hint"><summary>Как добавить товар через Telegram-канал</summary><p>Опубликуйте в канале пост с фото и такой подписью — товар сам появится на сайте:</p><pre>Название товара
+Цена: 250000
+Категория: верх / низ / обувь / аксессуары
+Размеры: S-XL (по желанию)
+Цвет: чёрный (по желанию)
+#популярное #1день</pre><p>Размеры по умолчанию: обувь 36–44, одежда XS–5XL. Бот должен быть администратором канала. Для нескольких фото отправьте альбом, подпись — на первом фото.</p></details>${l.length?l.map(p=>`<div class="it">${p.imgs&&p.imgs[0]?`<img src="${API}/img/${p.imgs[0]}" alt="">`:'<div class="ph"></div>'}<div class="m"><b>${esc(p.name)}</b><span class="mu">${fmt(p.price)} · ${CATN[p.cat]||""}${p.sizes&&p.sizes.length?" · "+esc(p.sizes.join(" ")):""}</span><div class="tg">${p.isNew?"<span>Новинка</span>":""}${p.pop?"<span>Популярное</span>":""}${p.fast?"<span>1 день</span>":""}</div></div><div class="ac"><label class="sw"><input type="checkbox" data-st="${p.id}" ${p.stock!==false?"checked":""}><i></i></label><button data-ed="${p.id}">Редактировать</button><button class="d" data-dl="${p.id}">Удалить</button></div></div>`).join(""):'<div class="empty">Товаров пока нет. Нажмите «+ Товар».</div>'}`;
+ $("#sq").oninput=e=>{q=e.target.value.trim().toLowerCase();const pos=e.target.selectionStart;dProd();const s=$("#sq");s.focus();s.setSelectionRange(pos,pos)};
+ $("#add").onclick=()=>editP();
+ $$("[data-ed]").forEach(b=>b.onclick=()=>editP(+b.dataset.ed));
+ $$("[data-dl]").forEach(b=>b.onclick=async()=>{const p=P.find(x=>x.id===+b.dataset.dl);if(!confirm("Удалить «"+p.name+"» насовсем?"))return;const r=await call("/admin/product/delete",{id:p.id});if(!r||!r.ok)return toast(r&&r.err||"Нет связи");toast("Удалено");show("prod")});
+ $$("[data-st]").forEach(c=>c.onchange=async()=>{const p=P.find(x=>x.id===+c.dataset.st);const r=await call("/admin/product",{p:{...p,stock:c.checked},add:[]});if(!r||!r.ok){c.checked=!c.checked;return toast(r&&r.err||"Нет связи")}p.stock=c.checked;toast(c.checked?"В наличии":"Нет в наличии")});
+}
+function shrink(f,cb){
+ const im=new Image();im.onload=()=>{let k=Math.min(1,1000/Math.max(im.width,im.height)),qu=.82,out;
+  for(let i=0;i<4;i++){const c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext("2d").drawImage(im,0,0,c.width,c.height);out=c.toDataURL("image/jpeg",qu);if(out.length<800000)break;k*=.8;qu-=.08}
+  cb(out)};im.src=URL.createObjectURL(f);
+}
+function editP(id){
+ const old=id?P.find(x=>x.id===id):null,p=old||{name:"",price:"",cat:"top",sizes:CLS.slice(),color:"",desc:"",stock:true,isNew:true,pop:false,fast:false,imgs:[]};
+ let ph=(p.imgs||[]).map(i=>({id:i,url:API+"/img/"+i}));
+ const sh=document.createElement("div");sh.className="sheet";document.body.appendChild(sh);
+ const render=()=>{
+  sh.innerHTML=`<div class="in"><div class="r"><h2>${old?"Изменить товар":"Новый товар"}</h2><button class="g" id="cl">Закрыть</button></div>
+  <span class="lb">Фото (первое — главное)</span><div class="ph-l">${ph.map((x,i)=>`<div class="ph-i"><img src="${x.url}" alt=""><button class="x" data-rm="${i}">✕</button>${i>0&&x.id?`<button class="mk" data-mk="${i}">Сделать главным</button>`:""}</div>`).join("")}<label class="ph-add">+ Фото<input type="file" id="pf" accept="image/*" multiple hidden></label></div>
+  <span class="lb">Название</span><input id="fn" value="${esc(p.name)}" placeholder="Например: Худи Oversize">
+  <span class="lb">Цена, сум</span><input id="fp" type="number" inputmode="numeric" value="${esc(p.price)}" placeholder="250000">
+  <span class="lb">Категория</span><select id="fc">${Object.entries(CATN).map(([k,v])=>`<option value="${k}" ${p.cat===k?"selected":""}>${v}</option>`).join("")}</select>
+  <span class="lb">Размеры через пробел или запятую</span><input id="fs" value="${esc((p.sizes||[]).join(" "))}" placeholder="S M L XL">
+  <div class="chips"><button data-sz="${CLS.join(' ')}">Одежда XS–5XL</button><button data-sz="${SHS.join(' ')}">Обувь 36–44</button><button data-sz="">Без размеров</button></div>
+  <span class="lb">Цвет (для фильтра)</span><input id="fo" value="${esc(p.color)}" placeholder="Чёрный">
+  <span class="lb">Описание</span><textarea id="fd" placeholder="Материал, посадка, особенности">${esc(p.desc)}</textarea>
+  <div class="tgl"><span>В наличии</span><label class="sw"><input type="checkbox" id="t1" ${p.stock!==false?"checked":""}><i></i></label></div>
+  <div class="tgl"><span>Новинка</span><label class="sw"><input type="checkbox" id="t2" ${p.isNew?"checked":""}><i></i></label></div>
+  <div class="tgl"><span>Популярное</span><label class="sw"><input type="checkbox" id="t3" ${p.pop?"checked":""}><i></i></label></div>
+  <div class="tgl"><span>Доставка за 1 день</span><label class="sw"><input type="checkbox" id="t4" ${p.fast?"checked":""}><i></i></label></div>
+  <button class="b" id="sv" style="margin-top:14px">Сохранить</button></div>`;
+  const keep=()=>{p.name=$("#fn").value;p.price=$("#fp").value;p.cat=$("#fc").value;p.sizes=$("#fs").value.split(/[\s,]+/).filter(Boolean);p.color=$("#fo").value;p.desc=$("#fd").value;p.stock=$("#t1").checked;p.isNew=$("#t2").checked;p.pop=$("#t3").checked;p.fast=$("#t4").checked};
+  $("#cl").onclick=()=>sh.remove();
+  $("#fc").onchange=()=>{keep();p.sizes=defSz(p.cat).slice();render()};
+  $$("[data-sz]",sh).forEach(b=>b.onclick=()=>{keep();p.sizes=b.dataset.sz.split(" ").filter(Boolean);render()});
+  $$("[data-rm]",sh).forEach(b=>b.onclick=()=>{keep();ph.splice(+b.dataset.rm,1);render()});
+  $$("[data-mk]",sh).forEach(b=>b.onclick=()=>{keep();const i=+b.dataset.mk;ph.unshift(ph.splice(i,1)[0]);render()});
+  $("#pf").onchange=e=>{keep();const fs=[...e.target.files].slice(0,8-ph.length);let n=fs.length;if(!n)return;fs.forEach(f=>shrink(f,d=>{ph.push({data:d,url:d});if(--n===0)render()}))};
+  $("#sv").onclick=async()=>{keep();const price=Math.round(+p.price);
+   if(!p.name.trim())return toast("Введите название");if(!(price>0))return toast("Введите цену");
+   const btn=$("#sv");btn.disabled=true;btn.textContent="Сохраняю…";
+   const body={p:{id:old?old.id:undefined,name:p.name,price,cat:p.cat,sizes:p.sizes,color:p.color,desc:p.desc,stock:p.stock,isNew:p.isNew,pop:p.pop,fast:p.fast,imgs:ph.filter(x=>x.id).map(x=>x.id)},add:ph.filter(x=>x.data).map(x=>x.data)};
+   const r=await call("/admin/product",body);btn.disabled=false;btn.textContent="Сохранить";
+   if(!r)return toast("Нет связи с сервером");if(!r.ok)return toast(r.err||"Ошибка");
+   toast("Сохранено");sh.remove();show("prod")};
+ };
+ render();
+}
+
+/* ---------- заказы ---------- */
+function dOrd(){
+ const l=O.filter(o=>ofl==="all"||o.st===ofl);
+ $("#v").innerHTML=`<div class="chips">${["all",...STS].map(s=>`<button data-f="${s}" class="${ofl===s?"on":""}">${s==="all"?"Все ("+O.length+")":s+" ("+O.filter(o=>o.st===s).length+")"}</button>`).join("")}</div>${l.length?l.map(o=>`<div class="card"><div class="r"><b>№${esc(o.id)}</b><span class="st ${STC[o.st]||""}">${esc(o.st)}</span></div><div class="mu" style="margin:4px 0 8px">${esc(o.d)} · @${esc(o.nick)}</div><div>${esc(o.n)} · ${esc(o.t)}</div><div style="margin:8px 0;line-height:1.5">${esc(o.items)}</div><div class="r"><b>${fmt(o.sum)}</b><span class="mu">${esc(o.pay)}</span></div><div class="mu" style="margin:6px 0">BTS: ${esc(o.c)}</div>${o.k?`<div class="mu" style="margin-bottom:6px">Комментарий: ${esc(o.k)}</div>`:""}<select data-os="${esc(o.id)}">${STS.map(s=>`<option ${s===o.st?"selected":""}>${s}</option>`).join("")}</select></div>`).join(""):'<div class="empty">Заказов нет</div>'}<button class="b s" id="rf">Обновить</button>`;
+ $$("[data-f]").forEach(b=>b.onclick=()=>{ofl=b.dataset.f;dOrd()});
+ $("#rf").onclick=()=>show("ord");
+ $$("[data-os]").forEach(s=>s.onchange=async()=>{const o=O.find(x=>x.id===s.dataset.os);if(!confirm("Статус заказа №"+o.id+" → «"+s.value+"»? Клиент получит уведомление в чате."+(s.value==="Отменён"&&o.bal?" Оплата с баланса будет возвращена.":""))){s.value=o.st;return}
+  const r=await call("/admin/order/status",{id:o.id,st:s.value});if(!r||!r.ok){s.value=o.st;return toast(r&&r.err||"Нет связи")}toast("Статус обновлён");show("ord")});
+}
+
+/* ---------- пользователи ---------- */
+function dUsr(){
+ const l=U.filter(u=>!q||(u.nick+" "+u.n+" "+u.t+" "+u.tgu).toLowerCase().includes(q));
+ $("#v").innerHTML=`<div class="bar"><input id="sq" placeholder="Поиск: ник, имя, телефон" value="${esc(q)}"></div><div class="mu" style="margin-bottom:10px">Всего: ${U.length}</div>${l.length?l.map(u=>`<div class="card"><div class="r"><b>@${esc(u.nick)}</b><span class="bal">${fmt(u.bal)}</span></div><div class="mu" style="margin:4px 0 10px">${esc(u.n)||"без имени"}${u.t?" · "+esc(u.t):""}<br>Заказов: ${u.orders}${u.tg?" · Telegram"+(u.tgu?" @"+esc(u.tgu):""):""}${u.ts?" · с "+new Date(u.ts).toLocaleDateString("ru-RU"):""}</div><button class="b s" data-bl="${esc(u.nick)}">Изменить баланс</button></div>`).join(""):'<div class="empty">Никого нет</div>'}`;
+ $("#sq").oninput=e=>{q=e.target.value.trim().toLowerCase();const pos=e.target.selectionStart;dUsr();const s=$("#sq");s.focus();s.setSelectionRange(pos,pos)};
+ $$("[data-bl]").forEach(b=>b.onclick=()=>balP(b.dataset.bl));
+}
+function balP(nick){
+ const u=U.find(x=>x.nick===nick),sh=document.createElement("div");sh.className="sheet";document.body.appendChild(sh);
+ sh.innerHTML=`<div class="in"><div class="r"><h2>@${esc(nick)}</h2><button class="g" id="cl">Закрыть</button></div><div class="mu">Текущий баланс</div><div class="bal" style="margin-bottom:16px">${fmt(u.bal)}</div><span class="lb">Сумма, сум</span><input id="am" type="number" inputmode="numeric" placeholder="50000"><div class="bar"><button class="b" id="pl">Пополнить</button><button class="b r" id="mi">Списать</button></div><p class="mu">Клиент получит сообщение об изменении баланса в чате на сайте.</p></div>`;
+ $("#cl").onclick=()=>sh.remove();
+ const go=async sg=>{const a=Math.round(+$("#am").value);if(!(a>0))return toast("Введите сумму");if(!confirm((sg>0?"Пополнить":"Списать")+" "+fmt(a)+" — @"+nick+"?"))return;
+  const r=await call("/admin/balance",{nick,delta:sg*a});if(!r||!r.ok)return toast(r&&r.err||"Нет связи");toast("Баланс: "+fmt(r.bal));sh.remove();show("usr")};
+ $("#pl").onclick=()=>go(1);$("#mi").onclick=()=>go(-1);
+}
+
+function dPromo(){
+ $("#v").innerHTML=`<div class="bar"><button class="b" id="addp">+ Создать промокод</button></div>${PR.length?PR.map(x=>`<div class="card"><div class="r"><b style="font-size:18px;letter-spacing:1px">${esc(x.code)}</b><span class="st ${x.active?"d":"c"}">−${x.pct}%</span></div><div class="mu" style="margin:6px 0 12px">Использовано: ${x.uses||0}${x.max?" из "+x.max:""}${x.exp?" · до "+new Date(x.exp).toLocaleDateString("ru-RU"):" · без срока"}</div><div class="r"><div class="r" style="gap:10px"><span>Действует</span><label class="sw"><input type="checkbox" data-pa="${esc(x.code)}" ${x.active?"checked":""}><i></i></label></div><div><button class="g" data-pe="${esc(x.code)}">Редактировать</button>&nbsp;&nbsp;<button class="g" style="color:var(--no)" data-pd="${esc(x.code)}">Удалить</button></div></div></div>`).join(""):'<div class="empty">Промокодов пока нет</div>'}`;
+ $("#addp").onclick=()=>promoP();
+ $$("[data-pe]").forEach(b=>b.onclick=()=>promoP(b.dataset.pe));
+ $$("[data-pd]").forEach(b=>b.onclick=async()=>{if(!confirm("Удалить промокод "+b.dataset.pd+"?"))return;const r=await call("/admin/promo/delete",{code:b.dataset.pd});if(!r||!r.ok)return toast(r&&r.err||"Нет связи");toast("Удалено");show("promo")});
+ $$("[data-pa]").forEach(c=>c.onchange=async()=>{const x=PR.find(y=>y.code===c.dataset.pa);const r=await call("/admin/promo",{code:x.code,pct:x.pct,max:x.max,exp:x.exp?new Date(x.exp).toISOString().slice(0,10):"",active:c.checked});if(!r||!r.ok){c.checked=!c.checked;return toast(r&&r.err||"Нет связи")}x.active=c.checked;toast(c.checked?"Промокод включён":"Промокод выключен");dPromo()});
+}
+function promoP(code){
+ const old=code?PR.find(x=>x.code===code):null,sh=document.createElement("div");sh.className="sheet";document.body.appendChild(sh);
+ sh.innerHTML=`<div class="in"><div class="r"><h2>${old?"Промокод "+esc(code):"Новый промокод"}</h2><button class="g" id="cl">Закрыть</button></div>
+ <span class="lb">Код (латиницей, например SALE10)</span><input id="pcd" value="${esc(code||"")}" ${old?"disabled":""} placeholder="SALE10" autocapitalize="characters" style="text-transform:uppercase">
+ <span class="lb">Скидка, %</span><input id="ppc" type="number" inputmode="numeric" value="${old?old.pct:""}" placeholder="10">
+ <span class="lb">Максимум использований (пусто — без ограничения)</span><input id="pmx" type="number" inputmode="numeric" value="${old&&old.max?old.max:""}" placeholder="100">
+ <span class="lb">Действует до (пусто — без срока)</span><input id="pex" type="date" value="${old&&old.exp?new Date(old.exp).toISOString().slice(0,10):""}">
+ <button class="b" id="sv" style="margin-top:10px">${old?"Сохранить":"Создать"}</button></div>`;
+ $("#cl").onclick=()=>sh.remove();
+ $("#sv").onclick=async()=>{const body={code:$("#pcd").value.trim(),pct:+$("#ppc").value,max:+$("#pmx").value||0,exp:$("#pex").value,active:old?old.active:true};
+  if(!body.code)return toast("Введите код");if(!(body.pct>=1&&body.pct<=90))return toast("Скидка от 1 до 90%");
+  const r=await call("/admin/promo",body);if(!r)return toast("Нет связи с сервером");if(!r.ok)return toast(r.err||"Ошибка");toast("Сохранено");sh.remove();show("promo")};
+}
+
+tok?start():login();
+</script>
+</body>
+</html>

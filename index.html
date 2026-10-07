@@ -292,7 +292,7 @@ header{justify-content:space-between!important}
 .hx .ib svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .hpill{display:flex;align-items:center;gap:6px;background:var(--fg);color:var(--bg);padding:0 13px;height:38px;border-radius:19px;font-size:13px;font-weight:700;white-space:nowrap}
 .hpill svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.soc{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.soc{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 .soc a{background:var(--pc);color:var(--fg);border-radius:18px;padding:16px 6px;display:flex;flex-direction:column;align-items:center;gap:8px;font-size:13px;font-weight:600;transition:transform .35s cubic-bezier(.22,1,.36,1)}
 .soc a:active{transform:scale(.94)}
 .soc svg{width:28px;height:28px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
@@ -334,6 +334,20 @@ button.perk{text-align:left;color:var(--fg);cursor:pointer;transition:transform 
 .dots{bottom:20px!important}
 .sl{padding-bottom:58px!important}
 @media(max-width:860px){.hero{min-height:285px!important}}
+/* туман на фоне */
+:root{--fog1:#00000018;--fog2:#0000000e}
+:root[data-theme=dark]{--fog1:#ffffff17;--fog2:#ffffff0d}
+:root[data-theme=gray]{--fog1:#ffffff66;--fog2:#00000014}
+body::before{content:"";position:fixed;inset:-25%;z-index:-1;pointer-events:none;background:radial-gradient(38% 28% at 18% 14%,var(--fog1),transparent 72%),radial-gradient(34% 30% at 86% 34%,var(--fog2),transparent 72%),radial-gradient(44% 34% at 28% 78%,var(--fog1),transparent 72%),radial-gradient(30% 26% at 92% 92%,var(--fog2),transparent 72%);animation:fogdrift 30s ease-in-out infinite alternate;will-change:transform}
+body::after{content:"";position:fixed;inset:-30%;z-index:-1;pointer-events:none;background:radial-gradient(30% 24% at 70% 12%,var(--fog2),transparent 72%),radial-gradient(36% 28% at 10% 55%,var(--fog2),transparent 72%),radial-gradient(34% 30% at 60% 96%,var(--fog1),transparent 72%);animation:fogdrift2 38s ease-in-out infinite alternate;will-change:transform}
+@keyframes fogdrift{from{transform:translate3d(-4%,-3%,0) scale(1)}to{transform:translate3d(4%,4%,0) scale(1.1)}}
+@keyframes fogdrift2{from{transform:translate3d(4%,3%,0) scale(1.08)}to{transform:translate3d(-4%,-4%,0) scale(1)}}
+/* полировка */
+@supports(color:color-mix(in srgb,red,blue)){header{background:color-mix(in srgb,var(--bg) 78%,transparent)!important;-webkit-backdrop-filter:saturate(1.5) blur(16px);backdrop-filter:saturate(1.5) blur(16px)}}
+.pc{border-radius:22px}.pc .pi{box-shadow:0 10px 26px #0000001f}
+.perk{border:1px solid var(--line);box-shadow:0 6px 18px #00000010}
+.tb .inp{box-shadow:0 6px 18px #0000000f}
+.gal{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;margin-bottom:10px;scrollbar-width:none}.gal::-webkit-scrollbar{display:none}.gal img{flex:0 0 86%;width:86%;border-radius:14px;scroll-snap-align:center;object-fit:cover;aspect-ratio:1/1.1}
 </style>
 </head>
 <body>
@@ -372,7 +386,7 @@ button.perk{text-align:left;color:var(--fg);cursor:pointer;transition:transform 
  </div>
  <div class="hblk" id="hnew"><div class="hh"><h2>Новинки</h2><button data-c="new">Все ›</button></div><div class="hscroll" id="hng"></div></div>
  <div class="photo-cta"><div><b>Не нашли товар?</b><span>Загрузите фото — мы найдём такой же</span></div><button class="btn" id="ctac"><svg viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Поиск по фото</button></div>
- <div class="tiles" id="tiles"></div>
+   <div class="tiles" id="tiles"></div>
 
  <section id="new"><div class="sh"><h2>Новинки</h2><button class="btn d" data-go="catalog">Смотреть все</button></div><div class="grid" id="newg"></div></section>
 
@@ -430,7 +444,7 @@ let PRODUCTS=[];
 const CATS=[["new","Новые"],["top","Верх"],["bottom","Низ"],["shoes","Обувь"],["acc","Аксессуары"],["fast","Доставка 1 день"]];
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const ls={g:(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},s:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
-let cart=ls.g("cart",[]),promo=ls.g("promo",false),cat="all",fav=ls.g("fav",[]);
+let cart=ls.g("cart",[]),promo=ls.g("promo",false),promoPct=ls.g("ppct",5),promoCode=ls.g("pcode","OPENING"),cat="all",fav=ls.g("fav",[]);
 const HEART=on=>`<svg class="hs${on?" on":""}" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>`;
 const fmt=n=>n.toLocaleString("ru-RU").replace(/,/g," ")+" сум";
 function toast(t){const e=$("#toast");e.textContent=t;e.classList.add("on");clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove("on"),2200)}
@@ -467,17 +481,17 @@ var renderCat;
 function renderAll(){const hn=PRODUCTS.filter(p=>p.isNew);$("#hnew").style.display=hn.length?"":"none";$("#hng").innerHTML=hn.map(card).join("");const n=PRODUCTS.filter(p=>p.isNew),pp=PRODUCTS.filter(p=>p.pop);$("#pop").style.display=pp.length?"":"none";$("#popg").innerHTML=pp.map(card).join("");$("#newg").innerHTML=n.length?n.map(card).join(""):emptyT;renderCat()}
 document.addEventListener("click",e=>{const a=e.target.closest("[data-add]"),c=e.target.closest("[data-p]");const f=e.target.closest("[data-fav]");if(f){e.stopPropagation();toggleFav(+f.dataset.fav);return}if(a){e.stopPropagation();openP(+a.dataset.add)}else if(c)openP(+c.dataset.p)});
 function openP(id){const p=PRODUCTS.find(x=>x.id===id);if(!p)return;let sz=null,qn=1;closeAll();
- $("#pm").innerHTML=`<button class="x" data-close>✕</button><h3>${p.name}</h3>${p.img?`<img src="${p.img}" style="width:100%;border-radius:12px;margin-bottom:10px">`:""}<b>${fmt(p.price)}</b>${p.sizes?.length?`<p style="margin-top:10px;color:#777">Размер:</p><div class="sizes">${p.sizes.map(s=>`<button class="sz">${s}</button>`).join("")}</div>`:""}<div class="q" style="margin:14px 0"><span>Количество:</span><button id="qm">−</button><b id="qv">1</b><button id="qp">+</button></div><button class="btn d" id="pad" ${p.stock===false?"disabled":""} style="width:100%;text-align:center">${p.stock===false?"Нет в наличии":"Добавить в корзину"}</button><div class="dl"><b>Доставка</b><br>По всему Узбекистану<br>Товары в наличии — доставка 1 день<br>Карго — 0 сум</div>`;
+ $("#pm").innerHTML=`<button class="x" data-close>✕</button><h3>${p.name}</h3>${p.gal&&p.gal.length>1?`<div class="gal">${p.gal.map(u=>`<img src="${u}" alt="">`).join("")}</div>`:p.img?`<img src="${p.img}" style="width:100%;border-radius:12px;margin-bottom:10px" alt="">`:""}<b>${fmt(p.price)}</b>${p.desc?`<p style="margin-top:8px;color:var(--mut);line-height:1.55;font-size:14px">${esc(p.desc)}</p>`:""}${p.sizes?.length?`<p style="margin-top:10px;color:#777">Размер:</p><div class="sizes">${p.sizes.map(s=>`<button class="sz">${s}</button>`).join("")}</div>`:""}<div class="q" style="margin:14px 0"><span>Количество:</span><button id="qm">−</button><b id="qv">1</b><button id="qp">+</button></div><button class="btn d" id="pad" ${p.stock===false?"disabled":""} style="width:100%;text-align:center">${p.stock===false?"Нет в наличии":"Добавить в корзину"}</button><div class="dl"><b>Доставка</b><br>По всему Узбекистану<br>Товары в наличии — доставка 1 день<br>Карго — 0 сум</div>`;
  $$("#pm .sz").forEach(b=>b.onclick=()=>{$$("#pm .sz").forEach(x=>x.classList.remove("on"));b.classList.add("on");sz=b.textContent});
  $("#qm").onclick=()=>{qn=Math.max(1,qn-1);$("#qv").textContent=qn};$("#qp").onclick=()=>{qn=Math.min(20,qn+1);$("#qv").textContent=qn};
  $("#pad").onclick=()=>{if(p.sizes?.length&&!sz)return toast("Выберите размер");const k=p.id+"|"+(sz||""),it=cart.find(i=>i.k===k);it?it.q+=qn:cart.push({k,id:p.id,sz,q:qn});save();closeAll();toast("Добавлено в корзину");$("#cc").classList.add("bump");setTimeout(()=>$("#cc").classList.remove("bump"),400)};
  $("#ovx").classList.add("on")}
 /* корзина */
 function save(){ls.s("cart",cart);ls.s("promo",promo);drawCart()}
-function total(){const s=cart.reduce((a,i)=>{const p=PRODUCTS.find(x=>x.id===i.id);return a+(p?p.price*i.q:0)},0);return promo?Math.round(s*.95):s}
+function total(){const s=cart.reduce((a,i)=>{const p=PRODUCTS.find(x=>x.id===i.id);return a+(p?p.price*i.q:0)},0);return promo?Math.round(s*(100-promoPct)/100):s}
 function drawCart(){{const n=cart.reduce((a,i)=>a+i.q,0);$("#cc").textContent=n;$("#cc2").textContent=n;$("#cc2").hidden=!n}
  $("#items").innerHTML=cart.length?cart.map((i,n)=>{const p=PRODUCTS.find(x=>x.id===i.id);if(!p)return"";return`<div class="it">${p.img?`<img src="${p.img}">`:'<div class="ph"></div>'}<div>${p.name}${i.sz?` (${i.sz})`:""}<br><b>${fmt(p.price)}</b></div><div class="q"><button data-q="${n}" data-d="-1">−</button>${i.q}<button data-q="${n}" data-d="1">+</button></div></div>`}).join(""):'<p style="color:#777;text-align:center;padding:40px 0">Корзина пуста</p>';
- $("#tot").textContent="Итого: "+fmt(total())+(promo?" (скидка 5%)":"")}
+ $("#tot").textContent="Итого: "+fmt(total())+(promo?" (скидка ${promoPct}%)":"")}
 document.addEventListener("click",e=>{const q=e.target.closest("[data-q]");if(!q)return;const i=cart[+q.dataset.q];i.q+=+q.dataset.d;if(i.q<1)cart.splice(+q.dataset.q,1);save()});
 const openCart=()=>{closeAll();drawCart();$("#dr").classList.add("on");document.body.classList.add("cart-open")};
 $("#bc").onclick=openCart;$("#bc2").onclick=openCart;
@@ -487,8 +501,8 @@ $("#co").onclick=()=>{if(!cart.length)return toast("Корзина пуста");
  bindBts("obt");
  $("#oko").onclick=async()=>{const v=id=>$("#"+id).value.trim(),n=v("on"),t=v("ot"),b=v("obt");if(!n||!t)return toast("Укажите имя и телефон");if(!btsOk(b))return toast("Выберите пункт BTS из списка");
   const items=cart.map(i=>{const p=PRODUCTS.find(x=>x.id===i.id);return p?`${p.name}${i.sz?" ("+i.sz+")":""} × ${i.q}`:""}).filter(Boolean).join(", ");
-  const o={id:Date.now().toString().slice(-6),u:me,d:new Date().toLocaleString("ru-RU"),items,sum:total(),st:"Новый",n,t,c:b,a:"",k:v("ok"),pay:$("#op").value==="bal"?"Оплата с баланса":$("#op").value,useBal:$("#op").value==="bal"};
-  if(API){const r=await api("/order",o);if(!r)return toast("Нет связи с сервером. Попробуйте позже");if(!r.ok)return toast(r.err||"Не удалось отправить заказ");if(typeof r.bal==="number"){const x=getU();x[me].bal=r.bal;ls.s("users",x)}}
+  const o={id:Date.now().toString().slice(-6),u:me,d:new Date().toLocaleString("ru-RU"),items,sum:total(),st:"Новый",n,t,c:b,a:"",k:v("ok"),pay:$("#op").value==="bal"?"Оплата с баланса":$("#op").value,useBal:$("#op").value==="bal",lines:cart.map(i=>({id:i.id,sz:i.sz,q:i.q})),promo:!!promo,promoCode:promo?promoCode:""};
+  if(API){const r=await api("/order",o);if(!r)return toast("Нет связи с сервером. Попробуйте позже");if(!r.ok)return toast(r.err||"Не удалось отправить заказ");if(r.id)o.id=r.id;if(typeof r.sum==="number")o.sum=r.sum;if(typeof r.bal==="number"){const x=getU();x[me].bal=r.bal;ls.s("users",x)}}
   const os=ls.g("orders",[]);os.push(o);ls.s("orders",os);cart=[];save();
   const txt=`Заказ №${o.id}\n${items}\nИтого: ${fmt(o.sum)}\n${n}, ${t}\nBTS: ${b}\n${o.pay}${o.k?"\n"+o.k:""}`;
   $("#ob").innerHTML=`<h3>Заказ №${o.id} принят ✅</h3><p style="line-height:1.6;margin-bottom:14px">Спасибо! Мы свяжемся с вами по номеру ${esc(t)} для подтверждения. Заказ сохранён в вашем профиле.</p><a class="btn d" style="display:block;text-align:center;width:100%" target="_blank" href="https://t.me/Abso1ute_Shop?text=${encodeURIComponent(txt)}">Ускорить: отправить в Telegram</a>`}
@@ -542,7 +556,7 @@ function bindBts(id){const inp=$("#"+id),box=$("#"+id+"l");
   $$("#"+id+"l [data-v]").forEach(b=>b.onclick=()=>{inp.value=b.dataset.v;box.innerHTML=""})};
  if(inp.value&&!btsOk(inp.value))inp.oninput()}
 
-const socHTML=()=>`<div class="soc"><a href="https://t.me/Abso1ute_shop" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M21.5 3.5 2.5 11l6 2.2L11 20l3-4 5.5 4z"/><path d="m8.5 13.2 8-5.7"/></svg>Telegram</a><a href="https://www.instagram.com/abso1ute_shop?stkn=eGh6ZjJrZW1qdDd1&utm_source=qr" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r=".6"/></svg>Instagram</a><a href="https://www.tiktok.com/@abso1ute_shop" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M14 3v11.2a3.8 3.8 0 1 1-3.8-3.8"/><path d="M14 3c.4 2.6 2.2 4.4 5 4.6"/></svg>TikTok</a></div>`;
+const socHTML=()=>`<div class="soc"><a href="https://t.me/Abso1ute_shop" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M21.5 3.5 2.5 11l6 2.2L11 20l3-4 5.5 4z"/><path d="m8.5 13.2 8-5.7"/></svg>Telegram</a><a href="https://www.instagram.com/abso1ute_shop?stkn=eGh6ZjJrZW1qdDd1&utm_source=qr" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r=".6"/></svg>Instagram</a></div>`;
 const row=(id,t,ic)=>`<button class="row" data-v="${id}">${ic?I(ic):""}<span>${t}</span><svg class="chv" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></button>`;
 const IC={shield:'<path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="m9 12 2 2 4-4"/>',pin:'<path d="M12 21s7-6 7-11a7 7 0 0 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>',card:'<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 10h18"/>',bell:'<path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 21h4"/>',help:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 1-1 1.7M12 17h.01"/>',chat:'<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/>',info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/>',box:'<path d="M4 8l8-4 8 4v9l-8 4-8-4z"/><path d="M4 8l8 4 8-4M12 12v9"/>',heart:'<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>',tag:'<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M9 15l6-6M9.5 9.5h.01M14.5 14.5h.01"/>',wallet:'<rect x="3" y="6" width="18" height="13" rx="3"/><path d="M12 10v5M9.5 12.5h5"/>',gear:'<circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/>'};
 const I=n=>`<svg class="ri" viewBox="0 0 24 24">${IC[n]}</svg>`;
@@ -627,7 +641,9 @@ $("#cam").onclick=openCam;$("#pk2").onclick=()=>{closeAll();drawAcc("sup");$("#o
 
 $$(".bb[data-go]").forEach(b=>b.addEventListener("click",closeAll));
 $("#howb").onclick=()=>{closeAll();drawAcc("faq");$("#ovp").classList.add("on")};
-$("#pa").onclick=()=>{if($("#pc").value.trim().toUpperCase()==="OPENING"){promo=true;save();toast("Промокод применён: −5%")}else toast("Неверный промокод")};
+$("#pa").onclick=async()=>{const c=$("#pc").value.trim();if(!c)return toast("Введите промокод");
+ if(API){const r=await api("/promo/check",{code:c});if(!r)return toast("Нет связи с сервером");if(!r.ok)return toast(r.err||"Неверный промокод");promo=true;promoPct=r.pct;promoCode=r.code;ls.s("ppct",promoPct);ls.s("pcode",promoCode);save();toast("Промокод применён: −"+r.pct+"%")}
+ else if(c.toUpperCase()==="OPENING"){promo=true;promoPct=5;promoCode="OPENING";ls.s("ppct",5);ls.s("pcode","OPENING");save();toast("Промокод применён: −5%")}else toast("Неверный промокод")};
 /* свайп вправо закрывает корзину */
 let tx=0;document.addEventListener("touchstart",e=>tx=e.touches[0].clientX,{passive:true});document.addEventListener("touchend",e=>{if($("#dr").classList.contains("on")&&e.changedTouches[0].clientX-tx>90)closeAll()},{passive:true});
 /* фильтры */
@@ -653,7 +669,10 @@ $("#addrev").onclick=()=>{closeAll();$("#ovr").classList.add("on")};
 $("#rsv").onclick=()=>{const n=$("#rn").value.trim(),t=$("#rt").value.trim();if(!n||!t)return toast("Заполните поля");revs=revs.filter(r=>r.n!=="Abso1ute Shop");revs.unshift({n,t});ls.s("revs",revs);drawR();$("#rn").value=$("#rt").value="";closeAll();toast("Спасибо за отзыв!")};
 $("#cpl").onclick=()=>{navigator.clipboard?.writeText("https://t.me/Abso1ute_Shop");toast("Ссылка скопирована")};
 document.addEventListener("keydown",e=>e.key==="Escape"&&closeAll());
-drawR();renderAll();drawCart();
+const mapP=p=>({...p,img:p.imgs&&p.imgs[0]?API+"/img/"+p.imgs[0]:"",gal:(p.imgs||[]).map(i=>API+"/img/"+i)});
+async function loadProducts(){if(!API)return;try{const r=await fetch(API+"/products",{cache:"no-store"}),j=await r.json();if(j&&j.ok&&Array.isArray(j.items)){PRODUCTS=j.items.map(mapP);ls.s("prods",j.items);renderAll();drawCart()}}catch(e){}}
+{const pc=ls.g("prods",[]);if(pc.length)PRODUCTS=pc.map(mapP)}
+drawR();renderAll();drawCart();loadProducts();
 </script>
 </body>
 </html>
