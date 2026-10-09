@@ -2,12 +2,13 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <title>ABSO1UTE — админка</title>
 <style>
 :root{--bg:#0b0b0b;--cd:#161616;--ln:#262626;--fg:#f2f2f2;--mu:#8c8c8c;--ok:#35c26b;--no:#e5484d}
 *{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
+html,body{touch-action:manipulation}input,select,textarea{font-size:16px!important}
 body{background:var(--bg);color:var(--fg);font:15px/1.4 -apple-system,"Inter",system-ui,sans-serif;padding-bottom:40px}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 input,select,textarea{font:inherit;color:var(--fg);background:var(--cd);border:1px solid var(--ln);border-radius:12px;padding:12px 14px;width:100%;outline:none;margin-bottom:10px}
@@ -69,7 +70,13 @@ const $=s=>document.querySelector(s),$$=(s,c)=>[...(c||document).querySelectorAl
 const esc=x=>String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const fmt=n=>Number(n||0).toLocaleString("ru-RU").replace(/\u00a0/g," ")+" сум";
 const CATN={top:"Верх",bottom:"Низ",shoes:"Обувь",acc:"Аксессуары"};
-const STS=["Новый","Подтверждён","Отправлен","Доставлен","Отменён"],STC={"Новый":"n","Подтверждён":"p","Отправлен":"s","Доставлен":"d","Отменён":"c"};
+const STS=["Ожидает оплаты","Оплачен","Взвешивается","Ожидает оплаты карго","В пути","Доставлен","Отменён"],STC={"Ожидает оплаты":"n","Оплачен":"p","Взвешивается":"s","Ожидает оплаты карго":"n","В пути":"s","Доставлен":"d","Отменён":"c","Новый":"n","Подтверждён":"p","Отправлен":"s"};
+const RATE={auto:100000,avia:150000};
+function cargoForm(o){
+ const cg=o.cargo,can=["Оплачен","Взвешивается","Ожидает оплаты карго"].includes(o.st)&&!(cg&&cg.paid);
+ const info=cg?`<div class="mu" style="margin:8px 0">Карго: ${cg.kg} кг · ${cg.type==="avia"?"Авиа":"Авто"} · ${fmt(cg.sum)} — ${cg.paid?"оплачено":cg.pending?"чек на проверке":"ждёт оплаты покупателем"}</div>`:"";
+ return info+(can?`<div class="card" style="background:#101010;margin:10px 0 0"><span class="lb">Карго: вес в кг и способ доставки</span><div class="bar"><input data-kg="${esc(o.id)}" type="number" step="0.01" inputmode="decimal" placeholder="Вес, кг" value="${cg?cg.kg:""}"><select data-ty="${esc(o.id)}" style="margin:0;width:110px"><option value="auto" ${cg&&cg.type==="avia"?"":"selected"}>Авто</option><option value="avia" ${cg&&cg.type==="avia"?"selected":""}>Авиа</option></select></div><span class="lb">Сумма карго, сум (считается сама, можно поправить)</span><input data-cs="${esc(o.id)}" type="number" inputmode="numeric" placeholder="0" value="${cg?cg.sum:""}"><button class="b" data-cgs="${esc(o.id)}">Отправить покупателю</button></div>`:"");
+}
 const CLS="XS S M L XL 2XL 3XL 4XL 5XL".split(" "),SHS="36 37 38 39 40 41 42 43 44".split(" "),defSz=c=>c==="shoes"?SHS:c==="acc"?[]:CLS;
 let tok=localStorage.getItem("adm")||"",tab="prod",P=[],O=[],U=[],PR=[],ofl="all",q="";
 let tm;const toast=t=>{const e=$("#toast");e.textContent=t;e.classList.add("on");clearTimeout(tm);tm=setTimeout(()=>e.classList.remove("on"),2600)};
@@ -117,7 +124,7 @@ function dProd(){
 Категория: верх / низ / обувь / аксессуары
 Размеры: S-XL (по желанию)
 Цвет: чёрный (по желанию)
-#популярное #1день</pre><p>Размеры по умолчанию: обувь 36–44, одежда XS–5XL. Бот должен быть администратором канала. Для нескольких фото отправьте альбом, подпись — на первом фото.</p></details>${l.length?l.map(p=>`<div class="it">${p.imgs&&p.imgs[0]?`<img src="${API}/img/${p.imgs[0]}" alt="">`:'<div class="ph"></div>'}<div class="m"><b>${esc(p.name)}</b><span class="mu">${fmt(p.price)} · ${CATN[p.cat]||""}${p.sizes&&p.sizes.length?" · "+esc(p.sizes.join(" ")):""}${p.colors&&p.colors.length?" · "+esc(p.colors.join("/")):""}</span><div class="tg">${p.isNew?"<span>Новинка</span>":""}${p.pop?"<span>Популярное</span>":""}${p.fast?"<span>1 день</span>":""}</div></div><div class="ac"><label class="sw"><input type="checkbox" data-st="${p.id}" ${p.stock!==false?"checked":""}><i></i></label><button data-ed="${p.id}">Редактировать</button><button class="d" data-dl="${p.id}">Удалить</button></div></div>`).join(""):'<div class="empty">Товаров пока нет. Нажмите «+ Товар».</div>'}`;
+#популярное #1день</pre><p>Размеры по умолчанию: обувь 36–44, одежда XS–5XL. Бот должен быть администратором канала. Для нескольких фото отправьте альбом, подпись — на первом фото.</p></details>${l.length?l.map(p=>`<div class="it">${p.imgs&&p.imgs[0]?`<img src="${API}/img/${p.imgs[0]}" alt="">`:'<div class="ph"></div>'}<div class="m"><b>${esc(p.name)}</b><span class="mu">${fmt(p.price)} · ${CATN[p.cat]||""}${p.sizes&&p.sizes.length?" · "+esc(p.sizes.join(" ")):""}${p.colors&&p.colors.length?" · "+esc(p.colors.join("/")):""}</span><div class="tg">${p.isNew?"<span>Новинка</span>":""}${p.pop?"<span>Популярное</span>":""}${p.fast?"<span>1 день</span>":""}${p.preorder?"<span>Под заказ</span>":""}</div></div><div class="ac"><label class="sw"><input type="checkbox" data-st="${p.id}" ${p.stock!==false?"checked":""}><i></i></label><button data-ed="${p.id}">Редактировать</button><button class="d" data-dl="${p.id}">Удалить</button></div></div>`).join(""):'<div class="empty">Товаров пока нет. Нажмите «+ Товар».</div>'}`;
  $("#sq").oninput=e=>{q=e.target.value.trim().toLowerCase();const pos=e.target.selectionStart;dProd();const s=$("#sq");s.focus();s.setSelectionRange(pos,pos)};
  $("#add").onclick=()=>editP();
  $$("[data-ed]").forEach(b=>b.onclick=()=>editP(+b.dataset.ed));
@@ -145,11 +152,12 @@ function editP(id){
   <span class="lb">Цвета через запятую (для товаров из канала определяются по фото сами)</span><input id="fo" value="${esc((p.colors&&p.colors.length?p.colors:(p.color?[p.color]:[])).join(", "))}" placeholder="Чёрный, Белый">
   <span class="lb">Описание</span><textarea id="fd" placeholder="Материал, посадка, особенности">${esc(p.desc)}</textarea>
   <div class="tgl"><span>В наличии</span><label class="sw"><input type="checkbox" id="t1" ${p.stock!==false?"checked":""}><i></i></label></div>
+  <div class="tgl"><span>Под заказ (из Китая)</span><label class="sw"><input type="checkbox" id="t5" ${p.preorder?"checked":""}><i></i></label></div>
   <div class="tgl"><span>Новинка</span><label class="sw"><input type="checkbox" id="t2" ${p.isNew?"checked":""}><i></i></label></div>
   <div class="tgl"><span>Популярное</span><label class="sw"><input type="checkbox" id="t3" ${p.pop?"checked":""}><i></i></label></div>
   <div class="tgl"><span>Доставка за 1 день</span><label class="sw"><input type="checkbox" id="t4" ${p.fast?"checked":""}><i></i></label></div>
   <button class="b" id="sv" style="margin-top:14px">Сохранить</button></div>`;
-  const keep=()=>{p.name=$("#fn").value;p.price=$("#fp").value;p.cat=$("#fc").value;p.sizes=$("#fs").value.split(/[\s,]+/).filter(Boolean);p.colors=$("#fo").value.split(/[,;/]+/).map(x=>x.trim()).filter(Boolean);p.desc=$("#fd").value;p.stock=$("#t1").checked;p.isNew=$("#t2").checked;p.pop=$("#t3").checked;p.fast=$("#t4").checked};
+  const keep=()=>{p.name=$("#fn").value;p.price=$("#fp").value;p.cat=$("#fc").value;p.sizes=$("#fs").value.split(/[\s,]+/).filter(Boolean);p.colors=$("#fo").value.split(/[,;/]+/).map(x=>x.trim()).filter(Boolean);p.desc=$("#fd").value;p.stock=$("#t1").checked;p.isNew=$("#t2").checked;p.pop=$("#t3").checked;p.fast=$("#t4").checked;p.preorder=$("#t5").checked};
   $("#cl").onclick=()=>sh.remove();
   $("#fc").onchange=()=>{keep();p.sizes=defSz(p.cat).slice();render()};
   $$("[data-sz]",sh).forEach(b=>b.onclick=()=>{keep();p.sizes=b.dataset.sz.split(" ").filter(Boolean);render()});
@@ -159,7 +167,7 @@ function editP(id){
   $("#sv").onclick=async()=>{keep();const price=Math.round(+p.price);
    if(!p.name.trim())return toast("Введите название");if(!(price>0))return toast("Введите цену");
    const btn=$("#sv");btn.disabled=true;btn.textContent="Сохраняю…";
-   const body={p:{id:old?old.id:undefined,name:p.name,price,cat:p.cat,sizes:p.sizes,colors:p.colors,colorsSet:p.colors.join("|")===origCols?!!(old&&old.colorsSet):p.colors.length>0,desc:p.desc,stock:p.stock,isNew:p.isNew,pop:p.pop,fast:p.fast,imgs:ph.filter(x=>x.id).map(x=>x.id)},add:ph.filter(x=>x.data).map(x=>x.data)};
+   const body={p:{id:old?old.id:undefined,name:p.name,price,cat:p.cat,sizes:p.sizes,colors:p.colors,colorsSet:p.colors.join("|")===origCols?!!(old&&old.colorsSet):p.colors.length>0,desc:p.desc,stock:p.stock,isNew:p.isNew,pop:p.pop,fast:p.fast,preorder:p.preorder,imgs:ph.filter(x=>x.id).map(x=>x.id)},add:ph.filter(x=>x.data).map(x=>x.data)};
    const r=await call("/admin/product",body);btn.disabled=false;btn.textContent="Сохранить";
    if(!r)return toast("Нет связи с сервером");if(!r.ok)return toast(r.err||"Ошибка");
    toast("Сохранено");sh.remove();show("prod")};
@@ -170,9 +178,16 @@ function editP(id){
 /* ---------- заказы ---------- */
 function dOrd(){
  const l=O.filter(o=>ofl==="all"||o.st===ofl);
- $("#v").innerHTML=`<div class="chips">${["all",...STS].map(s=>`<button data-f="${s}" class="${ofl===s?"on":""}">${s==="all"?"Все ("+O.length+")":s+" ("+O.filter(o=>o.st===s).length+")"}</button>`).join("")}</div>${l.length?l.map(o=>`<div class="card"><div class="r"><b>№${esc(o.id)}</b><span class="st ${STC[o.st]||""}">${esc(o.st)}</span></div><div class="mu" style="margin:4px 0 8px">${esc(o.d)} · @${esc(o.nick)}</div><div>${esc(o.n)} · ${esc(o.t)}</div><div style="margin:8px 0;line-height:1.5">${esc(o.items)}</div><div class="r"><b>${fmt(o.sum)}</b><span class="mu">${esc(o.pay)}</span></div><div class="mu" style="margin:6px 0">BTS: ${esc(o.c)}</div>${o.k?`<div class="mu" style="margin-bottom:6px">Комментарий: ${esc(o.k)}</div>`:""}<select data-os="${esc(o.id)}">${STS.map(s=>`<option ${s===o.st?"selected":""}>${s}</option>`).join("")}</select></div>`).join(""):'<div class="empty">Заказов нет</div>'}<button class="b s" id="rf">Обновить</button>`;
+ $("#v").innerHTML=`<div class="chips">${["all",...STS].map(s=>`<button data-f="${s}" class="${ofl===s?"on":""}">${s==="all"?"Все ("+O.length+")":s+" ("+O.filter(o=>o.st===s).length+")"}</button>`).join("")}</div>${l.length?l.map(o=>`<div class="card"><div class="r"><b>№${esc(o.id)}</b><span class="st ${STC[o.st]||""}">${esc(o.st)}</span></div><div class="mu" style="margin:4px 0 8px">${esc(o.d)} · @${esc(o.nick)}</div><div>${esc(o.n)} · ${esc(o.t)}</div><div style="margin:8px 0;line-height:1.5">${esc(o.items)}</div><div class="r"><b>${fmt(o.sum)}</b><span class="mu">${esc(o.pay)}</span></div><div class="mu" style="margin:6px 0">BTS: ${esc(o.c)}</div>${o.k?`<div class="mu" style="margin-bottom:6px">Комментарий: ${esc(o.k)}</div>`:""}<select data-os="${esc(o.id)}">${[...new Set([o.st,...STS])].map(s=>`<option ${s===o.st?"selected":""}>${s}</option>`).join("")}</select>${cargoForm(o)}</div>`).join(""):'<div class="empty">Заказов нет</div>'}<button class="b s" id="rf">Обновить</button>`;
  $$("[data-f]").forEach(b=>b.onclick=()=>{ofl=b.dataset.f;dOrd()});
  $("#rf").onclick=()=>show("ord");
+ const calc=id=>{const kg=+($(`[data-kg="${id}"]`)||{}).value,ty=($(`[data-ty="${id}"]`)||{}).value||"auto",cs=$(`[data-cs="${id}"]`);if(cs&&kg>0)cs.value=Math.round(kg*RATE[ty])};
+ $$("[data-kg]").forEach(i=>i.oninput=()=>calc(i.dataset.kg));$$("[data-ty]").forEach(i=>i.onchange=()=>calc(i.dataset.ty));
+ $$("[data-cgs]").forEach(b=>b.onclick=async()=>{const id=b.dataset.cgs,kg=+$(`[data-kg="${id}"]`).value,type=$(`[data-ty="${id}"]`).value,sum=+$(`[data-cs="${id}"]`).value;
+  if(!(kg>0))return toast("Введите вес в кг");if(!(sum>0))return toast("Введите сумму карго");
+  if(!confirm("Отправить покупателю: "+kg+" кг, карго "+fmt(sum)+"?"))return;
+  b.disabled=true;const r=await call("/admin/order/cargo",{id,kg,type,sum});b.disabled=false;
+  if(!r||!r.ok)return toast(r&&r.err||"Нет связи");toast("Отправлено покупателю");show("ord")});
  $$("[data-os]").forEach(s=>s.onchange=async()=>{const o=O.find(x=>x.id===s.dataset.os);if(!confirm("Статус заказа №"+o.id+" → «"+s.value+"»? Клиент получит уведомление в чате."+(s.value==="Отменён"&&o.bal?" Оплата с баланса будет возвращена.":""))){s.value=o.st;return}
   const r=await call("/admin/order/status",{id:o.id,st:s.value});if(!r||!r.ok){s.value=o.st;return toast(r&&r.err||"Нет связи")}toast("Статус обновлён");show("ord")});
 }

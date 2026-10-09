@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>ABSO1UTE SHOP</title>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -176,10 +176,14 @@ main>section:not(#catalog),.tiles,footer{display:none!important}
 @keyframes hop{40%{transform:translateY(-7px) scale(1.15)}}
 .bb .hs.on{fill:currentColor}
 #ovp{z-index:55;display:block;overflow:auto;padding:0;background:var(--bg);opacity:1;transform:translateX(100%);transition:transform .45s cubic-bezier(.22,1,.36,1);bottom:calc(68px + env(safe-area-inset-bottom,0px))}
+#ovf2{z-index:55;display:block;overflow:auto;padding:0;background:var(--bg);opacity:1;transform:translateX(100%);transition:transform .45s cubic-bezier(.22,1,.36,1);bottom:calc(68px + env(safe-area-inset-bottom,0px))}
 #ovp.on{transform:none}
-@media(min-width:861px){#ovp{bottom:0}}
+#ovf2.on{transform:none}
+@media(min-width:861px){#ovp{bottom:0}#ovf2{bottom:0}}
 #ovp .md{width:100%;max-width:620px;margin:0 auto;max-height:none;border-radius:0;background:transparent;padding:26px 20px 40px;transform:none;overflow:visible}
+#ovf2 .md{width:100%;max-width:620px;margin:0 auto;max-height:none;border-radius:0;background:transparent;padding:26px 20px 40px;transform:none;overflow:visible}
 #ovp .x{position:fixed;top:12px;right:14px;background:var(--card);color:var(--fg)}
+#ovf2 .x{position:fixed;top:12px;right:14px;background:var(--card);color:var(--fg)}
 .pt{font:700 34px Oswald,sans-serif;text-transform:uppercase;margin:6px 0 16px}
 .pch{display:flex;gap:14px;align-items:center;padding:20px;border-radius:24px;color:#fff;background:radial-gradient(circle at 90% 10%,#4a4a4a,#111 60%,#000)}
 .pch b{font-size:19px;display:block}.pch span{color:#bbb;font-size:13px}
@@ -202,11 +206,15 @@ header{justify-content:center!important}.icons,.burger,#nav,nav{display:none!imp
 .bar{display:flex!important;max-width:640px;margin:0 auto;border-radius:20px 20px 0 0}
 body{padding-bottom:70px!important}
 .sl{padding:30px 26px 28px!important}
-@media(min-width:861px){.sl{padding:30px 60px!important}#ovp{bottom:calc(68px + env(safe-area-inset-bottom,0px))}}
+@media(min-width:861px){.sl{padding:30px 60px!important}#ovp{bottom:calc(68px + env(safe-area-inset-bottom,0px))}#ovf2{bottom:calc(68px + env(safe-area-inset-bottom,0px))}}
 #ovp{--pbg:#f4f4f5;--pc:#fff;background:var(--pbg)}
+#ovf2{--pbg:#f4f4f5;--pc:#fff;background:var(--pbg)}
 :root[data-theme=dark] #ovp{--pbg:#0c0c0c;--pc:#1a1a1a}
+:root[data-theme=dark] #ovf2{--pbg:#0c0c0c;--pc:#1a1a1a}
 :root[data-theme=gray] #ovp{--pbg:#c9c9c9;--pc:#dedede}
+:root[data-theme=gray] #ovf2{--pbg:#c9c9c9;--pc:#dedede}
 #ovp .x{display:none}
+#ovf2 .x{display:none}
 .phd{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.phd .pt{margin:0}
 .phb{display:flex;gap:10px;align-items:center}
 .bell{position:relative;width:42px;height:42px;display:grid;place-items:center}.bell .dot{position:absolute;top:6px;right:8px;width:10px;height:10px;border-radius:50%;background:var(--fg);border:2px solid var(--pbg)}
@@ -244,6 +252,7 @@ html{scroll-behavior:smooth}
 .ov .md{transform:translateY(26px) scale(.96);opacity:0;transition:transform .5s cubic-bezier(.22,1,.36,1),opacity .4s}
 .ov.on .md{transform:none;opacity:1}
 #ovp .md{transform:none!important;opacity:1!important}
+#ovf2 .md{transform:none!important;opacity:1!important}
 .sl{transition:opacity .9s cubic-bezier(.22,1,.36,1),transform .9s cubic-bezier(.22,1,.36,1)!important}
 @keyframes fup{from{opacity:0;transform:translateY(14px)}}
 @keyframes msgin{from{opacity:0;transform:translateY(8px) scale(.96)}}
@@ -349,6 +358,26 @@ body::after{content:"";position:fixed;inset:-30%;z-index:-1;pointer-events:none;
 .tb .inp{box-shadow:0 6px 18px #0000000f}
 .gal{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;margin-bottom:10px;scrollbar-width:none}.gal::-webkit-scrollbar{display:none}.gal img{flex:0 0 86%;width:86%;border-radius:14px;scroll-snap-align:center;object-fit:cover;aspect-ratio:1/1.1}
 .cols{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.cols button{padding:7px 14px;border-radius:16px;background:var(--card);color:var(--fg);font-size:13px;font-weight:600;border:2px solid transparent;transition:.3s}.cols button.on{border-color:var(--fg)}
+
+.bar .bb{opacity:.55;transition:opacity .3s,transform .35s cubic-bezier(.22,1,.36,1)}.bar .bb.act{opacity:1}
+#tps[disabled]{background:#8a8a8a!important;color:#fff!important;opacity:1!important}
+html,body{touch-action:manipulation}
+input,select,textarea{font-size:16px!important}
+.mu2{color:var(--mut);font-size:13px;line-height:1.45}.ok2{color:#2a9d5c;font-weight:600;margin-top:8px}
+.r2{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.stc{font-size:12px;font-weight:700;padding:4px 10px;border-radius:12px;background:var(--fg);color:var(--bg);white-space:nowrap}
+.cgb{margin-top:12px;padding:12px;border-radius:14px;background:var(--pbg,var(--card));border:1px dashed var(--line);font-size:14px}
+.trk{position:relative;margin:30px 0 8px}
+.trk-l{position:absolute;left:30px;right:30px;top:14px;height:4px;background:var(--line);border-radius:2px}
+.trk-f{height:4px;background:var(--fg);border-radius:2px;transition:width 1s cubic-bezier(.22,1,.36,1)}
+.trk-t{position:absolute;top:-24px;left:calc(30px + (100% - 60px)*var(--p) - 14px);transition:left 1s cubic-bezier(.22,1,.36,1);color:var(--fg)}
+.trk-t svg{width:28px;height:28px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;animation:tbump 1.1s ease-in-out infinite}
+@keyframes tbump{50%{transform:translateY(-2px)}}
+.trk-n{display:flex;justify-content:space-between;position:relative}
+.trk-s{width:60px;text-align:center;font-size:11px;line-height:1.25;color:var(--mut)}
+.trk-s i{display:block;margin:0 auto 6px;width:30px;height:30px;border-radius:50%;background:var(--bg);border:2px solid var(--line);transition:.5s}
+.trk-s.on{color:var(--fg);font-weight:600}.trk-s.on i{background:var(--fg);border-color:var(--fg)}
+.trk-c{margin-top:10px;color:#d92d20;font-weight:600}
 </style>
 </head>
 <body>
@@ -423,6 +452,7 @@ body::after{content:"";position:fixed;inset:-30%;z-index:-1;pointer-events:none;
 
 <div class="ov" id="ovs"><div class="md"><button class="x" data-close>✕</button><h3>Поиск</h3><div class="sr"><input class="inp" id="si" placeholder="Название товара"><button class="btn d" id="sgo" style="margin:0">Найти</button></div><div class="grid" id="sres" style="grid-template-columns:1fr 1fr;margin-top:14px"></div></div></div>
 <div class="ov" id="ovp"><div class="md"><button class="x" data-close>✕</button><div id="pbody"></div></div></div>
+<div class="ov" id="ovf2"><div class="md"><div id="fpage"></div></div></div>
 <div class="ov" id="ovo"><div class="md"><button class="x" data-close>✕</button><div id="ob"></div></div></div>
 <div class="ov" id="ovf"><div class="md"><button class="x" data-close>✕</button><div id="fbody"></div></div></div>
 <div class="ov" id="ovc"><div class="md"><button class="x" data-close>✕</button><div id="cbody"></div></div></div>
@@ -453,8 +483,8 @@ function toast(t){const e=$("#toast");e.textContent=t;e.classList.add("on");clea
 document.addEventListener("click",e=>{const b=e.target.closest("button,.btn,.tile,.chip");if(!b)return;const r=b.getBoundingClientRect(),d=Math.max(r.width,r.height),s=document.createElement("span");s.className="rip";s.style.cssText=`width:${d}px;height:${d}px;left:${e.clientX-r.left-d/2}px;top:${e.clientY-r.top-d/2}px`;if(getComputedStyle(b).position==="static")b.style.position="relative";b.style.overflow="hidden";b.appendChild(s);setTimeout(()=>s.remove(),600)});
 const go=id=>{closeAll();$("#"+id).scrollIntoView({behavior:"smooth"})};
 $$("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go));
-const closeAll=()=>{document.body.classList.remove("cart-open");$$(".ov").forEach(o=>o.classList.remove("on"));$("#dr").classList.remove("on");$("#nav").classList.remove("m");$("#dd").classList.remove("open")};
-document.addEventListener("click",e=>{if(e.target.closest("[data-close]")||e.target.classList.contains("ov"))closeAll();if(!e.target.closest("#dd"))$("#dd").classList.remove("open")});
+const closeAll=()=>{document.body.classList.remove("cart-open");$$(".ov").forEach(o=>o.classList.remove("on"));$("#dr").classList.remove("on");$("#nav").classList.remove("m");$("#dd").classList.remove("open");setTab(0)};
+document.addEventListener("click",e=>{const cb=e.target.closest("[data-close]");if(cb||e.target.classList.contains("ov")){const ov=(cb&&cb.closest(".ov"))||(e.target.classList.contains("ov")?e.target:null);if(ov&&ov.id!=="ovp"&&ov.id!=="ovf2"&&($("#ovp").classList.contains("on")||$("#ovf2").classList.contains("on")))ov.classList.remove("on");else closeAll()}if(!e.target.closest("#dd"))$("#dd").classList.remove("open")});
 /* меню */
 $("#burger").onclick=()=>$("#nav").classList.toggle("m");
 $("#ddb").onclick=()=>$("#dd").classList.toggle("open");
@@ -476,12 +506,12 @@ $("#ddm").innerHTML=CATS.map(c=>`<button data-c="${c[0]}">${c[1]}</button>`).joi
 $("#chips").innerHTML=[["all","Все"],...CATS].map(c=>`<button class="chip" data-c="${c[0]}">${c[1]}</button>`).join("");
 document.addEventListener("click",e=>{const t=e.target.closest("[data-c]");if(!t)return;cat=t.dataset.c;renderCat();go("catalog")});
 /* товары */
-const card=p=>`<div class="pc" data-p="${p.id}"><div class="pi">${p.isNew?'<span class="badge">НОВИНКА</span>':""}${p.fast?'<span class="badge f">🚚 1 день</span>':""}<button class="fav" data-fav="${p.id}" aria-label="Избранное">${HEART(fav.includes(p.id))}</button>${p.img?`<img src="${p.img}" alt="${p.name}" loading="lazy">`:""}</div><h4>${p.name}</h4>${p.sizes?.length?`<small>Размеры: ${p.sizes.join(" ")}</small>`:""}<small style="display:block;margin-top:2px" class="${p.stock===false?"no":"ok"}">${p.stock===false?"Нет в наличии":"★ В наличии"}</small><div class="pr"><span>${fmt(p.price)}</span>${p.stock===false?"":`<button class="add" data-add="${p.id}" aria-label="В корзину"><svg viewBox="0 0 24 24" style="width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><path d="M5 8h14l-1 12H6zM9 8a3 3 0 0 1 6 0"/></svg></button>`}</div></div>`;
+const card=p=>`<div class="pc" data-p="${p.id}"><div class="pi">${p.isNew?'<span class="badge">НОВИНКА</span>':""}${p.fast?'<span class="badge f">🚚 1 день</span>':""}<button class="fav" data-fav="${p.id}" aria-label="Избранное">${HEART(fav.includes(p.id))}</button>${p.img?`<img src="${p.img}" alt="${p.name}" loading="lazy">`:""}</div><h4>${p.name}</h4>${p.sizes?.length?`<small>Размеры: ${p.sizes.join(" ")}</small>`:""}<small style="display:block;margin-top:2px" class="${p.stock===false?"no":"ok"}">${p.stock===false?"Нет в наличии":p.preorder?"Под заказ":"★ В наличии"}</small><div class="pr"><span>${fmt(p.price)}</span>${p.stock===false?"":`<button class="add" data-add="${p.id}" aria-label="В корзину"><svg viewBox="0 0 24 24" style="width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><path d="M5 8h14l-1 12H6zM9 8a3 3 0 0 1 6 0"/></svg></button>`}</div></div>`;
 const emptyT='<div class="empty">Товары скоро появятся</div>';
 var renderCat;
 function renderAll(){const hn=PRODUCTS.filter(p=>p.isNew);$("#hnew").style.display=hn.length?"":"none";$("#hng").innerHTML=hn.map(card).join("");const n=PRODUCTS.filter(p=>p.isNew),pp=PRODUCTS.filter(p=>p.pop);$("#pop").style.display=pp.length?"":"none";$("#popg").innerHTML=pp.map(card).join("");$("#newg").innerHTML=n.length?n.map(card).join(""):emptyT;renderCat()}
 document.addEventListener("click",e=>{const a=e.target.closest("[data-add]"),c=e.target.closest("[data-p]");const f=e.target.closest("[data-fav]");if(f){e.stopPropagation();toggleFav(+f.dataset.fav);return}if(a){e.stopPropagation();openP(+a.dataset.add)}else if(c)openP(+c.dataset.p)});
-function openP(id){const p=PRODUCTS.find(x=>x.id===id);if(!p)return;let sz=null,qn=1;closeAll();
+function openP(id){const p=PRODUCTS.find(x=>x.id===id);if(!p)return;let sz=null,qn=1;$$(".ov.on").forEach(o=>{if(o.id!=="ovf2"&&o.id!=="ovp")o.classList.remove("on")});$("#dr").classList.remove("on");document.body.classList.remove("cart-open");
  $("#pm").innerHTML=`<button class="x" data-close>✕</button><h3>${p.name}</h3>${p.gal&&p.gal.length>1?`<div class="gal">${p.gal.map((u,i)=>`<img src="${u}" data-col="${esc((p.galc||[])[i]||"")}" alt="">`).join("")}</div>`:p.img?`<img src="${p.img}" style="width:100%;border-radius:12px;margin-bottom:10px" alt="">`:""}<b>${fmt(p.price)}</b>${pcolors(p).length?`<div class="cols">${pcolors(p).map(c=>`<button data-gc="${esc(c)}">${esc(c)}</button>`).join("")}</div>`:""}${p.desc?`<p style="margin-top:8px;color:var(--mut);line-height:1.55;font-size:14px">${esc(p.desc)}</p>`:""}${p.sizes?.length?`<p style="margin-top:10px;color:#777">Размер:</p><div class="sizes">${p.sizes.map(s=>`<button class="sz">${s}</button>`).join("")}</div>`:""}<div class="q" style="margin:14px 0"><span>Количество:</span><button id="qm">−</button><b id="qv">1</b><button id="qp">+</button></div><button class="btn d" id="pad" ${p.stock===false?"disabled":""} style="width:100%;text-align:center">${p.stock===false?"Нет в наличии":"Добавить в корзину"}</button><div class="dl"><b>Доставка</b><br>По всему Узбекистану<br>Товары в наличии — доставка 1 день<br>Карго — 0 сум</div>`;
  $$("#pm .sz").forEach(b=>b.onclick=()=>{$$("#pm .sz").forEach(x=>x.classList.remove("on"));b.classList.add("on");sz=b.textContent});
  $$("[data-gc]").forEach(b=>b.onclick=()=>{$$("[data-gc]").forEach(x=>x.classList.toggle("on",x===b));const im=[...document.querySelectorAll(".gal img")].find(i=>i.dataset.col&&i.dataset.col.split("/").includes(b.dataset.gc));if(im)im.scrollIntoView({behavior:"smooth",inline:"center",block:"nearest"})});
@@ -495,19 +525,24 @@ function drawCart(){{const n=cart.reduce((a,i)=>a+i.q,0);$("#cc").textContent=n;
  $("#items").innerHTML=cart.length?cart.map((i,n)=>{const p=PRODUCTS.find(x=>x.id===i.id);if(!p)return"";return`<div class="it">${p.img?`<img src="${p.img}">`:'<div class="ph"></div>'}<div>${p.name}${i.sz?` (${i.sz})`:""}<br><b>${fmt(p.price)}</b></div><div class="q"><button data-q="${n}" data-d="-1">−</button>${i.q}<button data-q="${n}" data-d="1">+</button></div></div>`}).join(""):'<p style="color:#777;text-align:center;padding:40px 0">Корзина пуста</p>';
  $("#tot").textContent="Итого: "+fmt(total())+(promo?" (скидка ${promoPct}%)":"")}
 document.addEventListener("click",e=>{const q=e.target.closest("[data-q]");if(!q)return;const i=cart[+q.dataset.q];i.q+=+q.dataset.d;if(i.q<1)cart.splice(+q.dataset.q,1);save()});
-const openCart=()=>{closeAll();drawCart();$("#dr").classList.add("on");document.body.classList.add("cart-open")};
+const openCart=()=>{closeAll();drawCart();$("#dr").classList.add("on");document.body.classList.add("cart-open");setTab(2)};
 $("#bc").onclick=openCart;$("#bc2").onclick=openCart;
 $("#co").onclick=()=>{if(!cart.length)return toast("Корзина пуста");if(!me){closeAll();drawAuth("in");$("#ovp").classList.add("on");return toast("Войдите или зарегистрируйтесь, чтобы заказать")}
- const u=getU()[me]||{};closeAll();
- $("#ob").innerHTML=`<h3>Оформление заказа</h3><input class="inp" id="on" placeholder="Имя" value="${esc(u.n)}"><input class="inp" id="ot" placeholder="Телефон +998" value="${esc(u.t)}"><p class="fl">Пункт выдачи BTS</p>${btsPick("obt",u.bts||"")}<textarea class="inp" id="ok" rows="2" placeholder="Комментарий (необязательно)"></textarea><select class="inp" id="op"><option>Оплата переводом на карту</option>${API&&(u.bal||0)>=total()?`<option value="bal">Оплата с баланса (${fmt(u.bal)})</option>`:""}</select><p style="font-weight:600;margin:6px 0 12px">Итого: ${fmt(total())}</p><button class="btn d" id="oko" style="width:100%;text-align:center">Подтвердить заказ</button>`;
- bindBts("obt");
- $("#oko").onclick=async()=>{const v=id=>$("#"+id).value.trim(),n=v("on"),t=v("ot"),b=v("obt");if(!n||!t)return toast("Укажите имя и телефон");if(!btsOk(b))return toast("Выберите пункт BTS из списка");
+ if(!API)return toast("Сервер не подключён");
+ const u=getU()[me]||{};closeAll();const tot=total(),pu=payUI(tot,u.bal||0);
+ $("#ob").innerHTML=`<h3>Оформление заказа</h3><input class="inp" id="on" placeholder="Имя" value="${esc(u.n)}"><input class="inp" id="ot" placeholder="Телефон +998" value="${esc(u.t)}"><p class="fl">Пункт выдачи BTS</p>${btsPick("obt",u.bts||"")}<textarea class="inp" id="ok" rows="2" placeholder="Комментарий (необязательно)"></textarea><p class="fl">Оплата заказа</p>${pu.html}<p style="font-weight:600;margin:12px 0">Итого: ${fmt(tot)}</p><button class="btn d" id="oko" style="width:100%;text-align:center">Оплатить и оформить</button>`;
+ bindBts("obt");pu.bind($("#ob"));
+ $("#oko").onclick=async()=>{const bt=$("#oko");if(bt.disabled)return;const v=id=>$("#"+id).value.trim(),n=v("on"),t=v("ot"),b=v("obt");
+  if(!n||!t)return toast("Укажите имя и телефон");if(!btsOk(b))return toast("Выберите пункт BTS из списка");
+  if(pu.method==="card"&&!pu.receipt)return toast("Приложите фото чека перевода");
   const items=cart.map(i=>{const p=PRODUCTS.find(x=>x.id===i.id);return p?`${p.name}${i.sz?" ("+i.sz+")":""} × ${i.q}`:""}).filter(Boolean).join(", ");
-  const o={id:Date.now().toString().slice(-6),u:me,d:new Date().toLocaleString("ru-RU"),items,sum:total(),st:"Новый",n,t,c:b,a:"",k:v("ok"),pay:$("#op").value==="bal"?"Оплата с баланса":$("#op").value,useBal:$("#op").value==="bal",lines:cart.map(i=>({id:i.id,sz:i.sz,q:i.q})),promo:!!promo,promoCode:promo?promoCode:""};
-  if(API){const r=await api("/order",o);if(!r)return toast("Нет связи с сервером. Попробуйте позже");if(!r.ok)return toast(r.err||"Не удалось отправить заказ");if(r.id)o.id=r.id;if(typeof r.sum==="number")o.sum=r.sum;if(typeof r.bal==="number"){const x=getU();x[me].bal=r.bal;ls.s("users",x)}}
-  const os=ls.g("orders",[]);os.push(o);ls.s("orders",os);cart=[];save();
-  const txt=`Заказ №${o.id}\n${items}\nИтого: ${fmt(o.sum)}\n${n}, ${t}\nBTS: ${b}\n${o.pay}${o.k?"\n"+o.k:""}`;
-  $("#ob").innerHTML=`<h3>Заказ №${o.id} принят ✅</h3><p style="line-height:1.6;margin-bottom:14px">Спасибо! Мы свяжемся с вами по номеру ${esc(t)} для подтверждения. Заказ сохранён в вашем профиле.</p><a class="btn d" style="display:block;text-align:center;width:100%" target="_blank" href="https://t.me/Abso1ute_Shop?text=${encodeURIComponent(txt)}">Ускорить: отправить в Telegram</a>`}
+  const o={id:Date.now().toString().slice(-6),items,sum:tot,n,t,c:b,k:v("ok"),useBal:pu.method==="bal",receipt:pu.method==="card"?pu.receipt:undefined,lines:cart.map(i=>({id:i.id,sz:i.sz,q:i.q})),promo:!!promo,promoCode:promo?promoCode:""};
+  bt.disabled=true;bt.textContent="Отправляю…";
+  const r=await api("/order",o);bt.disabled=false;bt.textContent="Оплатить и оформить";
+  if(!r)return toast("Нет связи с сервером. Попробуйте позже");if(!r.ok)return toast(r.err||"Не удалось оформить заказ");
+  cart=[];save();await syncMe();
+  $("#ob").innerHTML=`<h3>Заказ №${esc(r.id)} принят ✅</h3><p style="line-height:1.6;margin-bottom:14px">${r.st==="Оплачен"?"Оплата с баланса получена.":"Чек отправлен. Как только мы проверим оплату, заказ пойдёт в работу."} Следите за заказом в «Профиль → Мои заказы».</p><button class="btn d" id="gts" style="width:100%;text-align:center">Смотреть статус заказа</button>`;
+  $("#gts").onclick=()=>{closeAll();drawAcc("orders");$("#ovp").classList.add("on");setTab(3)}};
  $("#ovo").classList.add("on")};
 /* поиск */
 const openS=()=>{closeAll();$("#ovs").classList.add("on");setTimeout(()=>$("#si").focus(),250)};
@@ -521,7 +556,7 @@ let me=ls.g("me",null);const getU=()=>ls.g("users",{});if(me&&!getU()[me])me=nul
 /* ===== сервер (Cloudflare Worker) ===== */
 const API="https://abso1ute-shop.amirluckyyy.workers.dev";
 const CARDS=[{t:"VISA",n:"4916 9903 5153 0180",o:"AMIRXON ISROILOV"},{t:"HUMO",n:"9860 1606 2756 4299",o:"AMIRXON ISROILOV"}];
-let PV="",SYNC=false,PT=0;
+let PV="",SYNC=false,PT=0,PEND=false,OSIG="";
 async function api(path,body){if(!API)return null;try{const t=ls.g("tok",null),r=await fetch(API+path,{method:body===undefined?"GET":"POST",cache:"no-store",headers:{"Content-Type":"application/json",...(t?{Authorization:"Bearer "+t}:{})},body:body===undefined?undefined:JSON.stringify(body)}),j=await r.json().catch(()=>null);if(r.status===401){ls.s("tok",null);me=null;ls.s("me",null)}return j}catch(e){return null}}
 async function syncMe(){if(!API||!ls.g("tok",null))return;const r=await api("/me");if(!r||!r.ok)return;SYNC=true;const x=getU();x[me]={...(x[me]||{}),...r.user};ls.s("users",x);ls.s("orders",ls.g("orders",[]).filter(o=>o.u!==me).concat((r.orders||[]).map(o=>({...o,u:me}))));SYNC=false}
 const _lss=ls.s;ls.s=(k,v)=>{_lss(k,v);if(k==="users"&&!SYNC&&API&&ls.g("tok",null)&&me&&v&&v[me]){clearTimeout(PT);PT=setTimeout(()=>{const u=v[me];api("/profile",{n:u.n,t:u.t,bts:u.bts,rc:u.rc,av:u.av,nt:u.nt,ad:u.ad})},700)}};
@@ -529,8 +564,8 @@ const shrink=(f,cb)=>{const im=new Image();im.onload=()=>{const k=Math.min(1,900
 if(API&&me&&!ls.g("tok",null)){me=null;ls.s("me",null)}
 if(API)syncMe();
 const updBal=()=>{const u=getU()[me]||{};$$(".balnum").forEach(e=>e.textContent=fmt(u.bal||0))};
-if(API){const tick=async()=>{if(me&&ls.g("tok",null)&&!document.hidden&&$("#ovp")&&$("#ovp").classList.contains("on")){await syncMe();updBal()}};setInterval(tick,8000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)tick()})}
-const openPr=()=>{closeAll();drawAcc();$("#ovp").classList.add("on");syncMe().then(()=>{if(PV===""&&$("#ovp").classList.contains("on"))drawAcc()})};
+if(API){const tick=async()=>{if(me&&ls.g("tok",null)&&!document.hidden&&$("#ovp")&&$("#ovp").classList.contains("on")){await syncMe();updBal();if(PV==="balance"){const pn=((getU()[me]||{}).tops||[]).some(t=>t.st==="wait"&&(!t.ts||Date.now()-t.ts<864e5));if(pn!==PEND)drawAcc("balance")}if(PV==="orders"||String(PV).startsWith("cargo:")){const sg=oSig();if(sg!==OSIG){OSIG=sg;drawAcc(PV)}}}};setInterval(tick,8000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)tick()})}
+const openPr=()=>{closeAll();drawAcc();$("#ovp").classList.add("on");setTab(3);syncMe().then(()=>{if(PV===""&&$("#ovp").classList.contains("on"))drawAcc()})};
 $("#bp").onclick=openPr;$("#bp2").onclick=openPr;
 function drawAuth(m){const up=m==="up";
  $("#pbody").innerHTML=`<button class="bk" id="bk">‹ Назад</button><h3>${up?"Регистрация":"Вход"}</h3><input class="inp" id="an" placeholder="Ник" autocapitalize="off" autocomplete="username">${up&&API?'<input class="inp" id="atg" placeholder="Ваш Telegram-юзер (например, @ivan_uz)" autocapitalize="off" autocomplete="off">':""}<input class="inp" id="ap" type="password" placeholder="Пароль (от 6 символов)" autocomplete="${up?"new-password":"current-password"}">${up?'<input class="inp" id="ap2" type="password" placeholder="Повторите пароль" autocomplete="new-password">':""}<button class="btn d" id="ago" style="width:100%;text-align:center">${up?"Зарегистрироваться":"Войти"}</button><p class="sw">${up?"Уже есть аккаунт?":"Нет аккаунта?"} <a href="#" id="asw">${up?"Войти":"Зарегистрироваться"}</a></p>${up?"":'<p class="sw"><a href="#" id="afg">Забыли пароль?</a></p>'}`;
@@ -566,6 +601,38 @@ function bindBts(id){const inp=$("#"+id),box=$("#"+id+"l");
  if(inp.value&&!btsOk(inp.value))inp.oninput()}
 
 const socHTML=()=>`<div class="soc"><a href="https://t.me/Abso1ute_shop" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M21.5 3.5 2.5 11l6 2.2L11 20l3-4 5.5 4z"/><path d="m8.5 13.2 8-5.7"/></svg>Telegram</a><a href="https://www.instagram.com/abso1ute_shop?stkn=eGh6ZjJrZW1qdDd1&utm_source=qr" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r=".6"/></svg>Instagram</a></div>`;
+const TRK=["Оплачен","Взвешивается","В пути","Доставлен"],TRS={"Новый":-1,"Ожидает оплаты":-1,"Подтверждён":0,"Оплачен":0,"Взвешивается":1,"Ожидает оплаты карго":1,"Отправлен":2,"В пути":2,"Доставлен":3};
+const STT={"Ожидает оплаты":"Проверяем оплату","Ожидает оплаты карго":"Оплатите карго","Новый":"Оформлен","Подтверждён":"Оплачен","Отправлен":"В пути"};
+const TRUCK='<svg viewBox="0 0 24 24"><path d="M2.5 6.5h11v10h-11zM13.5 10h4l3.5 3.2v3.3h-7.5"/><circle cx="7" cy="18.5" r="1.8"/><circle cx="17" cy="18.5" r="1.8"/></svg>';
+const oSig=()=>ls.g("orders",[]).filter(o=>o.u===me).map(o=>o.id+o.st+((o.cargo||{}).paid?1:0)+((o.cargo||{}).pending?1:0)+((o.cargo||{}).sum||0)).join("|");
+function trackHTML(o){
+ if(o.st==="Отменён")return'<div class="trk-c">Заказ отменён</div>';
+ const i=TRS[o.st],idx=i===undefined?-1:i,p=Math.max(idx,0)/3;
+ return`<div class="trk" style="--p:${p}"><div class="trk-l"><div class="trk-f" style="width:${p*100}%"></div></div><div class="trk-t">${TRUCK}</div><div class="trk-n">${TRK.map((t,k)=>`<div class="trk-s${k<=idx?" on":""}"><i></i>${t}</div>`).join("")}</div></div>`;
+}
+function orderCard(o){
+ const cg=o.cargo;let box="";
+ if(cg)box=`<div class="cgb"><div class="r2"><span>Вес: <b>${cg.kg} кг</b> · ${cg.type==="avia"?"Авиа":"Авто"}</span><b>${fmt(cg.sum)}</b></div>${cg.paid?'<div class="ok2">✅ Карго оплачено</div>':cg.pending?'<div class="mu2">Чек отправлен — ждём подтверждения</div>':o.st==="Ожидает оплаты карго"?`<button class="btn d" data-cg="${esc(o.id)}" style="width:100%;text-align:center;margin-top:10px">Оплатить карго ${fmt(cg.sum)}</button>`:""}</div>`;
+ return`<div class="ord"><div class="r2"><b>№${esc(o.id)}</b><span class="stc">${esc(STT[o.st]||o.st)}</span></div><div class="mu2">${esc(o.d)}</div><div style="margin:8px 0;line-height:1.5">${esc(o.items)}</div><b>${fmt(o.sum)}</b>${trackHTML(o)}${box}</div>`;
+}
+function payUI(amount,bal){
+ const can=bal>=amount,st={method:can?"bal":"card",receipt:""};
+ st.html=`<div class="pm"><button data-pm="bal" ${can?"":"disabled"}>С баланса<small>${fmt(bal)}</small></button><button data-pm="card">Переводом<small>с чеком</small></button></div>${can?"":`<p class="mu2" style="margin-top:8px">На балансе не хватает ${fmt(amount-bal)}. Пополните баланс или оплатите переводом.</p>`}<div class="pbox"></div>`;
+ st.bind=root=>{
+  const paint=()=>{
+   root.querySelectorAll("[data-pm]").forEach(b=>b.classList.toggle("on",b.dataset.pm===st.method));
+   const bx=root.querySelector(".pbox");
+   bx.innerHTML=st.method==="card"?`<p style="line-height:1.5;margin:12px 0 10px">Переведите <b>${fmt(amount)}</b> на одну из карт и приложите чек:</p>${CARDS.map(c=>`<button class="card-c" data-cp="${c.n}"><span>${c.t}</span><b>${c.n}</b><small>${c.o}</small></button>`).join("")}<label class="btn" style="display:block;text-align:center;margin:0 0 10px;background:var(--card);color:var(--fg);cursor:pointer">Прикрепить чек (обязательно)<input type="file" class="rf" accept="image/*" hidden></label><div class="rv"></div>`:"";
+   if(st.method==="card"){
+    bx.querySelectorAll("[data-cp]").forEach(b=>b.onclick=()=>{navigator.clipboard?.writeText(b.dataset.cp.replace(/\s/g,""));toast("Номер карты скопирован")});
+    bx.querySelector(".rf").onchange=e=>{const f=e.target.files[0];if(f)shrink(f,d=>{st.receipt=d;bx.querySelector(".rv").innerHTML=`<img class="cam-prev" src="${d}" alt="">`})};
+    if(st.receipt)bx.querySelector(".rv").innerHTML=`<img class="cam-prev" src="${st.receipt}" alt="">`;
+   }
+  };
+  root.querySelectorAll("[data-pm]").forEach(b=>b.onclick=()=>{if(b.disabled)return;st.method=b.dataset.pm;paint()});paint();
+ };
+ return st;
+}
 const row=(id,t,ic)=>`<button class="row" data-v="${id}">${ic?I(ic):""}<span>${t}</span><svg class="chv" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></button>`;
 const IC={shield:'<path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="m9 12 2 2 4-4"/>',pin:'<path d="M12 21s7-6 7-11a7 7 0 0 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>',card:'<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 10h18"/>',bell:'<path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 21h4"/>',help:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 1-1 1.7M12 17h.01"/>',chat:'<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/>',info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/>',box:'<path d="M4 8l8-4 8 4v9l-8 4-8-4z"/><path d="M4 8l8 4 8-4M12 12v9"/>',heart:'<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>',tag:'<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M9 15l6-6M9.5 9.5h.01M14.5 14.5h.01"/>',wallet:'<rect x="3" y="6" width="18" height="13" rx="3"/><path d="M12 10v5M9.5 12.5h5"/>',gear:'<circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/>'};
 const I=n=>`<svg class="ri" viewBox="0 0 24 24">${IC[n]}</svg>`;
@@ -608,13 +675,24 @@ if(v==="pay"){set(`${bk}<h3>Способы оплаты</h3><div class="ord"><b>
 if(v==="notif"){const n=u.nt||{o:true,p:true};set(`${bk}<h3>Уведомления</h3>${[["o","О статусе заказа"],["p","Акции и скидки"]].map(t=>`<button class="row" data-nt="${t[0]}"><span>${t[1]}</span><b>${n[t[0]]?"Вкл":"Выкл"}</b></button>`).join("")}<p style="color:var(--mut);font-size:13px;margin-top:10px">Уведомления начнут приходить после подключения сервера.</p>`);
  $$("#pbody [data-nt]").forEach(b=>b.onclick=()=>{const x=getU();const q=x[me].nt||{o:true,p:true};q[b.dataset.nt]=!q[b.dataset.nt];x[me].nt=q;ls.s("users",x);drawAcc("notif")});return}
 if(v==="promo"){set(`${bk}<h3>Промокоды</h3><div class="promo-card"><svg viewBox="0 0 24 24"><path d="M21.5 3.5 2.5 11l6 2.2L11 20l3-4 5.5 4z"/><path d="m8.5 13.2 8-5.7"/></svg><b>Промокоды — в наших соцсетях</b><span>Мы публикуем промокоды и акции в Telegram-канале. Подпишитесь, чтобы не пропустить скидки.</span><a class="btn" target="_blank" href="https://t.me/Abso1ute_Shop">Открыть @Abso1ute_Shop</a></div><p class="fl">Есть промокод?</p><p style="color:var(--mut);line-height:1.5">Введите его в корзине перед оформлением заказа.</p>`);return}
-if(v==="balance"){const tops=(u.tops||[]).slice(-5).reverse(),stt={wait:"Ожидает проверки",ok:"Подтверждено",no:"Отклонено"};let img="";
- set(`${bk}<h3>Баланс</h3><div class="pcard" style="text-align:center"><span style="color:#bbb;font-size:13px">Ваш баланс</span><b class="balnum" style="display:block;font:700 40px Oswald,sans-serif;margin-top:4px">${fmt(u.bal||0)}</b></div><p class="fl">Сумма пополнения, сум</p><input class="inp" id="tpa" type="number" inputmode="numeric" placeholder="Например, 100000"><p class="fl">Способ пополнения</p><div class="pm"><button class="on">Перевод на карту</button><button disabled>Payme<small>скоро</small></button></div><p style="line-height:1.5;margin:14px 0 10px"><b>Переведите сумму на одну из карт и обязательно прикрепите чек</b> — мы проверим его и пополним баланс.</p>${CARDS.map(c=>`<button class="card-c" data-cp="${c.n}"><span>${c.t}</span><b>${c.n}</b><small>${c.o}</small></button>`).join("")}<label class="btn" style="display:block;text-align:center;margin:0 0 10px;background:var(--pc);color:var(--fg);cursor:pointer">Прикрепить чек (обязательно)<input type="file" id="tpf" accept="image/*" hidden></label><div id="tpv"></div><button class="btn d" id="tps" style="width:100%;text-align:center">Отправить на проверку</button><button class="btn" id="tpr" style="width:100%;text-align:center;background:var(--pc);color:var(--fg)">Обновить баланс</button><p style="color:var(--mut);font-size:13px;margin-top:10px">После подтверждения баланс обновится автоматически.</p>${tops.length?'<p class="fl">Мои пополнения</p>'+tops.map(t=>`<div class="ord"><b>${fmt(t.amount)}</b> · ${stt[t.st]||""}<br>${esc(t.d||"")}</div>`).join(""):""}`);
+if(v==="balance"){const tops=(u.tops||[]).slice(-5).reverse(),stt={wait:"Ожидает проверки",ok:"Подтверждено",no:"Отклонено"},pend=(u.tops||[]).some(t=>t.st==="wait"&&(!t.ts||Date.now()-t.ts<864e5));PEND=pend;let img="";
+ set(`${bk}<h3>Баланс</h3><div class="pcard" style="text-align:center"><span style="color:#bbb;font-size:13px">Ваш баланс</span><b class="balnum" style="display:block;font:700 40px Oswald,sans-serif;margin-top:4px">${fmt(u.bal||0)}</b></div><p class="fl">Сумма пополнения, сум</p><input class="inp" id="tpa" type="number" inputmode="numeric" placeholder="Например, 100000" ${pend?"disabled":""}><p class="fl">Способ пополнения</p><div class="pm"><button class="on">Перевод на карту</button><button disabled>Payme<small>скоро</small></button></div><p style="line-height:1.5;margin:14px 0 10px"><b>Переведите сумму на одну из карт и обязательно прикрепите чек</b> — мы проверим его и пополним баланс.</p>${CARDS.map(c=>`<button class="card-c" data-cp="${c.n}"><span>${c.t}</span><b>${c.n}</b><small>${c.o}</small></button>`).join("")}<label class="btn" style="display:block;text-align:center;margin:0 0 10px;background:var(--pc);color:var(--fg);cursor:pointer">Прикрепить чек (обязательно)<input type="file" id="tpf" accept="image/*" hidden ${pend?"disabled":""}></label><div id="tpv"></div><button class="btn d" id="tps" ${pend?"disabled":""} style="width:100%;text-align:center">${pend?"Запрос отправлен — ожидайте подтверждения":"Отправить на проверку"}</button><button class="btn" id="tpr" style="width:100%;text-align:center;background:var(--pc);color:var(--fg)">Обновить баланс</button><p style="color:var(--mut);font-size:13px;margin-top:10px">После подтверждения баланс обновится автоматически.</p>${tops.length?'<p class="fl">Мои пополнения</p>'+tops.map(t=>`<div class="ord"><b>${fmt(t.amount)}</b> · ${stt[t.st]||""}<br>${esc(t.d||"")}</div>`).join(""):""}`);
  $$("#pbody [data-cp]").forEach(b=>b.onclick=()=>{navigator.clipboard?.writeText(b.dataset.cp.replace(/\s/g,""));toast("Номер карты скопирован")});
  $("#tpf").onchange=e=>{const f=e.target.files[0];if(f)shrink(f,d=>{img=d;$("#tpv").innerHTML=`<img class="cam-prev" src="${d}" alt="">`})};
- $("#tps").onclick=async()=>{const a=+$("#tpa").value;if(!API)return toast("Сервер ещё не подключён");if(!(a>=1000))return toast("Введите сумму от 1 000 сум");if(!img)return toast("Прикрепите фото чека");const r=await api("/topup",{amount:a,img});if(!r)return toast("Нет связи с сервером. Попробуйте позже");if(!r.ok){toast(r.err||"Не удалось отправить");if(!me)drawAuth("in");return}await syncMe();toast("Чек отправлен — ожидайте подтверждения");drawAcc("balance")};
+ $("#tps").onclick=async()=>{const bt=$("#tps");if(bt.disabled)return;const a=+$("#tpa").value;if(!API)return toast("Сервер ещё не подключён");if(!(a>=1000))return toast("Введите сумму от 1 000 сум");if(!img)return toast("Прикрепите фото чека");bt.disabled=true;bt.textContent="Отправляю…";const r=await api("/topup",{amount:a,img});if(!r||!r.ok){bt.disabled=false;bt.textContent="Отправить на проверку"}if(!r)return toast("Нет связи с сервером. Попробуйте позже");if(!r.ok){toast(r.err||"Не удалось отправить");if(!me)drawAuth("in");return}await syncMe();toast("Чек отправлен — ожидайте подтверждения");drawAcc("balance")};
  $("#tpr").onclick=async()=>{await syncMe();toast("Баланс обновлён");drawAcc("balance")};return}
-if(v==="orders"){const os=ls.g("orders",[]).filter(o=>o.u===me).reverse();set(`${bk}<h3>Мои заказы</h3>${os.length?os.map(o=>`<div class="ord"><b>№${o.id}</b> · ${o.d}<br>${esc(o.items)}<br><b>${fmt(o.sum)}</b> · ${o.st}</div>`).join(""):'<p style="color:var(--mut)">Заказов пока нет</p>'}`);return}
+if(v&&v.startsWith("cargo:")){const oid=v.slice(6),o=ls.g("orders",[]).find(x=>x.id===oid&&x.u===me);
+ if(!o||!o.cargo||o.cargo.paid||o.st!=="Ожидает оплаты карго")return drawAcc("orders");
+ OSIG=oSig();const cg=o.cargo,pu=payUI(cg.sum,u.bal||0);
+ set(`${bk}<h3>Оплата карго · №${esc(oid)}</h3><div class="pcard" style="text-align:center"><span style="color:#bbb;font-size:13px">К оплате: ${cg.kg} кг, ${cg.type==="avia"?"авиа":"авто"}</span><b style="display:block;font:700 36px Oswald,sans-serif;margin-top:4px">${fmt(cg.sum)}</b></div><p class="fl">Способ оплаты</p>${pu.html}<button class="btn d" id="cgp" style="width:100%;text-align:center;margin-top:14px">Оплатить карго</button>`);
+ $("#bk").onclick=()=>drawAcc("orders");pu.bind($("#pbody"));
+ $("#cgp").onclick=async()=>{const bt=$("#cgp");if(bt.disabled)return;if(pu.method==="card"&&!pu.receipt)return toast("Приложите фото чека");
+  bt.disabled=true;bt.textContent="Отправляю…";const r=await api("/order/cargo/pay",{id:oid,method:pu.method,img:pu.method==="card"?pu.receipt:undefined});bt.disabled=false;bt.textContent="Оплатить карго";
+  if(!r)return toast("Нет связи с сервером");if(!r.ok)return toast(r.err||"Не удалось оплатить");
+  await syncMe();toast(r.pending?"Чек отправлен — ждём подтверждения":"Карго оплачено");drawAcc("orders")};return}
+if(v==="orders"){const os=ls.g("orders",[]).filter(o=>o.u===me).reverse();OSIG=oSig();
+ set(`${bk}<h3>Мои заказы</h3>${os.length?os.map(orderCard).join(""):'<p style="color:var(--mut)">Заказов пока нет</p>'}`);
+ $$("#pbody [data-cg]").forEach(b=>b.onclick=()=>drawAcc("cargo:"+b.dataset.cg));return}
  if(v==="theme"){set(`${bk}<h3>Тема</h3>${[["dark","Чёрная"],["light","Белая"],["gray","Серая"]].map(t=>`<button class="row" data-th="${t[0]}"><span>${t[1]}</span><span>${document.documentElement.dataset.theme===t[0]?"✓":""}</span></button>`).join("")}`);$$("#pbody [data-th]").forEach(b=>b.onclick=()=>{setTheme(b.dataset.th);drawAcc("theme")});return}
    if(v==="addr"){set(`${bk}<h3>Адрес ПВЗ BTS</h3><p style="color:var(--mut);line-height:1.5;margin-bottom:10px">Введите город или район и выберите ближайший пункт выдачи BTS. Он подставится при оформлении заказа.</p>${btsPick("abt",u.bts||"")}<button class="btn d" id="aad" style="width:100%;text-align:center">Сохранить</button>`);bindBts("abt");
  $("#aad").onclick=()=>{const t=$("#abt").value.trim();if(!btsOk(t))return toast("Выберите пункт BTS из списка");const x=getU();x[me].bts=t;ls.s("users",x);toast("Пункт BTS сохранён")};return}
@@ -631,9 +709,11 @@ if(v==="sup"){const key="chat:"+(me||"guest"),draw=()=>{const c=$("#cl");if(!c)r
  $("#cs2").onclick=send;$("#cm").onkeydown=e=>{if(e.key==="Enter")send()};return}
 }
 /* избранное и «1 день» */
-function toggleFav(id){fav=fav.includes(id)?fav.filter(x=>x!==id):[...fav,id];ls.s("fav",fav);renderAll();if($("#ovl").classList.contains("on")&&$("#lt").textContent==="Избранное")openFav();else toast(fav.includes(id)?"Добавлено в избранное":"Убрано из избранного")}
+function toggleFav(id){fav=fav.includes(id)?fav.filter(x=>x!==id):[...fav,id];ls.s("fav",fav);renderAll();if($("#ovf2").classList.contains("on"))renderFavPage();else toast(fav.includes(id)?"Добавлено в избранное":"Убрано из избранного")}
 function openList(t,l,e){closeAll();$("#lt").textContent=t;$("#lg").innerHTML=l.length?l.map(card).join(""):'<div class="empty">'+e+'</div>';$("#ovl").classList.add("on")}
-const openFav=()=>openList("Избранное",PRODUCTS.filter(p=>fav.includes(p.id)),"Нажмите на сердечко на товаре, чтобы добавить сюда");
+const openFav=()=>openFavPage();
+function renderFavPage(){const l=PRODUCTS.filter(p=>fav.includes(p.id));$("#fpage").innerHTML=`<h2 class="pt">Избранное</h2>${l.length?`<div class="grid">${l.map(card).join("")}</div>`:'<div class="empty">Здесь пока пусто.<br>Нажмите на сердечко у товара, чтобы сохранить его.</div>'}`}
+function openFavPage(){closeAll();renderFavPage();$("#ovf2").classList.add("on");setTab(1)}
 const openFast=()=>openList("Доставка за 1 день",PRODUCTS.filter(p=>p.fast),"Товары с доставкой за 1 день скоро появятся");
 $("#bf").onclick=$("#bf2").onclick=openFav;$("#bt2").onclick=openFast;
 /* тема */
@@ -653,8 +733,14 @@ $("#howb").onclick=()=>{closeAll();drawAcc("faq");$("#ovp").classList.add("on")}
 $("#pa").onclick=async()=>{const c=$("#pc").value.trim();if(!c)return toast("Введите промокод");
  if(API){const r=await api("/promo/check",{code:c});if(!r)return toast("Нет связи с сервером");if(!r.ok)return toast(r.err||"Неверный промокод");promo=true;promoPct=r.pct;promoCode=r.code;ls.s("ppct",promoPct);ls.s("pcode",promoCode);save();toast("Промокод применён: −"+r.pct+"%")}
  else if(c.toUpperCase()==="OPENING"){promo=true;promoPct=5;promoCode="OPENING";ls.s("ppct",5);ls.s("pcode","OPENING");save();toast("Промокод применён: −5%")}else toast("Неверный промокод")};
-/* свайп вправо закрывает корзину */
-let tx=0;document.addEventListener("touchstart",e=>tx=e.touches[0].clientX,{passive:true});document.addEventListener("touchend",e=>{if($("#dr").classList.contains("on")&&e.changedTouches[0].clientX-tx>90)closeAll()},{passive:true});
+document.addEventListener("gesturestart",e=>e.preventDefault());
+/* свайп между вкладками: каталог → избранное → корзина → профиль */
+let curTab=0;
+function setTab(i){curTab=i;$$(".bar .bb").forEach((b,k)=>b.classList.toggle("act",k===i))}
+function goTab(i){if(i===0){closeAll();setTab(0)}else if(i===1)openFavPage();else if(i===2)openCart();else openPr()}
+let sx0=0,sy0=0,sblk=false;
+document.addEventListener("touchstart",e=>{const t=e.target;sblk=!!(t.closest&&t.closest(".hero,.gal,.hscroll,.perks,.chips,.ph-l,input,textarea,select,.bl,.themes,.chatpg,.fq-b,.tb"))||$$(".ov.on").some(x=>x.id!=="ovp"&&x.id!=="ovf2");sx0=e.touches[0].clientX;sy0=e.touches[0].clientY},{passive:true});
+document.addEventListener("touchend",e=>{if(sblk)return;const dx=e.changedTouches[0].clientX-sx0,dy=e.changedTouches[0].clientY-sy0;if(Math.abs(dx)<70||Math.abs(dx)<Math.abs(dy)*1.6)return;const n=Math.max(0,Math.min(3,curTab+(dx<0?1:-1)));if(n!==curTab)goTab(n)},{passive:true});
 /* фильтры */
 const pcolors=p=>p.colors&&p.colors.length?p.colors:(p.color?[p.color]:[]);
 const GROUPS={top:["tshirts","hoodies","top"],bottom:["pants","shorts","bottom"],shoes:["sneakers","shoes"],acc:["accessories","acc"]};
@@ -682,7 +768,7 @@ document.addEventListener("keydown",e=>e.key==="Escape"&&closeAll());
 const mapP=p=>({...p,img:p.imgs&&p.imgs[0]?API+"/img/"+p.imgs[0]:"",gal:(p.imgs||[]).map(i=>API+"/img/"+i),galc:(p.imgs||[]).map(i=>(p.imgColors||{})[i]||"")});
 async function loadProducts(){if(!API)return;try{const r=await fetch(API+"/products",{cache:"no-store"}),j=await r.json();if(j&&j.ok&&Array.isArray(j.items)){PRODUCTS=j.items.map(mapP);ls.s("prods",j.items);renderAll();drawCart()}}catch(e){}}
 {const pc=ls.g("prods",[]);if(pc.length)PRODUCTS=pc.map(mapP)}
-drawR();renderAll();drawCart();loadProducts();
+drawR();renderAll();drawCart();loadProducts();setTab(0);
 </script>
 </body>
 </html>
