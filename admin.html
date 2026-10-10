@@ -164,7 +164,7 @@ function editP(id){
   $$("[data-sz]",sh).forEach(b=>b.onclick=()=>{keep();p.sizes=b.dataset.sz.split(" ").filter(Boolean);render()});
   $$("[data-rm]",sh).forEach(b=>b.onclick=()=>{keep();ph.splice(+b.dataset.rm,1);render()});
   $$("[data-mk]",sh).forEach(b=>b.onclick=()=>{keep();const i=+b.dataset.mk;ph.unshift(ph.splice(i,1)[0]);render()});
-  $("#pf").onchange=e=>{keep();const fs=[...e.target.files].slice(0,8-ph.length);let n=fs.length;if(!n)return;fs.forEach(f=>shrink(f,d=>{ph.push({data:d,url:d});if(--n===0)render()}))};
+  $("#pf").onchange=e=>{keep();const fs=[...e.target.files].slice(0,10-ph.length);let n=fs.length;if(!n)return;fs.forEach(f=>shrink(f,d=>{ph.push({data:d,url:d});if(--n===0)render()}))};
   $("#sv").onclick=async()=>{keep();const price=Math.round(+p.price);
    if(!p.name.trim())return toast("Введите название");if(!(price>0))return toast("Введите цену");
    const btn=$("#sv");btn.disabled=true;btn.textContent="Сохраняю…";
