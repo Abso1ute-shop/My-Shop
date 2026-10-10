@@ -60,6 +60,7 @@ main{padding:0 16px;max-width:760px;margin:0 auto}
 .empty{text-align:center;color:var(--mu);padding:40px 0}
 .hint{background:var(--cd);border:1px solid var(--ln);border-radius:14px;padding:12px 14px;margin-bottom:12px;font-size:14px}.hint summary{cursor:pointer;color:var(--mu);font-weight:600}.hint p{margin:8px 0;color:var(--mu);line-height:1.5}.hint pre{background:#0b0b0b;border-radius:10px;padding:10px;white-space:pre-wrap;font:13px/1.5 ui-monospace,Menlo,monospace;color:#ddd}
 .thr{display:flex;gap:10px;overflow-x:auto;margin:8px 0}.th1{flex:none;width:92px;font-size:12px;color:var(--mu);line-height:1.3}.th1 img{width:92px;height:110px;object-fit:cover;border-radius:12px;display:block;margin-bottom:4px;border:2px solid #333}
+.ph-i .pcol{display:block;width:100%;margin:4px 0 0;padding:6px 8px;font-size:16px;border-radius:8px;box-sizing:border-box}
 </style>
 </head>
 <body>
@@ -137,14 +138,21 @@ function shrink(f,cb){
   for(let i=0;i<4;i++){const c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext("2d").drawImage(im,0,0,c.width,c.height);out=c.toDataURL("image/jpeg",qu);if(out.length<800000)break;k*=.8;qu-=.08}
   cb(out)};im.src=URL.createObjectURL(f);
 }
+async function smallOf(url){
+ const bl=await (await fetch(url)).blob(),u=URL.createObjectURL(bl);
+ try{const im=await new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=()=>no(new Error("фото не загрузилось"));i.src=u});
+  const k=Math.min(1,320/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);
+  c.getContext("2d").drawImage(im,0,0,c.width,c.height);return c.toDataURL("image/jpeg",.85)}finally{URL.revokeObjectURL(u)}
+}
 function editP(id){
  const old=id?P.find(x=>x.id===id):null,p=old||{name:"",price:"",cat:"top",sizes:CLS.slice(),colors:[],desc:"",stock:true,isNew:true,pop:false,fast:false,imgs:[]};
- let ph=(p.imgs||[]).map(i=>({id:i,url:API+"/img/"+i}));
+ let ph=(p.imgs||[]).map(i=>({id:i,url:API+"/img/"+i,col:(p.imgColors||{})[i]||""}));
  const origCols=(p.colors&&p.colors.length?p.colors:(p.color?[p.color]:[])).join("|");
  const sh=document.createElement("div");sh.className="sheet";document.body.appendChild(sh);
  const render=()=>{
   sh.innerHTML=`<div class="in"><div class="r"><h2>${old?"Изменить товар":"Новый товар"}</h2><button class="g" id="cl">Закрыть</button></div>
-  <span class="lb">Фото (первое — главное)</span><div class="ph-l">${ph.map((x,i)=>`<div class="ph-i"><img src="${x.url}" alt=""><button class="x" data-rm="${i}">✕</button>${i>0&&x.id?`<button class="mk" data-mk="${i}">Сделать главным</button>`:""}</div>`).join("")}<label class="ph-add">+ Фото<input type="file" id="pf" accept="image/*" multiple hidden></label></div>
+  <span class="lb">Фото (первое — главное)</span><div class="ph-l">${ph.map((x,i)=>`<div class="ph-i"><img src="${x.url}" alt=""><button class="x" data-rm="${i}">✕</button>${i>0&&x.id?`<button class="mk" data-mk="${i}">Сделать главным</button>`:""}${x.id?`<input class="pcol" data-pc="${i}" value="${esc(x.col||"")}" placeholder="Цвет">`:""}</div>`).join("")}<label class="ph-add">+ Фото<input type="file" id="pf" accept="image/*" multiple hidden></label></div>
+  ${old&&ph.some(x=>x.id)?`<button class="b s" id="ai" style="margin-top:8px">Определить цвета по фото (ИИ)</button>`:""}<p class="mu" style="font-size:12px;margin:6px 0 0">Под каждым фото — его цвет. На сайте кнопка цвета листает к этому фото, а в корзине показывается фото выбранного цвета.${ph.some(x=>x.data)?" Цвет новых фото можно указать после сохранения.":""}</p>
   <span class="lb">Название</span><input id="fn" value="${esc(p.name)}" placeholder="Например: Худи Oversize">
   <span class="lb">Цена, сум</span><input id="fp" type="number" inputmode="numeric" value="${esc(p.price)}" placeholder="250000">
   <span class="lb">Категория</span><select id="fc">${Object.entries(CATN).map(([k,v])=>`<option value="${k}" ${p.cat===k?"selected":""}>${v}</option>`).join("")}</select>
@@ -158,8 +166,16 @@ function editP(id){
   <div class="tgl"><span>Популярное</span><label class="sw"><input type="checkbox" id="t3" ${p.pop?"checked":""}><i></i></label></div>
   <div class="tgl"><span>Доставка за 1 день</span><label class="sw"><input type="checkbox" id="t4" ${p.fast?"checked":""}><i></i></label></div>
   <button class="b" id="sv" style="margin-top:14px">Сохранить</button></div>`;
-  const keep=()=>{p.name=$("#fn").value;p.price=$("#fp").value;p.cat=$("#fc").value;p.sizes=$("#fs").value.split(/[\s,]+/).filter(Boolean);p.colors=$("#fo").value.split(/[,;/]+/).map(x=>x.trim()).filter(Boolean);p.desc=$("#fd").value;p.stock=$("#t1").checked;p.isNew=$("#t2").checked;p.pop=$("#t3").checked;p.fast=$("#t4").checked;p.preorder=$("#t5").checked};
+  const keep=()=>{$$("[data-pc]",sh).forEach(x=>{const o=ph[+x.dataset.pc];if(o)o.col=x.value.trim()});p.name=$("#fn").value;p.price=$("#fp").value;p.cat=$("#fc").value;p.sizes=$("#fs").value.split(/[\s,]+/).filter(Boolean);p.colors=$("#fo").value.split(/[,;/]+/).map(x=>x.trim()).filter(Boolean);p.desc=$("#fd").value;p.stock=$("#t1").checked;p.isNew=$("#t2").checked;p.pop=$("#t3").checked;p.fast=$("#t4").checked;p.preorder=$("#t5").checked};
   $("#cl").onclick=()=>sh.remove();
+  if($("#ai"))$("#ai").onclick=async()=>{keep();const b=$("#ai");b.disabled=true;b.textContent="Определяю цвета…";
+   try{const imgs={};for(const x of ph.filter(y=>y.id))imgs[x.id]=await smallOf(x.url);
+    const r=await call("/admin/product/colors",{id:old.id,imgs});
+    if(!r||!r.ok){toast(r&&r.err||"Нет связи с сервером");b.disabled=false;b.textContent="Определить цвета по фото (ИИ)";return}
+    const ic=(r.item&&r.item.imgColors)||{};ph.forEach(x=>{if(x.id&&ic[x.id])x.col=ic[x.id]});
+    if(r.item&&!r.item.colorsSet){p.colors=r.item.colors||[];$("#fo").value=p.colors.join(", ")}
+    Object.assign(old,r.item||{});toast(r.found?"Цвета определены: "+r.found+" фото":"ИИ не смог определить цвета");render()}
+   catch(e){toast("Ошибка: "+e.message);b.disabled=false;b.textContent="Определить цвета по фото (ИИ)"}};
   $("#fc").onchange=()=>{keep();p.sizes=defSz(p.cat).slice();render()};
   $$("[data-sz]",sh).forEach(b=>b.onclick=()=>{keep();p.sizes=b.dataset.sz.split(" ").filter(Boolean);render()});
   $$("[data-rm]",sh).forEach(b=>b.onclick=()=>{keep();ph.splice(+b.dataset.rm,1);render()});
@@ -168,7 +184,7 @@ function editP(id){
   $("#sv").onclick=async()=>{keep();const price=Math.round(+p.price);
    if(!p.name.trim())return toast("Введите название");if(!(price>0))return toast("Введите цену");
    const btn=$("#sv");btn.disabled=true;btn.textContent="Сохраняю…";
-   const body={p:{id:old?old.id:undefined,name:p.name,price,cat:p.cat,sizes:p.sizes,colors:p.colors,colorsSet:p.colors.join("|")===origCols?!!(old&&old.colorsSet):p.colors.length>0,desc:p.desc,stock:p.stock,isNew:p.isNew,pop:p.pop,fast:p.fast,preorder:p.preorder,imgs:ph.filter(x=>x.id).map(x=>x.id)},add:ph.filter(x=>x.data).map(x=>x.data)};
+   const body={p:{id:old?old.id:undefined,name:p.name,price,cat:p.cat,sizes:p.sizes,colors:p.colors,colorsSet:p.colors.join("|")===origCols?!!(old&&old.colorsSet):p.colors.length>0,desc:p.desc,stock:p.stock,isNew:p.isNew,pop:p.pop,fast:p.fast,preorder:p.preorder,imgs:ph.filter(x=>x.id).map(x=>x.id),imgColors:Object.fromEntries(ph.filter(x=>x.id).map(x=>[x.id,x.col||""]))},add:ph.filter(x=>x.data).map(x=>x.data)};
    const r=await call("/admin/product",body);btn.disabled=false;btn.textContent="Сохранить";
    if(!r)return toast("Нет связи с сервером");if(!r.ok)return toast(r.err||"Ошибка");
    toast("Сохранено");sh.remove();show("prod")};
@@ -179,7 +195,7 @@ function editP(id){
 /* ---------- заказы ---------- */
 function dOrd(){
  const l=O.filter(o=>ofl==="all"||o.st===ofl);
- $("#v").innerHTML=`<div class="chips">${["all",...STS].map(s=>`<button data-f="${s}" class="${ofl===s?"on":""}">${s==="all"?"Все ("+O.length+")":s+" ("+O.filter(o=>o.st===s).length+")"}</button>`).join("")}</div>${l.length?l.map(o=>`<div class="card"><div class="r"><b>№${esc(o.id)}</b><span class="st ${STC[o.st]||""}">${esc(o.st)}</span></div><div class="mu" style="margin:4px 0 8px">${esc(o.d)} · @${esc(o.nick)}</div><div>${esc(o.n)} · ${esc(o.t)}</div><div style="margin:8px 0;line-height:1.5">${esc(o.items)}</div>${(o.lines||[]).length?`<div class="thr">${o.lines.map(l=>`<div class="th1">${l.img?`<img src="${API}/img/${l.img}" alt="">`:""}<span>${esc(l.name)}${l.sz?" · "+esc(l.sz):""} × ${l.q}</span></div>`).join("")}</div>`:""}<div class="r"><b>${fmt(o.sum)}</b><span class="mu">${esc(o.pay)}</span></div><div class="mu" style="margin:6px 0">BTS: ${esc(o.c)}</div>${o.k?`<div class="mu" style="margin-bottom:6px">Комментарий: ${esc(o.k)}</div>`:""}<select data-os="${esc(o.id)}">${[...new Set([o.st,...STS])].map(s=>`<option ${s===o.st?"selected":""}>${s}</option>`).join("")}</select>${cargoForm(o)}</div>`).join(""):'<div class="empty">Заказов нет</div>'}<button class="b s" id="rf">Обновить</button>`;
+ $("#v").innerHTML=`<div class="chips">${["all",...STS].map(s=>`<button data-f="${s}" class="${ofl===s?"on":""}">${s==="all"?"Все ("+O.length+")":s+" ("+O.filter(o=>o.st===s).length+")"}</button>`).join("")}</div>${l.length?l.map(o=>`<div class="card"><div class="r"><b>№${esc(o.id)}</b><span class="st ${STC[o.st]||""}">${esc(o.st)}</span></div><div class="mu" style="margin:4px 0 8px">${esc(o.d)} · @${esc(o.nick)}</div><div>${esc(o.n)} · ${esc(o.t)}</div><div style="margin:8px 0;line-height:1.5">${esc(o.items)}</div>${(o.lines||[]).length?`<div class="thr">${o.lines.map(l=>`<div class="th1">${l.img?`<img src="${API}/img/${l.img}" alt="">`:""}<span>${esc(l.name)}${l.col?" · "+esc(l.col):""}${l.sz?" · "+esc(l.sz):""} × ${l.q}</span></div>`).join("")}</div>`:""}<div class="r"><b>${fmt(o.sum)}</b><span class="mu">${esc(o.pay)}</span></div><div class="mu" style="margin:6px 0">BTS: ${esc(o.c)}</div>${o.k?`<div class="mu" style="margin-bottom:6px">Комментарий: ${esc(o.k)}</div>`:""}<select data-os="${esc(o.id)}">${[...new Set([o.st,...STS])].map(s=>`<option ${s===o.st?"selected":""}>${s}</option>`).join("")}</select>${cargoForm(o)}</div>`).join(""):'<div class="empty">Заказов нет</div>'}<button class="b s" id="rf">Обновить</button>`;
  $$("[data-f]").forEach(b=>b.onclick=()=>{ofl=b.dataset.f;dOrd()});
  $("#rf").onclick=()=>show("ord");
  const calc=id=>{const kg=+($(`[data-kg="${id}"]`)||{}).value,ty=($(`[data-ty="${id}"]`)||{}).value||"auto",cs=$(`[data-cs="${id}"]`);if(cs&&kg>0)cs.value=Math.round(kg*RATE[ty])};
