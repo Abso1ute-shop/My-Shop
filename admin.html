@@ -140,7 +140,7 @@ function dProd(){
 Категория: верх / низ / обувь / аксессуары
 Размеры: S-XL (по желанию)
 Цвет: чёрный (по желанию)
-#популярное #1день</pre><p>Размеры по умолчанию: обувь 36–44, одежда XS–5XL. Бот должен быть администратором канала. Для нескольких фото отправьте альбом, подпись — на первом фото.</p></details>${l.length?l.map(p=>`<div class="it">${p.imgs&&p.imgs[0]?`<img src="${API}/img/${p.imgs[0]}" alt="">`:'<div class="ph"></div>'}<div class="m"><b>${esc(p.name)}</b><span class="mu">${fmt(p.price)} · ${CATN[p.cat]||""}${p.sizes&&p.sizes.length?" · "+esc(p.sizes.join(" ")):""}${p.colors&&p.colors.length?" · "+esc(p.colors.join("/")):""}</span><div class="tg">${p.isNew?"<span>Новинка</span>":""}${p.pop?"<span>Популярное</span>":""}${p.fast?"<span>1 день</span>":""}${p.preorder?"<span>Под заказ</span>":""}</div></div><div class="ac"><label class="sw"><input type="checkbox" data-st="${p.id}" ${p.stock!==false?"checked":""}><i></i></label><button data-ed="${p.id}">Редактировать</button><button class="d" data-dl="${p.id}">Удалить</button></div></div>`).join(""):'<div class="empty">Товаров пока нет. Нажмите «+ Товар».</div>'}`;
+#популярное #1день</pre><p>Размеры по умолчанию: обувь 36–44, одежда XS–5XL. Бот должен быть администратором канала. Для нескольких фото отправьте альбом, подпись — на первом фото.</p></details>${l.length?l.map(p=>`<div class="it">${p.imgs&&p.imgs[0]?`<img src="${API}/img/${p.imgs[0]}" alt="">`:'<div class="ph"></div>'}<div class="m"><b>${esc(p.name)}</b><span class="mu">${fmt(p.price)} · ${CATN[p.cat]||""}${p.sizes&&p.sizes.length?" · "+esc(p.sizes.join(" ")):""}${p.colors&&p.colors.length?" · "+esc(p.colors.join("/")):""}</span><div class="tg">${p.isNew?"<span>Новинка</span>":""}${p.pop?"<span>Популярное</span>":""}${p.fast?"<span>1 день</span>":""}${p.fast&&(p.qtyC&&Object.keys(p.qtyC).length||typeof p.qty==="number")?`<span>В наличии: ${p.qtyC&&Object.keys(p.qtyC).length?Object.entries(p.qtyC).map(([c,n])=>esc(c)+" "+n).join(", "):p.qty} шт</span>`:""}${p.preorder?"<span>Под заказ</span>":""}</div></div><div class="ac"><label class="sw"><input type="checkbox" data-st="${p.id}" ${p.stock!==false?"checked":""}><i></i></label><button data-ed="${p.id}">Редактировать</button><button class="d" data-dl="${p.id}">Удалить</button></div></div>`).join(""):'<div class="empty">Товаров пока нет. Нажмите «+ Товар».</div>'}`;
  $("#sq").oninput=e=>{q=e.target.value.trim().toLowerCase();const pos=e.target.selectionStart;dProd();const s=$("#sq");s.focus();s.setSelectionRange(pos,pos)};
  $("#add").onclick=()=>editP();
  $("#imp").onclick=openImport;
@@ -160,10 +160,13 @@ async function smallOf(url){
   c.getContext("2d").drawImage(im,0,0,c.width,c.height);return c.toDataURL("image/jpeg",.85)}finally{URL.revokeObjectURL(u)}
 }
 function editP(id){
+ let qtyHTML=()=>"";
  const old=id?P.find(x=>x.id===id):null,p=old||{name:"",price:"",cat:"top",sizes:CLS.slice(),colors:[],desc:"",stock:true,isNew:true,pop:false,fast:false,imgs:[]};
  let ph=(p.imgs||[]).map(i=>({id:i,url:API+"/img/"+i,col:(p.imgColors||{})[i]||""}));
  const origCols=(p.colors&&p.colors.length?p.colors:(p.color?[p.color]:[])).join("|");
  const sh=document.createElement("div");sh.className="sheet";document.body.appendChild(sh);
+ qtyHTML=()=>{if(!p.fast)return"";const cols=(p.colors&&p.colors.length?p.colors:[]),qc=p.qtyC||{};
+  return`<div class="card" id="qbox" style="margin-top:8px"><b>Сколько в наличии</b><p class="mu" style="margin:4px 0 10px;line-height:1.45">${cols.length?"Укажите штуки по каждому цвету. Когда цвет закончится, его нельзя будет заказать; когда закончатся все — товар станет «Нет в наличии».":"Укажите количество. Добавьте цвета выше, чтобы считать штуки по цветам. Пусто — не считать (1 заказ = товар уходит из наличия)."}</p>${cols.length?cols.map(c=>`<div class="r" style="margin-bottom:8px"><span>${esc(c)}</span><span style="display:flex;align-items:center;gap:6px"><input data-qc="${esc(c)}" type="number" inputmode="numeric" min="0" value="${qc[c]??0}" style="width:90px;margin:0;text-align:center"> шт</span></div>`).join("")+`<div class="r mu"><span>Всего</span><b id="qtot">${cols.reduce((a,c)=>a+(+qc[c]||0),0)}</b></div>`:`<div class="r"><span>Количество</span><span style="display:flex;align-items:center;gap:6px"><input id="qn" type="number" inputmode="numeric" min="0" value="${p.qty??""}" placeholder="—" style="width:90px;margin:0;text-align:center"> шт</span></div>`}</div>`};
  const render=()=>{
   sh.innerHTML=`<div class="in"><div class="r"><h2>${old?"Изменить товар":"Новый товар"}</h2><button class="g" id="cl">Закрыть</button></div>
   <span class="lb">Фото (первое — главное)</span><div class="ph-l">${ph.map((x,i)=>`<div class="ph-i"><img src="${x.url}" alt=""><button class="x" data-rm="${i}">✕</button>${i>0&&x.id?`<button class="mk" data-mk="${i}">Сделать главным</button>`:""}${x.id?`<input class="pcol" data-pc="${i}" value="${esc(x.col||"")}" placeholder="Цвет">`:""}</div>`).join("")}<label class="ph-add">+ Фото<input type="file" id="pf" accept="image/*" multiple hidden></label></div>
@@ -179,9 +182,10 @@ function editP(id){
   <div class="tgl"><span>Под заказ (из Китая)</span><label class="sw"><input type="checkbox" id="t5" ${p.preorder?"checked":""}><i></i></label></div>
   <div class="tgl"><span>Новинка</span><label class="sw"><input type="checkbox" id="t2" ${p.isNew?"checked":""}><i></i></label></div>
   <div class="tgl"><span>Популярное</span><label class="sw"><input type="checkbox" id="t3" ${p.pop?"checked":""}><i></i></label></div>
-  <div class="tgl"><span>Доставка за 1 день</span><label class="sw"><input type="checkbox" id="t4" ${p.fast?"checked":""}><i></i></label></div>
+  <div class="tgl"><span>Доставка за 1 день (в наличии)</span><label class="sw"><input type="checkbox" id="t4" ${p.fast?"checked":""}><i></i></label></div>${qtyHTML()}
   <button class="b" id="sv" style="margin-top:14px">Сохранить</button></div>`;
-  const keep=()=>{$$("[data-pc]",sh).forEach(x=>{const o=ph[+x.dataset.pc];if(o)o.col=x.value.trim()});p.name=$("#fn").value;p.price=$("#fp").value;p.cat=$("#fc").value;p.sizes=$("#fs").value.split(/[\s,]+/).filter(Boolean);p.colors=$("#fo").value.split(/[,;/]+/).map(x=>x.trim()).filter(Boolean);p.desc=$("#fd").value;p.stock=$("#t1").checked;p.isNew=$("#t2").checked;p.pop=$("#t3").checked;p.fast=$("#t4").checked;p.preorder=$("#t5").checked};
+  const keep=()=>{$$("[data-pc]",sh).forEach(x=>{const o=ph[+x.dataset.pc];if(o)o.col=x.value.trim()});p.name=$("#fn").value;p.price=$("#fp").value;p.cat=$("#fc").value;p.sizes=$("#fs").value.split(/[\s,]+/).filter(Boolean);p.colors=$("#fo").value.split(/[,;]+/).map(x=>x.trim()).filter(Boolean);
+  if($("#qbox")){const qc=$$("[data-qc]",sh);if(qc.length){p.qtyC={};qc.forEach(i=>p.qtyC[i.dataset.qc]=Math.max(0,Math.round(+i.value)||0));p.qty=undefined}else{const v=$("#qn").value.trim();p.qty=v===""?undefined:Math.max(0,Math.round(+v)||0);p.qtyC=undefined}}p.desc=$("#fd").value;p.stock=$("#t1").checked;p.isNew=$("#t2").checked;p.pop=$("#t3").checked;p.fast=$("#t4").checked;p.preorder=$("#t5").checked};
   $("#cl").onclick=()=>sh.remove();
   if($("#ai"))$("#ai").onclick=async()=>{keep();const b=$("#ai");b.disabled=true;b.textContent="Определяю цвета…";
    try{const imgs={};for(const x of ph.filter(y=>y.id))imgs[x.id]=await smallOf(x.url);
@@ -192,6 +196,8 @@ function editP(id){
     Object.assign(old,r.item||{});toast(r.found?"Цвета определены: "+r.found+" фото":"ИИ не смог определить цвета");render()}
    catch(e){toast("Ошибка: "+e.message);b.disabled=false;b.textContent="Определить цвета по фото (ИИ)"}};
   $("#fc").onchange=()=>{keep();p.sizes=defSz(p.cat).slice();render()};
+  $("#t4").onchange=()=>{keep();render()};$("#fo").onchange=()=>{keep();render()};
+  $$("[data-qc],#qn",sh).forEach(i=>i.oninput=()=>{const t=$$("[data-qc]",sh).reduce((a,x)=>a+(Math.max(0,+x.value)||0),0);const e=$("#qtot");if(e)e.textContent=t});
   $$("[data-sz]",sh).forEach(b=>b.onclick=()=>{keep();p.sizes=b.dataset.sz.split(" ").filter(Boolean);render()});
   $$("[data-rm]",sh).forEach(b=>b.onclick=()=>{keep();ph.splice(+b.dataset.rm,1);render()});
   $$("[data-mk]",sh).forEach(b=>b.onclick=()=>{keep();const i=+b.dataset.mk;ph.unshift(ph.splice(i,1)[0]);render()});
@@ -199,7 +205,7 @@ function editP(id){
   $("#sv").onclick=async()=>{keep();const price=Math.round(+p.price);
    if(!p.name.trim())return toast("Введите название");if(!(price>0))return toast("Введите цену");
    const btn=$("#sv");btn.disabled=true;btn.textContent="Сохраняю…";
-   const body={p:{id:old?old.id:undefined,name:p.name,price,cat:p.cat,sizes:p.sizes,colors:p.colors,colorsSet:p.colors.join("|")===origCols?!!(old&&old.colorsSet):p.colors.length>0,desc:p.desc,stock:p.stock,isNew:p.isNew,pop:p.pop,fast:p.fast,preorder:p.preorder,imgs:ph.filter(x=>x.id).map(x=>x.id),imgColors:Object.fromEntries(ph.filter(x=>x.id).map(x=>[x.id,x.col||""]))},add:ph.filter(x=>x.data).map(x=>x.data)};
+   const body={p:{id:old?old.id:undefined,name:p.name,price,cat:p.cat,sizes:p.sizes,colors:p.colors,colorsSet:p.colors.join("|")===origCols?!!(old&&old.colorsSet):p.colors.length>0,desc:p.desc,stock:p.stock,isNew:p.isNew,pop:p.pop,fast:p.fast,preorder:p.preorder,qty:p.fast&&!p.colors.length?(p.qty??""):"",qtyC:p.fast&&p.colors.length?(p.qtyC||{}):{},imgs:ph.filter(x=>x.id).map(x=>x.id),imgColors:Object.fromEntries(ph.filter(x=>x.id).map(x=>[x.id,x.col||""]))},add:ph.filter(x=>x.data).map(x=>x.data)};
    const r=await call("/admin/product",body);btn.disabled=false;btn.textContent="Сохранить";
    if(!r)return toast("Нет связи с сервером");if(!r.ok)return toast(r.err||"Ошибка");
    toast("Сохранено");sh.remove();show("prod")};
