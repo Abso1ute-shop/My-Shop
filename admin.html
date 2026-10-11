@@ -135,7 +135,7 @@ function draw(){tab==="prod"?dProd():tab==="ord"?dOrd():tab==="promo"?dPromo():t
 /* ---------- товары ---------- */
 function dProd(){
  const l=P.filter(p=>!q||p.name.toLowerCase().includes(q));
- $("#v").innerHTML=`<div class="bar"><input id="sq" placeholder="Поиск товара" value="${esc(q)}"><button class="b" id="add">+ Добавить товар</button></div><details class="hint"><summary>Как добавить товар через Telegram-канал</summary><p>Опубликуйте в канале пост с фото и такой подписью — товар сам появится на сайте:</p><pre>Название товара
+ $("#v").innerHTML=`<div class="bar"><input id="sq" placeholder="Поиск товара" value="${esc(q)}"><button class="b" id="add">+ Добавить товар</button></div><button class="b s" id="imp" style="margin-bottom:12px">Импорт старых постов из канала</button><details class="hint"><summary>Как добавить товар через Telegram-канал</summary><p>Опубликуйте в канале пост с фото и такой подписью — товар сам появится на сайте:</p><pre>Название товара
 Цена: 250000
 Категория: верх / низ / обувь / аксессуары
 Размеры: S-XL (по желанию)
@@ -143,6 +143,7 @@ function dProd(){
 #популярное #1день</pre><p>Размеры по умолчанию: обувь 36–44, одежда XS–5XL. Бот должен быть администратором канала. Для нескольких фото отправьте альбом, подпись — на первом фото.</p></details>${l.length?l.map(p=>`<div class="it">${p.imgs&&p.imgs[0]?`<img src="${API}/img/${p.imgs[0]}" alt="">`:'<div class="ph"></div>'}<div class="m"><b>${esc(p.name)}</b><span class="mu">${fmt(p.price)} · ${CATN[p.cat]||""}${p.sizes&&p.sizes.length?" · "+esc(p.sizes.join(" ")):""}${p.colors&&p.colors.length?" · "+esc(p.colors.join("/")):""}</span><div class="tg">${p.isNew?"<span>Новинка</span>":""}${p.pop?"<span>Популярное</span>":""}${p.fast?"<span>1 день</span>":""}${p.preorder?"<span>Под заказ</span>":""}</div></div><div class="ac"><label class="sw"><input type="checkbox" data-st="${p.id}" ${p.stock!==false?"checked":""}><i></i></label><button data-ed="${p.id}">Редактировать</button><button class="d" data-dl="${p.id}">Удалить</button></div></div>`).join(""):'<div class="empty">Товаров пока нет. Нажмите «+ Товар».</div>'}`;
  $("#sq").oninput=e=>{q=e.target.value.trim().toLowerCase();const pos=e.target.selectionStart;dProd();const s=$("#sq");s.focus();s.setSelectionRange(pos,pos)};
  $("#add").onclick=()=>editP();
+ $("#imp").onclick=openImport;
  $$("[data-ed]").forEach(b=>b.onclick=()=>editP(+b.dataset.ed));
  $$("[data-dl]").forEach(b=>b.onclick=async()=>{const p=P.find(x=>x.id===+b.dataset.dl);if(!confirm("Удалить «"+p.name+"» насовсем?"))return;const r=await call("/admin/product/delete",{id:p.id});if(!r||!r.ok)return toast(r&&r.err||"Нет связи");toast("Удалено");show("prod")});
  $$("[data-st]").forEach(c=>c.onchange=async()=>{const p=P.find(x=>x.id===+c.dataset.st);const r=await call("/admin/product",{p:{...p,stock:c.checked},add:[]});if(!r||!r.ok){c.checked=!c.checked;return toast(r&&r.err||"Нет связи")}p.stock=c.checked;toast(c.checked?"В наличии":"Нет в наличии")});
@@ -204,6 +205,53 @@ function editP(id){
    toast("Сохранено");sh.remove();show("prod")};
  };
  render();
+}
+
+/* ---------- импорт из канала ---------- */
+function openImport(){
+ const sh=document.createElement("div");sh.className="sheet";document.body.appendChild(sh);
+ let found=[],stop=false,busy=false;
+ const close=()=>{stop=true;sh.remove();show("prod")};
+ const head=`<div class="r"><h2>Импорт из канала</h2><button class="g" id="ix">Закрыть</button></div>`;
+ const step1=()=>{sh.innerHTML=`<div class="in">${head}<p class="mu" style="line-height:1.5;margin:6px 0 12px">Сервер прочитает открытую страницу канала, найдёт посты с товарами (хештег + цена), скачает все фото и сам определит цвета. Посты, которые уже есть на сайте, и одинаковые фото пропускаются.</p>
+  <span class="lb">Сколько последних товаров взять</span><input id="icn" type="number" inputmode="numeric" value="150" min="1" max="300">
+  <div class="tgl"><span>Определять цвета ИИ</span><label class="sw"><input type="checkbox" id="iai" checked><i></i></label></div>
+  <button class="b" id="isc" style="margin-top:12px">Найти посты</button><div id="ilog" class="mu" style="margin-top:10px"></div></div>`;
+  $("#ix").onclick=close;$("#isc").onclick=scan};
+ async function scan(){
+  const want=Math.max(1,Math.min(300,+$("#icn").value||150)),ai=$("#iai").checked,btn=$("#isc");btn.disabled=true;found=[];
+  let before=0,pages=0,seen=new Set(),all=[];
+  while(pages<60&&!stop){
+   $("#ilog").textContent=`Читаю канал… страница ${pages+1}, найдено товаров: ${found.length}`;
+   const r=await call("/admin/import/scan",{before});
+   if(!r||!r.ok){$("#ilog").textContent=(r&&r.err)||"Нет связи с сервером. Загружен ли новый worker.js?";btn.disabled=false;return}
+   pages++;const fresh=r.items.filter(x=>!seen.has(x.id));fresh.forEach(x=>seen.add(x.id));all.push(...fresh);
+   found=all.filter(x=>x.st==="new").sort((a,b)=>b.id-a.id).slice(0,want);
+   if(found.length>=want||!r.next||!fresh.length||r.next<=1)break;before=r.next;
+  }
+  const dups=all.filter(x=>x.st==="dup").length,skips=all.filter(x=>x.st==="skip").length,ph=found.reduce((a,x)=>a+x.photos.length,0);
+  sh.innerHTML=`<div class="in">${head}<div class="card"><b>Найдено новых товаров: ${found.length}</b><div class="mu" style="margin-top:6px;line-height:1.5">Фото: ${ph}<br>Уже есть на сайте: ${dups}<br>Не товар (нет хештега, цены или фото): ${skips}<br>Просмотрено постов: ${all.length}</div></div>
+  ${ph+found.length>900?`<div class="card" style="border-color:#7a5c00"><b>Внимание</b><div class="mu" style="margin-top:4px;line-height:1.5">Бесплатный лимит Cloudflare — около 1000 записей в базу в день, а этот импорт займёт ~${ph+found.length}. Если лимит закончится, импорт остановится — нажмите ещё раз завтра, уже добавленные товары повторно не создадутся.</div></div>`:""}
+  ${found.length?`<button class="b" id="igo">Добавить ${found.length} товаров</button>`:'<div class="empty">Новых товаров нет</div>'}
+  <div class="thr" style="flex-direction:column;gap:6px;margin-top:12px">${found.map(x=>`<div class="it" id="ir${x.id}"><img src="${x.photos[0]}" alt="" referrerpolicy="no-referrer"><div class="m"><b>${esc(x.name)}</b><span class="mu" style="display:block">${fmt(x.price)} · фото: ${x.photos.length} · пост ${x.id}</span><span class="mu ist" style="display:block;color:var(--fg)">ждёт</span></div></div>`).join("")}</div></div>`;
+  $("#ix").onclick=close;const go=$("#igo");if(go)go.onclick=()=>run(ai);
+ }
+ async function run(ai){
+  if(busy)return;busy=true;const go=$("#igo");go.disabled=true;let ok=0,sk=0,er=0,colors=0;
+  const list=found.slice().sort((a,b)=>a.id-b.id);
+  for(let i=0;i<list.length&&!stop;i++){
+   const x=list[i],row=$("#ir"+x.id),st=row&&row.querySelector(".ist");go.textContent=`Добавляю ${i+1} из ${list.length}…`;if(st)st.textContent="загружаю…";
+   let r=null;for(const max of[10,5,3,1]){r=await call("/admin/import/post",{post:{id:x.id,date:x.date,caption:x.caption,photos:x.photos},ai,max});if(r&&(r.ok||r.err==="LIMIT"))break}
+   if(r&&r.err==="LIMIT"){if(st)st.textContent="остановлено";toast("Дневной лимит Cloudflare исчерпан. Продолжите завтра");go.textContent=`Лимит на сегодня. Добавлено: ${ok}`;break}
+   if(!r||!r.ok){er++;if(st)st.textContent="ошибка: "+((r&&r.err)||"нет связи");continue}
+   if(r.skipped){sk++;if(st)st.textContent="пропущен: "+r.skipped;continue}
+   ok++;colors+=r.colorsFound||0;if(st)st.textContent="добавлен"+(r.item.colors&&r.item.colors.length?" · "+r.item.colors.join(", "):"");if(row)row.style.borderColor="var(--ok)";
+  }
+  await call("/admin/import/finish",{});busy=false;
+  if(!go.textContent.startsWith("Лимит"))go.textContent=`Готово: добавлено ${ok}, пропущено ${sk}${er?", ошибок "+er:""}`;
+  toast("Импорт завершён: добавлено "+ok);
+ }
+ step1();
 }
 
 /* ---------- заказы ---------- */
