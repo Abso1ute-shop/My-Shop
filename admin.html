@@ -62,6 +62,22 @@ main{padding:0 16px;max-width:760px;margin:0 auto}
 .thr{display:flex;gap:10px;overflow-x:auto;margin:8px 0}.th1{flex:none;width:92px;font-size:12px;color:var(--mu);line-height:1.3}.th1 img{width:92px;height:110px;object-fit:cover;border-radius:12px;display:block;margin-bottom:4px;border:2px solid #333}
 .ph-i .pcol{display:block;width:100%;margin:4px 0 0;padding:6px 8px;font-size:16px;border-radius:8px;box-sizing:border-box}
 button.g.d,.b.s.d{color:var(--no)}
+nav{position:sticky;top:57px;z-index:4;background:#0b0b0bf2;scrollbar-width:none}nav::-webkit-scrollbar{display:none}
+nav button{display:flex;align-items:center;gap:7px;position:relative}nav button svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:none}
+nav .nb{font-style:normal;background:#e5282b;color:#fff;border-radius:999px;min-width:18px;height:18px;padding:0 5px;font:700 11px/18px -apple-system,Inter,sans-serif;text-align:center;box-sizing:border-box}nav .nb:empty{display:none}
+@media(min-width:900px){main{max-width:1040px!important}}
+.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;background:var(--cd);border:1px solid var(--ln);border-radius:14px;padding:4px;margin:4px 0 12px}.seg button{padding:9px 4px;border-radius:10px;color:var(--mu);font-size:13px;font-weight:600;transition:.2s}.seg button.on{background:#fff;color:#000}
+.todo>b{display:block;margin-bottom:6px}.todo.ok{border-color:#1f4d2e}.tdr{display:flex;justify-content:space-between;align-items:center;width:100%;padding:11px 2px;border-top:1px solid var(--ln);color:var(--fg);text-align:left;font-size:14px}.tdr i{font-style:normal;background:#e5282b;color:#fff;border-radius:999px;min-width:24px;height:24px;padding:0 7px;font:700 13px/24px -apple-system,Inter,sans-serif;text-align:center}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:10px}@media(min-width:900px){.kpis{grid-template-columns:repeat(4,1fr)}.charts{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.charts .chart:first-child{grid-column:1/-1}}
+.kpi{background:var(--cd);border:1px solid var(--ln);border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:2px;min-width:0}.kpi b{font-size:clamp(16px,4.6vw,21px);letter-spacing:-.3px;line-height:1.2;word-break:break-word}@media(min-width:900px){.kpi b{font-size:21px}nav{justify-content:center}}.kpi span{font-size:13px;color:var(--fg);opacity:.85}.kpi small{font-size:11px;color:var(--mu)}
+.chart{background:var(--cd);border:1px solid var(--ln);border-radius:16px;padding:12px 12px 6px;margin-bottom:10px}.ch{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.cw{position:relative;height:170px}.cw svg{position:absolute;inset:0;width:100%;height:100%}.xl{position:absolute;left:0;right:0;bottom:0;height:20px;pointer-events:none}.xl span{position:absolute;bottom:2px;transform:translateX(-50%);font-size:11px;color:var(--mu)}
+.gl{stroke:#ffffff14;stroke-width:1;vector-effect:non-scaling-stroke}.bl{stroke:#ffffff33;stroke-width:1;vector-effect:non-scaling-stroke}
+.bar{fill:#d9d9d9;transition:fill .15s}.bar.last{fill:#fff}.bar0{fill:#ffffff22}.bg{cursor:pointer}.bg.hov .bar{fill:var(--ok)}
+.ymax{position:absolute;top:0;left:2px;font-size:11px;color:var(--mu)}
+.tip{position:absolute;top:-4px;transform:translate(-50%,-100%);background:#fff;color:#000;border-radius:10px;padding:6px 10px;font-size:12px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;display:flex;flex-direction:column;align-items:center;box-shadow:0 6px 18px #0008;z-index:2}.tip b{font-size:14px}
+.topr{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--ln)}.topr:first-of-type{margin-top:8px}.tn{width:24px;height:24px;border-radius:50%;background:#fff;color:#000;display:grid;place-items:center;font-weight:800;font-size:12px;flex:none}.tt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.b.fin{margin:4px 0 10px;background:var(--ok);color:#000}
 .st.f{background:#fff;color:#000}
 .card.nw{border-color:#fff;box-shadow:0 0 0 1px #fff}.nwb{display:inline-block;background:#fff;color:#000;font-size:11px;font-weight:800;padding:2px 7px;border-radius:8px;margin-right:8px;letter-spacing:.5px}
 </style>
@@ -88,7 +104,7 @@ function cargoForm(o){
  return info+`<div class="card" style="background:#101010;margin:10px 0 0"><div class="r"><span class="lb" style="margin:0">Карго по каждому товару</span><select data-ty="${id}" style="margin:0;width:110px"><option value="auto" ${ty==="avia"?"":"selected"}>Авто</option><option value="avia" ${ty==="avia"?"selected":""}>Авиа</option></select></div>${lines.map((l,k)=>`<div style="border-top:1px solid var(--ln);padding:10px 0 4px;margin-top:8px"><div style="font-size:14px;margin-bottom:6px">${esc(l.name)}${l.col?" · "+esc(l.col):""}${l.sz?" · "+esc(l.sz):""} × ${l.q}${l.fast?' <span class="mu">(1 день — карго 0)</span>':""}</div><div class="bar" style="margin:0"><input data-ckg="${id}" data-k="${k}" type="number" step="0.01" inputmode="decimal" placeholder="Вес, кг" value="${old[k]?old[k].kg:(l.fast?0:"")}"><input data-csm="${id}" data-k="${k}" type="number" inputmode="numeric" placeholder="Сумма, сум" value="${old[k]?old[k].sum:(l.fast?0:"")}"></div></div>`).join("")}<div class="r" style="margin:10px 0"><span class="mu">Итого</span><b data-ctot="${id}">${cg?cg.kg+" кг · "+fmt(cg.sum):"—"}</b></div><button class="b" data-cgs="${id}">Отправить покупателю</button></div>`;
 }
 const CLS="XS S M L XL 2XL 3XL 4XL 5XL".split(" "),SHS="36 37 38 39 40 41 42 43 44".split(" "),defSz=c=>c==="shoes"?SHS:c==="acc"?[]:CLS;
-let tok=localStorage.getItem("adm")||"",tab="prod",P=[],O=[],U=[],PR=[],R=[],ofl="all",rfl="all",q="";
+let tok=localStorage.getItem("adm")||"",tab="dash",ST=null,dper="week",P=[],O=[],U=[],PR=[],R=[],ofl="all",rfl="all",q="";
 let tm;const toast=t=>{const e=$("#toast");e.textContent=t;e.classList.add("on");clearTimeout(tm);tm=setTimeout(()=>e.classList.remove("on"),2600)};
 
 async function call(path,body){
@@ -111,17 +127,17 @@ function login(){
  $("#go").onclick=go;$("#pw").onkeydown=e=>{if(e.key==="Enter")go()};
 }
 function start(){
- $("#app").innerHTML=`<header><b>АДМИНКА</b><button class="g" id="out">Выйти</button></header><nav><button data-t="prod">Товары</button><button data-t="ord">Заказы</button><button data-t="usr">Пользователи</button><button data-t="promo">Промокоды</button><button data-t="rev">Отзывы</button></nav><main id="v"></main>`;
+ $("#app").innerHTML=`<header><b>АДМИНКА</b><button class="g" id="out">Выйти</button></header><nav><button data-t="dash"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Сводка</span><i class="nb" data-nb="dash"></i></button><button data-t="ord"><svg viewBox="0 0 24 24"><path d="M4 8l8-4 8 4v9l-8 4-8-4z"/><path d="M4 8l8 4 8-4M12 12v9"/></svg><span>Заказы</span><i class="nb" data-nb="ord"></i></button><button data-t="prod"><svg viewBox="0 0 24 24"><path d="M6 8h12l-1 12H7z"/><path d="M9 8a3 3 0 0 1 6 0"/></svg><span>Товары</span><i class="nb" data-nb="prod"></i></button><button data-t="rev"><svg viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.8l-5.2 2.8 1-5.8-4.3-4.1 5.9-.8z"/></svg><span>Отзывы</span><i class="nb" data-nb="rev"></i></button><button data-t="usr"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5c0-4 3.5-6 7.5-6s7.5 2 7.5 6"/></svg><span>Клиенты</span><i class="nb" data-nb="usr"></i></button><button data-t="promo"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M9 15l6-6"/></svg><span>Промокоды</span><i class="nb" data-nb="promo"></i></button></nav><main id="v"></main>`;
  $("#out").onclick=()=>{tok="";localStorage.removeItem("adm");login()};
- $$("nav [data-t]").forEach(b=>b.onclick=()=>show(b.dataset.t));show(tab);
+ $$("nav [data-t]").forEach(b=>b.onclick=()=>show(b.dataset.t));show(tab);setTimeout(pollOrd,1500);
 }
 async function show(t){
  tab=t;q="";$$("nav [data-t]").forEach(b=>b.classList.toggle("on",b.dataset.t===t));
  $("#v").innerHTML='<div class="empty">Загрузка…</div>';
- const r=await call(t==="prod"?"/admin/products":t==="ord"?"/admin/orders":t==="promo"?"/admin/promos":t==="rev"?"/admin/reviews":"/admin/users");
+ const r=await call(t==="dash"?"/admin/stats":t==="prod"?"/admin/products":t==="ord"?"/admin/orders":t==="promo"?"/admin/promos":t==="rev"?"/admin/reviews":"/admin/users");
  if(!r)return $("#v").innerHTML='<div class="empty">Нет связи с сервером</div>';
  if(!r.ok)return $("#v").innerHTML='<div class="empty">'+esc(r.err||"Ошибка")+'</div>';
- if(t==="prod")P=r.items;if(t==="ord")O=r.items;if(t==="usr")U=r.items;if(t==="promo")PR=r.items;if(t==="rev")R=r.items;
+ if(t==="prod")P=r.items;if(t==="ord")O=r.items;if(t==="usr")U=r.items;if(t==="promo")PR=r.items;if(t==="rev")R=r.items;if(t==="dash"){ST=r;navBadges()}
  draw();
 }
 let ordT=0;
@@ -130,12 +146,42 @@ async function pollOrd(){
  const known=new Set(O.map(o=>o.id)),nw=r.items.filter(o=>!known.has(o.id));
  const ch=nw.length||r.items.some(o=>{const x=O.find(y=>y.id===o.id);return x&&(x.st!==o.st||JSON.stringify(x.cargo||{})!==JSON.stringify(o.cargo||{}))});
  if(O.length&&nw.length)toast("Новый заказ №"+nw.map(o=>o.id).join(", №"));
- O=r.items;const bd=$('nav [data-t="ord"]');if(bd){const seen=JSON.parse(localStorage.getItem("aseen")||"[]");const n=O.filter(o=>!seen.includes(o.id)).length;bd.textContent="Заказы"+(n?" ("+n+")":"")}
+ O=r.items;const bd=$('nav [data-t="ord"]');if(bd){const seen=JSON.parse(localStorage.getItem("aseen")||"[]");const n=O.filter(o=>!seen.includes(o.id)).length;{const nb=bd.querySelector(".nb");if(nb)nb.textContent=n||""}}
  const busy=document.activeElement&&/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)&&document.activeElement.id!=="sq";
  if(ch&&tab==="ord"&&!busy&&!document.querySelector(".sheet"))dOrd();
 }
 setInterval(()=>{if(!document.hidden)pollOrd()},15000);
-function draw(){tab==="prod"?dProd():tab==="ord"?dOrd():tab==="promo"?dPromo():tab==="rev"?dRev():dUsr()}
+function draw(){tab==="dash"?dDash():tab==="prod"?dProd():tab==="ord"?dOrd():tab==="promo"?dPromo():tab==="rev"?dRev():dUsr()}
+
+/* ---------- сводка / аналитика ---------- */
+const nfmt=n=>Number(n||0).toLocaleString("ru-RU").replace(/\u00a0/g," ");
+function navBadges(){if(!ST)return;const t=ST.todo,set=(k,n)=>{const e=$(`[data-nb="${k}"]`);if(e)e.textContent=n>0?n:""};set("rev",t.reviews)}
+function barChart(rows,key,label,money){
+ const W=600,H=170,pl=6,pr=6,pt=18,pb=24,n=rows.length,bw=(W-pl-pr)/n,max=Math.max(1,...rows.map(r=>r[key])),y=v=>pt+(H-pt-pb)*(1-v/max);
+ const nice=money?(max>=1e6?(max/1e6).toFixed(1).replace(".0","")+" млн":nfmt(max)):nfmt(max);
+ const bars=rows.map((r,i)=>{const v=r[key],x=pl+i*bw+1,w=Math.max(2,bw-2),top=y(v),h=H-pb-top;const d=v>0?`M${x},${H-pb}V${top+Math.min(4,h)}Q${x},${top} ${x+Math.min(4,w/2)},${top}H${x+w-Math.min(4,w/2)}Q${x+w},${top} ${x+w},${top+Math.min(4,h)}V${H-pb}Z`:"";
+  return`<g class="bg" data-i="${i}"><rect x="${pl+i*bw}" y="${pt}" width="${bw}" height="${H-pt-pb}" fill="transparent"/>${d?`<path d="${d}" class="bar${i===n-1?" last":""}"/>`:`<rect x="${x}" y="${H-pb-1.5}" width="${w}" height="1.5" class="bar0"/>`}</g>`}).join("");
+ const xl=rows.map((r,i)=>i%5===4||i===n-1?`<span style="left:${(pl+i*bw+bw/2)/W*100}%">${r.d.slice(8)}.${r.d.slice(5,7)}</span>`:"").join("");
+ return`<div class="chart" data-key="${key}" data-money="${money?1:""}"><div class="ch"><b>${label}</b><span class="mu">30 дней</span></div><div class="cw"><svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none"><line x1="${pl}" x2="${W-pr}" y1="${pt}" y2="${pt}" class="gl"/><line x1="${pl}" x2="${W-pr}" y1="${(pt+H-pb)/2}" y2="${(pt+H-pb)/2}" class="gl"/><line x1="${pl}" x2="${W-pr}" y1="${H-pb}" y2="${H-pb}" class="bl"/>${bars}</svg><div class="xl">${xl}</div><span class="ymax">${nice}</span><div class="tip"></div></div></div>`;
+}
+function dDash(){
+ if(!ST||!ST.ok)return $("#v").innerHTML='<div class="empty">Нет данных. Загружен ли новый worker.js?</div>';
+ const P=ST.periods[dper],t=ST.todo,PN={day:"Сегодня",week:"7 дней",month:"30 дней",all:"Всё время"};
+ const kpi=(v,l,sub)=>`<div class="kpi"><b>${v}</b><span>${l}</span>${sub?`<small>${sub}</small>`:""}</div>`;
+ const todo=[["check","Проверить оплату (чеки)",t.check,"Ожидает оплаты"],["weigh","Взвесить и выставить карго",t.weigh,"Оплачен"],["cargoCheck","Проверить чеки карго",t.cargoCheck,"Ожидает оплаты карго"],["finish","Завершить (в пункте выдачи)",t.finish,"В пункте выдачи"],["reviews","Ответить на отзывы",t.reviews,"rev"]].filter(x=>x[2]>0);
+ $("#v").innerHTML=`<div class="seg">${Object.entries(PN).map(([k,n])=>`<button data-per="${k}" class="${dper===k?"on":""}">${n}</button>`).join("")}</div>
+ ${todo.length?`<div class="card todo"><b>Нужно сделать</b>${todo.map(x=>`<button class="tdr" data-go="${x[3]}"><span>${x[1]}</span><i>${x[2]}</i></button>`).join("")}</div>`:`<div class="card todo ok"><b>Всё сделано</b><span class="mu">Нет заказов, которые ждут действий</span></div>`}
+ <div class="kpis">${kpi(nfmt(P.revenue)+" сум","Выручка",P.cargo?"+ карго "+nfmt(P.cargo)+" сум":"оплаченные заказы")}${kpi(P.orders,"Оформлено заказов",P.cancelled?"отменено: "+P.cancelled:"")}${kpi(P.paid,"Оплачено заказов",P.waiting?"ждут проверки: "+P.waiting:"")}${kpi(P.buyers,"Покупателей","купили хотя бы раз")}${kpi(nfmt(P.visits),"Посетителей","уникальных за день")}${kpi(P.conv+"%","Конверсия","покупатели / посетители")}${kpi(nfmt(P.avg)+" сум","Средний чек","")}${kpi(ST.products.total,"Товаров на сайте",ST.products.out?"нет в наличии: "+ST.products.out:"")}</div>
+ <div class="charts">${barChart(ST.series,"revenue","Выручка по дням",1)}${barChart(ST.series,"visits","Посетители по дням")}${barChart(ST.series,"orders","Заказы по дням")}</div>
+ <div class="card"><b>Топ товаров · ${PN[dper]}</b>${P.top.length?P.top.map((x,i)=>`<div class="topr"><span class="tn">${i+1}</span><span class="tt">${esc(x.name)}</span><b>${x.q} шт</b></div>`).join(""):'<div class="mu" style="margin-top:8px">Пока нет продаж за этот период</div>'}</div>
+ <p class="mu" style="text-align:center;margin:10px 0 24px">Посетитель считается один раз в день с одного устройства</p>`;
+ $$("[data-per]").forEach(b=>b.onclick=()=>{dper=b.dataset.per;dDash()});
+ $$("[data-go]").forEach(b=>b.onclick=()=>{const g=b.dataset.go;if(g==="rev"){rfl="noans";show("rev")}else{ofl=g;show("ord")}});
+ $$(".chart").forEach(ch=>{const key=ch.dataset.key,money=ch.dataset.money,tip=ch.querySelector(".tip"),cw=ch.querySelector(".cw");
+  const showTip=g=>{ch.querySelectorAll(".bg.hov").forEach(x=>x.classList.remove("hov"));if(!g){tip.style.opacity=0;return}g.classList.add("hov");const r=ST.series[+g.dataset.i],rc=g.getBoundingClientRect(),cr=cw.getBoundingClientRect();
+   tip.innerHTML=`<b>${money?nfmt(r[key])+" сум":nfmt(r[key])}</b><span>${new Date(r.d+"T12:00:00").toLocaleDateString("ru-RU",{day:"numeric",month:"long"})}</span>`;tip.style.opacity=1;tip.style.left=Math.min(cr.width-70,Math.max(70,rc.left-cr.left+rc.width/2))+"px"};
+  ch.querySelectorAll(".bg").forEach(g=>{g.addEventListener("mouseenter",()=>showTip(g));g.addEventListener("click",()=>showTip(g))});cw.addEventListener("mouseleave",()=>showTip(null))});
+}
 
 /* ---------- товары ---------- */
 function dProd(){
@@ -174,9 +220,9 @@ function editP(id){
   return`<div class="card" id="qbox" style="margin-top:8px"><b>Сколько в наличии</b><p class="mu" style="margin:4px 0 10px;line-height:1.45">${cols.length?"Укажите штуки по каждому цвету. Когда цвет закончится, его нельзя будет заказать; когда закончатся все — товар станет «Нет в наличии».":"Укажите количество. Добавьте цвета выше, чтобы считать штуки по цветам. Пусто — не считать (1 заказ = товар уходит из наличия)."}</p>${cols.length?cols.map(c=>`<div class="r" style="margin-bottom:8px"><span>${esc(c)}</span><span style="display:flex;align-items:center;gap:6px"><input data-qc="${esc(c)}" type="number" inputmode="numeric" min="0" value="${qc[c]??0}" style="width:90px;margin:0;text-align:center"> шт</span></div>`).join("")+`<div class="r mu"><span>Всего</span><b id="qtot">${cols.reduce((a,c)=>a+(+qc[c]||0),0)}</b></div>`:`<div class="r"><span>Количество</span><span style="display:flex;align-items:center;gap:6px"><input id="qn" type="number" inputmode="numeric" min="0" value="${p.qty??""}" placeholder="—" style="width:90px;margin:0;text-align:center"> шт</span></div>`}</div>`};
  const render=()=>{
   sh.innerHTML=`<div class="in"><div class="r"><h2>${old?"Изменить товар":"Новый товар"}</h2><button class="g" id="cl">Закрыть</button></div>
-  <span class="lb">Фото (первое — главное)</span><div class="ph-l">${ph.map((x,i)=>`<div class="ph-i"><img src="${x.url}" alt=""><button class="x" data-rm="${i}">✕</button>${i>0&&x.id?`<button class="mk" data-mk="${i}">Сделать главным</button>`:""}${x.id?`<input class="pcol" data-pc="${i}" value="${esc(x.col||"")}" placeholder="Цвет">`:""}</div>`).join("")}<label class="ph-add">+ Фото<input type="file" id="pf" accept="image/*" multiple hidden></label></div>
-  ${old&&ph.some(x=>x.id)?`<button class="b s" id="ai" style="margin-top:8px">Определить цвета по фото (ИИ)</button>`:""}<p class="mu" style="font-size:12px;margin:6px 0 0">Под каждым фото — его цвет. На сайте кнопка цвета листает к этому фото, а в корзине показывается фото выбранного цвета.${ph.some(x=>x.data)?" Цвет новых фото можно указать после сохранения.":""}</p>
-  <span class="lb">Название</span><input id="fn" value="${esc(p.name)}" placeholder="Например: Худи Oversize">
+  <span class="lb">Фото (первое — главное)</span><div class="ph-l">${ph.map((x,i)=>`<div class="ph-i"><img src="${x.url}" alt=""><button class="x" data-rm="${i}">✕</button>${i>0&&x.id?`<button class="mk" data-mk="${i}">Сделать главным</button>`:""}<input class="pcol" data-pc="${i}" value="${esc(x.col||"")}" placeholder="Цвет" list="colist"></div>`).join("")}<label class="ph-add">+ Фото<input type="file" id="pf" accept="image/*" multiple hidden></label></div>
+  ${old&&ph.some(x=>x.id)?`<button class="b s" id="ai" style="margin-top:8px">Определить цвета по фото (ИИ)</button>`:""}<p class="mu" style="font-size:12px;margin:6px 0 0">Под каждым фото — его цвет. На сайте кнопка цвета листает к этому фото, а в корзине показывается фото выбранного цвета.</p>
+  <datalist id="colist">${["Чёрный","Белый","Серый","Синий","Голубой","Красный","Бордовый","Зелёный","Хаки","Бежевый","Коричневый","Розовый","Фиолетовый","Жёлтый","Оранжевый","Чёрный/Белый"].map(c=>`<option value="${c}">`).join("")}</datalist><span class="lb">Название</span><input id="fn" value="${esc(p.name)}" placeholder="Например: Худи Oversize">
   <span class="lb">Цена, сум</span><input id="fp" type="number" inputmode="numeric" value="${esc(p.price)}" placeholder="250000">
   <span class="lb">Категория</span><select id="fc">${Object.entries(CATN).map(([k,v])=>`<option value="${k}" ${p.cat===k?"selected":""}>${v}</option>`).join("")}</select>
   <span class="lb">Размеры через пробел или запятую</span><input id="fs" value="${esc((p.sizes||[]).join(" "))}" placeholder="S M L XL">
@@ -210,7 +256,7 @@ function editP(id){
   $("#sv").onclick=async()=>{keep();const price=Math.round(+p.price);
    if(!p.name.trim())return toast("Введите название");if(!(price>0))return toast("Введите цену");
    const btn=$("#sv");btn.disabled=true;btn.textContent="Сохраняю…";
-   const body={p:{id:old?old.id:undefined,name:p.name,price,cat:p.cat,sizes:p.sizes,colors:p.colors,colorsSet:p.colors.join("|")===origCols?!!(old&&old.colorsSet):p.colors.length>0,desc:p.desc,stock:p.stock,isNew:p.isNew,pop:p.pop,fast:p.fast,preorder:p.preorder,qty:p.fast&&!p.colors.length?(p.qty??""):"",qtyC:p.fast&&p.colors.length?(p.qtyC||{}):{},imgs:ph.filter(x=>x.id).map(x=>x.id),imgColors:Object.fromEntries(ph.filter(x=>x.id).map(x=>[x.id,x.col||""]))},add:ph.filter(x=>x.data).map(x=>x.data)};
+   const body={p:{id:old?old.id:undefined,name:p.name,price,cat:p.cat,sizes:p.sizes,colors:p.colors,colorsSet:p.colors.join("|")===origCols?!!(old&&old.colorsSet):p.colors.length>0,desc:p.desc,stock:p.stock,isNew:p.isNew,pop:p.pop,fast:p.fast,preorder:p.preorder,qty:p.fast&&!p.colors.length?(p.qty??""):"",qtyC:p.fast&&p.colors.length?(p.qtyC||{}):{},imgs:ph.filter(x=>x.id).map(x=>x.id),imgColors:Object.fromEntries(ph.filter(x=>x.id).map(x=>[x.id,x.col||""])),addColors:ph.filter(x=>x.data).map(x=>x.col||"")},add:ph.filter(x=>x.data).map(x=>x.data)};
    const r=await call("/admin/product",body);btn.disabled=false;btn.textContent="Сохранить";
    if(!r)return toast("Нет связи с сервером");if(!r.ok)return toast(r.err||"Ошибка");
    toast("Сохранено");sh.remove();show("prod")};
@@ -268,10 +314,11 @@ function openImport(){
 /* ---------- заказы ---------- */
 function dOrd(){
  const seen=JSON.parse(localStorage.getItem("aseen")||"null"),fresh=id=>seen&&!seen.includes(id);
- const l=O.filter(o=>(ofl==="all"||o.st===ofl)&&(!q||(o.id+" "+o.nick+" "+o.n+" "+o.t+" "+o.items).toLowerCase().includes(q)));
- $("#v").innerHTML=`<div class="bar"><input id="sq" placeholder="Поиск по номеру заказа, нику, имени" value="${esc(q)}" inputmode="search"></div><div class="chips">${["all",...STS].map(s=>`<button data-f="${s}" class="${ofl===s?"on":""}">${s==="all"?"Все ("+O.length+")":s+" ("+O.filter(o=>o.st===s).length+")"}</button>`).join("")}</div>${l.length?l.map(o=>`<div class="card${fresh(o.id)?" nw":""}"><div class="r"><b>${fresh(o.id)?'<span class="nwb">НОВЫЙ</span>':""}№${esc(o.id)}${o.st==="Отменён"?` <button class="g d" data-odel="${esc(o.id)}" style="margin-left:8px;padding:4px 10px;font-size:13px">Удалить</button>`:""}</b><span class="st ${STC[o.st]||""}">${esc(o.st)}</span></div><div class="mu" style="margin:4px 0 8px">${esc(o.d)} · @${esc(o.nick)}</div><div>${esc(o.n)} · ${esc(o.t)}</div><div style="margin:8px 0;line-height:1.5">${esc(o.items)}</div>${(o.lines||[]).length?`<div class="thr">${o.lines.map(l=>`<div class="th1">${l.img?`<img src="${API}/img/${l.img}" alt="">`:""}<span>${esc(l.name)}${l.col?" · "+esc(l.col):""}${l.sz?" · "+esc(l.sz):""} × ${l.q}</span></div>`).join("")}</div>`:""}<div class="r"><b>${fmt(o.sum)}</b><span class="mu">${esc(o.pay)}</span></div><div class="mu" style="margin:6px 0">BTS: ${esc(o.c)}</div>${o.k?`<div class="mu" style="margin-bottom:6px">Комментарий: ${esc(o.k)}</div>`:""}<select data-os="${esc(o.id)}">${[...new Set([o.st,...STS])].map(s=>`<option ${s===o.st?"selected":""}>${s}</option>`).join("")}</select>${cargoForm(o)}</div>`).join(""):'<div class="empty">Заказов нет</div>'}${O.some(o=>o.st==="Отменён")?`<button class="b s d" id="odall" style="margin-bottom:8px">Удалить все отменённые (${O.filter(o=>o.st==="Отменён").length})</button>`:""}<button class="b s" id="rf">Обновить</button>`;
+ const l=O.filter(o=>(ofl==="all"?o.st!=="Завершён":o.st===ofl)&&(!q||(o.id+" "+o.nick+" "+o.n+" "+o.t+" "+o.items).toLowerCase().includes(q)));
+ $("#v").innerHTML=`<div class="bar"><input id="sq" placeholder="Поиск по номеру заказа, нику, имени" value="${esc(q)}" inputmode="search"></div><div class="chips">${["all",...STS].map(s=>`<button data-f="${s}" class="${ofl===s?"on":""}">${s==="all"?"Все ("+O.filter(o=>o.st!=="Завершён").length+")":(s==="Завершён"?"✓ Завершённые":s)+" ("+O.filter(o=>o.st===s).length+")"}</button>`).join("")}</div>${l.length?l.map(o=>`<div class="card${fresh(o.id)?" nw":""}"><div class="r"><b>${fresh(o.id)?'<span class="nwb">НОВЫЙ</span>':""}№${esc(o.id)}${o.st==="Отменён"?` <button class="g d" data-odel="${esc(o.id)}" style="margin-left:8px;padding:4px 10px;font-size:13px">Удалить</button>`:""}</b><span class="st ${STC[o.st]||""}">${esc(o.st)}</span></div><div class="mu" style="margin:4px 0 8px">${esc(o.d)} · @${esc(o.nick)}</div><div>${esc(o.n)} · ${esc(o.t)}</div><div style="margin:8px 0;line-height:1.5">${esc(o.items)}</div>${(o.lines||[]).length?`<div class="thr">${o.lines.map(l=>`<div class="th1">${l.img?`<img src="${API}/img/${l.img}" alt="">`:""}<span>${esc(l.name)}${l.col?" · "+esc(l.col):""}${l.sz?" · "+esc(l.sz):""} × ${l.q}</span></div>`).join("")}</div>`:""}<div class="r"><b>${fmt(o.sum)}</b><span class="mu">${esc(o.pay)}</span></div><div class="mu" style="margin:6px 0">BTS: ${esc(o.c)}</div>${o.k?`<div class="mu" style="margin-bottom:6px">Комментарий: ${esc(o.k)}</div>`:""}${["В пункте выдачи","Доставлен","В пути"].includes(o.st)?`<button class="b fin" data-fin="${esc(o.id)}">✓ Завершить заказ</button>`:""}<select data-os="${esc(o.id)}">${[...new Set([o.st,...STS])].map(s=>`<option ${s===o.st?"selected":""}>${s}</option>`).join("")}</select>${cargoForm(o)}</div>`).join(""):'<div class="empty">Заказов нет</div>'}${O.some(o=>o.st==="Отменён")?`<button class="b s d" id="odall" style="margin-bottom:8px">Удалить все отменённые (${O.filter(o=>o.st==="Отменён").length})</button>`:""}<button class="b s" id="rf">Обновить</button>`;
  $$("[data-f]").forEach(b=>b.onclick=()=>{ofl=b.dataset.f;dOrd()});
  $("#rf").onclick=()=>show("ord");
+ $$("[data-fin]").forEach(b=>b.onclick=async()=>{const id=b.dataset.fin;if(!confirm("Заказ №"+id+" получен покупателем? Он перейдёт в «Завершённые», покупатель сможет оставить отзыв."))return;b.disabled=true;const r=await call("/admin/order/status",{id,st:"Завершён"});if(!r||!r.ok){b.disabled=false;return toast(r&&r.err||"Нет связи")}const c=b.closest(".card");if(c){c.style.transition="opacity .35s,transform .35s";c.style.opacity="0";c.style.transform="translateX(40px)"}toast("Заказ завершён");setTimeout(()=>show("ord"),380)});
  $("#sq").oninput=e=>{q=e.target.value.toLowerCase().trim();const p=e.target.selectionStart;dOrd();const i=$("#sq");i.focus();i.setSelectionRange(p,p)};
  setTimeout(()=>localStorage.setItem("aseen",JSON.stringify(O.map(o=>o.id))),4000);
  $$("[data-odel]").forEach(b=>b.onclick=async()=>{if(!confirm("Удалить отменённый заказ №"+b.dataset.odel+" из списка?"))return;const r=await call("/admin/order/delete",{id:b.dataset.odel});if(!r||!r.ok)return toast(r&&r.err||"Нет связи");toast("Заказ удалён");show("ord")});
