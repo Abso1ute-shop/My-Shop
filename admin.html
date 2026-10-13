@@ -81,6 +81,8 @@ nav .nb{font-style:normal;background:#e5282b;color:#fff;border-radius:999px;min-
 .b.fin{margin:4px 0 10px;background:var(--ok);color:#000}
 .st.f{background:#fff;color:#000}
 .card.nw{border-color:#fff;box-shadow:0 0 0 1px #fff}.nwb{display:inline-block;background:#fff;color:#000;font-size:11px;font-weight:800;padding:2px 7px;border-radius:8px;margin-right:8px;letter-spacing:.5px}
+.ubd{display:flex;flex-wrap:wrap;gap:6px;margin:-4px 0 10px}.ub{font-size:12px;padding:4px 9px;border-radius:999px;font-weight:600}.ub.ban{background:rgba(229,72,77,.15);color:var(--no)}.ub.frz{background:rgba(74,163,255,.15);color:#6cb6ff}
+.uz{margin-top:18px;padding-top:14px;border-top:1px solid var(--ln)}.ur{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--ln)}.ur:last-child{border:0}.ur small{display:block;color:var(--mu);font-size:12px;margin-top:3px;line-height:1.35}.ur>div{flex:1;min-width:0}.ur .b{flex:none;width:auto;padding:10px 14px;font-size:14px;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -105,7 +107,7 @@ function cargoForm(o){
  return info+`<div class="card" style="background:#101010;margin:10px 0 0"><div class="r"><span class="lb" style="margin:0">Карго по каждому товару</span><select data-ty="${id}" style="margin:0;width:110px"><option value="auto" ${ty==="avia"?"":"selected"}>Авто</option><option value="avia" ${ty==="avia"?"selected":""}>Авиа</option></select></div>${lines.map((l,k)=>`<div style="border-top:1px solid var(--ln);padding:10px 0 4px;margin-top:8px"><div style="font-size:14px;margin-bottom:6px">${esc(l.name)}${l.col?" · "+esc(l.col):""}${l.sz?" · "+esc(l.sz):""} × ${l.q}${l.fast?' <span class="mu">(1 день — карго 0)</span>':""}</div><div class="bar" style="margin:0"><input data-ckg="${id}" data-k="${k}" type="number" step="0.01" inputmode="decimal" placeholder="Вес, кг" value="${old[k]?old[k].kg:(l.fast?0:"")}"><input data-csm="${id}" data-k="${k}" type="number" inputmode="numeric" placeholder="Сумма, сум" value="${old[k]?old[k].sum:(l.fast?0:"")}"></div></div>`).join("")}<div class="r" style="margin:10px 0"><span class="mu">Итого</span><b data-ctot="${id}">${cg?cg.kg+" кг · "+fmt(cg.sum):"—"}</b></div><button class="b" data-cgs="${id}">Отправить покупателю</button></div>`;
 }
 const CLS="XS S M L XL 2XL 3XL 4XL 5XL".split(" "),SHS="36 37 38 39 40 41 42 43 44".split(" "),defSz=c=>c==="shoes"?SHS:c==="acc"?[]:CLS;
-let tok=localStorage.getItem("adm")||"",tab="dash",ST=null,dper="week",P=[],O=[],U=[],PR=[],R=[],ofl="all",rfl="all",q="";
+let tok=localStorage.getItem("adm")||"",tab="dash",ST=null,dper="week",P=[],O=[],U=[],PR=[],R=[],ofl="all",rfl="all",ufl="all",q="";
 let tm;const toast=t=>{const e=$("#toast");e.textContent=t;e.classList.add("on");clearTimeout(tm);tm=setTimeout(()=>e.classList.remove("on"),2600)};
 
 async function call(path,body){
@@ -120,16 +122,31 @@ function login(){
   btn.disabled=true;btn.textContent="Проверяю…";
   let resp,r=null;
   try{resp=await fetch(API+"/admin/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({pass:$("#pw").value})});r=await resp.json().catch(()=>null)}
-  catch(e){btn.disabled=false;btn.textContent="Войти";return le.textContent="Нет связи с сервером. Проверьте интернет. Если интернет есть, в Cloudflare переменная ALLOW_ORIGIN не совпадает с адресом сайта (её можно удалить)."}
+  catch(e){btn.disabled=false;btn.textContent="Войти";return le.textContent="Нет связи с сервером. Проверьте интернет. Если интернет есть, проверьте, что новый worker.js загружен в absolute-api."}
   btn.disabled=false;btn.textContent="Войти";
   if(!r)return le.textContent="Сервер ответил ошибкой "+resp.status+". Проверьте, что новый worker.js загружен и сборка в Cloudflare прошла.";
   if(!r.ok){if(/Нужно войти/.test(r.err||""))return le.textContent="Сервер ещё не обновлён: загрузите новый worker.js в репозиторий absolute-api и дождитесь зелёной галочки в Cloudflare.";return le.textContent=r.err||"Ошибка"}
+  if(r.need2fa)return codeStep($("#pw").value,r.cid);
   tok=r.token;localStorage.setItem("adm",tok);start()};
  $("#go").onclick=go;$("#pw").onkeydown=e=>{if(e.key==="Enter")go()};
 }
+function codeStep(pass,cid){
+ $("#app").innerHTML=`<div class="lg"><h1>ABSO1UTE</h1><p>Код отправлен вам в Telegram</p><input id="cd" type="text" inputmode="numeric" maxlength="6" placeholder="Код из Telegram" autocomplete="one-time-code"><button class="b" id="go">Подтвердить</button><button class="g" id="bk" style="margin-top:10px;width:100%">Назад</button><p class="le" id="le"></p></div>`;
+ $("#cd").focus();$("#bk").onclick=login;
+ const go=async()=>{
+  const le=$("#le"),btn=$("#go"),c=$("#cd").value.replace(/\D/g,"");le.textContent="";
+  if(c.length!==6)return le.textContent="Введите 6 цифр из Telegram";
+  btn.disabled=true;btn.textContent="Проверяю…";let r=null;
+  try{r=await (await fetch(API+"/admin/login/confirm",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({pass,cid,code:c})})).json()}catch(e){}
+  btn.disabled=false;btn.textContent="Подтвердить";
+  if(!r)return le.textContent="Нет связи с сервером";
+  if(!r.ok){if(/истёк|использован|Слишком/.test(r.err||""))setTimeout(login,1800);return le.textContent=r.err||"Ошибка"}
+  pass="";tok=r.token;localStorage.setItem("adm",tok);start()};
+ $("#go").onclick=go;$("#cd").oninput=e=>{if(e.target.value.replace(/\D/g,"").length===6)go()};$("#cd").onkeydown=e=>{if(e.key==="Enter")go()};
+}
 function start(){
  $("#app").innerHTML=`<header><b>АДМИНКА</b><button class="g" id="out">Выйти</button></header><nav><button data-t="dash"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Сводка</span><i class="nb" data-nb="dash"></i></button><button data-t="ord"><svg viewBox="0 0 24 24"><path d="M4 8l8-4 8 4v9l-8 4-8-4z"/><path d="M4 8l8 4 8-4M12 12v9"/></svg><span>Заказы</span><i class="nb" data-nb="ord"></i></button><button data-t="prod"><svg viewBox="0 0 24 24"><path d="M6 8h12l-1 12H7z"/><path d="M9 8a3 3 0 0 1 6 0"/></svg><span>Товары</span><i class="nb" data-nb="prod"></i></button><button data-t="rev"><svg viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.8l-5.2 2.8 1-5.8-4.3-4.1 5.9-.8z"/></svg><span>Отзывы</span><i class="nb" data-nb="rev"></i></button><button data-t="usr"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5c0-4 3.5-6 7.5-6s7.5 2 7.5 6"/></svg><span>Клиенты</span><i class="nb" data-nb="usr"></i></button><button data-t="promo"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M9 15l6-6"/></svg><span>Промокоды</span><i class="nb" data-nb="promo"></i></button></nav><main id="v"></main>`;
- $("#out").onclick=()=>{tok="";localStorage.removeItem("adm");login()};
+ $("#out").onclick=()=>{const t=tok;fetch(API+"/admin/logout",{method:"POST",headers:{Authorization:"Bearer "+t}}).catch(()=>{});tok="";localStorage.removeItem("adm");login()};
  $$("nav [data-t]").forEach(b=>b.onclick=()=>show(b.dataset.t));show(tab);setTimeout(pollOrd,1500);
 }
 async function show(t){
@@ -359,18 +376,27 @@ function dRev(){
 
 /* ---------- пользователи ---------- */
 function dUsr(){
- const l=U.filter(u=>!q||(u.nick+" "+u.n+" "+u.t+" "+u.tgu).toLowerCase().includes(q));
- $("#v").innerHTML=`<div class="bar"><input id="sq" placeholder="Поиск: ник, имя, телефон" value="${esc(q)}"></div><div class="mu" style="margin-bottom:10px">Всего: ${U.length}</div>${l.length?l.map(u=>`<div class="card"><div class="r"><b>@${esc(u.nick)}</b><span class="bal">${fmt(u.bal)}</span></div><div class="mu" style="margin:4px 0 10px">${esc(u.n)||"без имени"}${u.t?" · "+esc(u.t):""}<br>Заказов: ${u.orders}${u.tg?" · Telegram"+(u.tgu?" @"+esc(u.tgu):""):""}${u.ts?" · с "+new Date(u.ts).toLocaleDateString("ru-RU"):""}</div><button class="b s" data-bl="${esc(u.nick)}">Изменить баланс</button></div>`).join(""):'<div class="empty">Никого нет</div>'}`;
+ const l=U.filter(u=>(ufl==="all"||(ufl==="ban"?u.ban:u.frz))&&(!q||(u.nick+" "+u.n+" "+u.t+" "+u.tgu).toLowerCase().includes(q)));
+ $("#v").innerHTML=`<div class="bar"><input id="sq" placeholder="Поиск: ник, имя, телефон" value="${esc(q)}"></div><div class="chips">${[["all","Все ("+U.length+")"],["ban","Заблокированные ("+U.filter(u=>u.ban).length+")"],["frz","Заморожен баланс ("+U.filter(u=>u.frz).length+")"]].map(c=>`<button data-uf="${c[0]}" class="${ufl===c[0]?"on":""}">${c[1]}</button>`).join("")}</div>${l.length?l.map(u=>`<div class="card"><div class="r"><b>@${esc(u.nick)}</b><span class="bal">${fmt(u.bal)}</span></div><div class="mu" style="margin:4px 0 10px">${esc(u.n)||"без имени"}${u.t?" · "+esc(u.t):""}<br>Заказов: ${u.orders}${u.tg?" · Telegram"+(u.tgu?" @"+esc(u.tgu):""):""}${u.ts?" · с "+new Date(u.ts).toLocaleDateString("ru-RU"):""}</div>${u.ban||u.frz?`<div class="ubd">${u.ban?`<span class="ub ban">⛔ Заблокирован${u.ban!=="без причины"?": "+esc(u.ban):""}</span>`:""}${u.frz?'<span class="ub frz">❄️ Баланс заморожен</span>':""}</div>`:""}<button class="b s" data-bl="${esc(u.nick)}">Управлять</button></div>`).join(""):'<div class="empty">Никого нет</div>'}`;
  $("#sq").oninput=e=>{q=e.target.value.trim().toLowerCase();const pos=e.target.selectionStart;dUsr();const s=$("#sq");s.focus();s.setSelectionRange(pos,pos)};
+ $$("[data-uf]").forEach(b=>b.onclick=()=>{ufl=b.dataset.uf;dUsr()});
  $$("[data-bl]").forEach(b=>b.onclick=()=>balP(b.dataset.bl));
 }
 function balP(nick){
  const u=U.find(x=>x.nick===nick),sh=document.createElement("div");sh.className="sheet";document.body.appendChild(sh);
- sh.innerHTML=`<div class="in"><div class="r"><h2>@${esc(nick)}</h2><button class="g" id="cl">Закрыть</button></div><div class="mu">Текущий баланс</div><div class="bal" style="margin-bottom:16px">${fmt(u.bal)}</div><span class="lb">Сумма, сум</span><input id="am" type="number" inputmode="numeric" placeholder="50000"><div class="bar"><button class="b" id="pl">Пополнить</button><button class="b r" id="mi">Списать</button></div><p class="mu">Клиент получит сообщение об изменении баланса в чате на сайте.</p></div>`;
+ sh.innerHTML=`<div class="in"><div class="r"><h2>@${esc(nick)}</h2><button class="g" id="cl">Закрыть</button></div><div class="mu">Текущий баланс</div><div class="bal" style="margin-bottom:16px">${fmt(u.bal)}</div><span class="lb">Сумма, сум</span><input id="am" type="number" inputmode="numeric" placeholder="50000"><div class="bar"><button class="b" id="pl">Пополнить</button><button class="b r" id="mi">Списать</button></div><p class="mu">Клиент получит сообщение об изменении баланса в чате на сайте.</p>
+ <div class="uz"><span class="lb">Причина (необязательно, клиент увидит её в Telegram)</span><input id="rs" placeholder="Например: подозрение на мошенничество">
+ <div class="ur"><div><b>❄️ Заморозить баланс</b><small>Клиент не сможет платить с баланса и пополнять его. Деньги останутся на счёте.</small></div><button class="b s${u.frz?"":" r"}" id="fz">${u.frz?"Разморозить":"Заморозить"}</button></div>
+ <div class="ur"><div><b>⛔ Заблокировать аккаунт</b><small>Клиента выкинет с сайта, войти и зарегистрироваться на этот Telegram он не сможет.</small></div><button class="b s${u.ban?"":" r"}" id="bn">${u.ban?"Разблокировать":"Заблокировать"}</button></div>
+ <div class="ur"><div><b>🗑 Удалить аккаунт</b><small>Удаляется насовсем вместе с балансом (${fmt(u.bal)}). Его заказы останутся в «Заказах». Ник и Telegram освободятся.</small></div><button class="b s r" id="dl">Удалить</button></div></div></div>`;
  $("#cl").onclick=()=>sh.remove();
  const go=async sg=>{const a=Math.round(+$("#am").value);if(!(a>0))return toast("Введите сумму");if(!confirm((sg>0?"Пополнить":"Списать")+" "+fmt(a)+" — @"+nick+"?"))return;
   const r=await call("/admin/balance",{nick,delta:sg*a});if(!r||!r.ok)return toast(r&&r.err||"Нет связи");toast("Баланс: "+fmt(r.bal));sh.remove();show("usr")};
  $("#pl").onclick=()=>go(1);$("#mi").onclick=()=>go(-1);
+ const act=async(path,on,ok,extra={})=>{const r=await call(path,{nick,on,reason:$("#rs").value.trim(),...extra});if(!r||!r.ok)return toast(r&&r.err||"Нет связи");toast(ok);sh.remove();show("usr")};
+ $("#fz").onclick=()=>{const on=!u.frz;if(confirm((on?"Заморозить":"Разморозить")+" баланс @"+nick+"?"))act("/admin/user/freeze",on,on?"Баланс заморожен":"Баланс разморожен")};
+ $("#bn").onclick=()=>{const on=!u.ban;if(confirm((on?"Заблокировать":"Разблокировать")+" аккаунт @"+nick+"?"))act("/admin/user/ban",on,on?"Аккаунт заблокирован":"Аккаунт разблокирован")};
+ $("#dl").onclick=()=>{const c=prompt("Удаление нельзя отменить. Баланс "+fmt(u.bal)+" пропадёт.\nЧтобы подтвердить, введите ник: "+nick);if(c===null)return;if(c.trim().replace(/^@/,"").toLowerCase()!==nick)return toast("Ник введён неверно — аккаунт не удалён");act("/admin/user/delete",true,"Аккаунт удалён",{confirm:nick})};
 }
 
 function dPromo(){
