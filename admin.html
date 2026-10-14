@@ -204,7 +204,7 @@ function dDash(){
 /* ---------- товары ---------- */
 function dProd(){
  const l=P.filter(p=>!q||p.name.toLowerCase().includes(q));
- $("#v").innerHTML=`<div class="bar"><input id="sq" placeholder="Поиск товара" value="${esc(q)}"><button class="b" id="add">+ Добавить товар</button></div><button class="b s" id="imp" style="margin-bottom:8px">Импорт старых постов из канала</button>${P.some(x=>!x.desc)?`<button class="b s" id="aidall" style="margin-bottom:12px">✨ Придумать описания для товаров без описания (${P.filter(x=>!x.desc).length})</button>`:""}<details class="hint"><summary>Как добавить товар через Telegram-канал</summary><p>Опубликуйте в канале пост с фото и такой подписью — товар сам появится на сайте:</p><pre>Название товара
+ $("#v").innerHTML=`<div class="bar"><input id="sq" placeholder="Поиск товара" value="${esc(q)}"><button class="b" id="add">+ Добавить товар</button></div><button class="b s" id="imp" style="margin-bottom:8px">Импорт старых постов из канала</button>${P.some(x=>!x.desc)?`<button class="b s" id="aidall" style="margin-bottom:12px">✨ Придумать описания для товаров без описания (${P.filter(x=>!x.desc).length})</button>`:""}${P.length?`<button class="b s" id="aidre" style="margin-bottom:12px">✨ Переписать все описания заново по фото (${P.length})</button>`:""}<details class="hint"><summary>Как добавить товар через Telegram-канал</summary><p>Опубликуйте в канале пост с фото и такой подписью — товар сам появится на сайте:</p><pre>Название товара
 Цена: 250000
 Категория: верх / низ / обувь / аксессуары
 Размеры: S-XL (по желанию)
@@ -213,9 +213,11 @@ function dProd(){
  $("#sq").oninput=e=>{q=e.target.value.trim().toLowerCase();const pos=e.target.selectionStart;dProd();const s=$("#sq");s.focus();s.setSelectionRange(pos,pos)};
  $("#add").onclick=()=>editP();
  $("#imp").onclick=openImport;
- if($("#aidall"))$("#aidall").onclick=async()=>{const l=P.filter(x=>!x.desc);if(!confirm("ИИ напишет описания для "+l.length+" товаров. Продолжить?"))return;const b=$("#aidall");b.disabled=true;let ok=0;
-  for(let i=0;i<l.length;i++){b.textContent=`✨ Пишу описания… ${i+1} из ${l.length}`;const r=await call("/admin/product/describe",{id:l[i].id});if(r&&r.ok){ok++;l[i].desc=r.text}}
+ const aiAll=async(b,l)=>{if(!confirm("ИИ посмотрит на фото и напишет описания для "+l.length+" товаров. Это займёт примерно "+Math.max(1,Math.ceil(l.length*8/60))+" мин. Не закрывайте страницу. Продолжить?"))return;b.disabled=true;let ok=0;
+  for(let i=0;i<l.length;i++){if(!document.body.contains(b))break;b.textContent=`✨ Пишу описания… ${i+1} из ${l.length}`;let img="";try{if((l[i].imgs||[])[0])img=await smallOf(API+"/img/"+l[i].imgs[0],512)}catch(e){}const r=await call("/admin/product/describe",{id:l[i].id,img,force:true});if(r&&r.ok){ok++;l[i].desc=r.text}}
   toast("Готово: описаний "+ok);show("prod")};
+ if($("#aidall"))$("#aidall").onclick=()=>aiAll($("#aidall"),P.filter(x=>!x.desc));
+ if($("#aidre"))$("#aidre").onclick=()=>aiAll($("#aidre"),P.slice());
  $$("[data-ed]").forEach(b=>b.onclick=()=>editP(+b.dataset.ed));
  $$("[data-dl]").forEach(b=>b.onclick=async()=>{const p=P.find(x=>x.id===+b.dataset.dl);if(!confirm("Удалить «"+p.name+"» насовсем?"))return;const r=await call("/admin/product/delete",{id:p.id});if(!r||!r.ok)return toast(r&&r.err||"Нет связи");toast("Удалено");show("prod")});
  $$("[data-st]").forEach(c=>c.onchange=async()=>{const p=P.find(x=>x.id===+c.dataset.st);const r=await call("/admin/product",{p:{...p,stock:c.checked},add:[]});if(!r||!r.ok){c.checked=!c.checked;return toast(r&&r.err||"Нет связи")}p.stock=c.checked;toast(c.checked?"В наличии":"Нет в наличии")});
@@ -225,10 +227,10 @@ function shrink(f,cb){
   for(let i=0;i<4;i++){const c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext("2d").drawImage(im,0,0,c.width,c.height);out=c.toDataURL("image/jpeg",qu);if(out.length<800000)break;k*=.8;qu-=.08}
   cb(out)};im.src=URL.createObjectURL(f);
 }
-async function smallOf(url){
+async function smallOf(url,mx=320){
  const bl=await (await fetch(url)).blob(),u=URL.createObjectURL(bl);
  try{const im=await new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=()=>no(new Error("фото не загрузилось"));i.src=u});
-  const k=Math.min(1,320/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);
+  const k=Math.min(1,mx/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);
   c.getContext("2d").drawImage(im,0,0,c.width,c.height);return c.toDataURL("image/jpeg",.85)}finally{URL.revokeObjectURL(u)}
 }
 function editP(id){
@@ -262,7 +264,8 @@ function editP(id){
   if($("#qbox")){const qc=$$("[data-qc]",sh);if(qc.length){p.qtyC={};qc.forEach(i=>p.qtyC[i.dataset.qc]=Math.max(0,Math.round(+i.value)||0));p.qty=undefined}else{const v=$("#qn").value.trim();p.qty=v===""?undefined:Math.max(0,Math.round(+v)||0);p.qtyC=undefined}}p.desc=$("#fd").value;p.stock=$("#t1").checked;p.isNew=$("#t2").checked;p.pop=$("#t3").checked;p.fast=$("#t4").checked;p.preorder=$("#t5").checked};
   $("#cl").onclick=()=>sh.remove();
   $("#aid").onclick=async()=>{keep();if(!p.name.trim())return toast("Сначала введите название");const b=$("#aid");b.disabled=true;b.textContent="✨ Пишу…";
-   const r=await call("/admin/describe",{name:p.name,cat:p.cat,colors:p.colors.length?p.colors:ph.map(x=>x.col).filter(Boolean),sizes:p.sizes,hint:p.desc});b.disabled=false;b.textContent="✨ Ещё вариант";
+   let img="";if(ph[0]){b.textContent="✨ Смотрю на фото…";try{img=await smallOf(ph[0].url,512)}catch(e){}b.textContent="✨ Пишу…"}
+   const r=await call("/admin/describe",{name:p.name,cat:p.cat,colors:p.colors.length?p.colors:ph.map(x=>x.col).filter(Boolean),sizes:p.sizes,hint:"",img});b.disabled=false;b.textContent="✨ Ещё вариант";
    if(!r||!r.ok)return toast(r&&r.err||"Нет связи");$("#fd").value=r.text;p.desc=r.text};
   if($("#ai"))$("#ai").onclick=async()=>{keep();const b=$("#ai");b.disabled=true;b.textContent="Определяю цвета…";
    try{const imgs={};for(const x of ph.filter(y=>y.id))imgs[x.id]=await smallOf(x.url);
