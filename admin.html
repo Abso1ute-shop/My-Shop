@@ -203,7 +203,7 @@ function dDash(){
 
 /* ---------- товары ---------- */
 function trHash(n,d){let h=5381;const x=String(n||"")+"\u0001"+String(d||"");for(let i=0;i<x.length;i++)h=((h<<5)+h+x.charCodeAt(i))|0;return (h>>>0).toString(36)}
-const needTr=p=>!p.tr||p.tr.h!==trHash(p.name,p.desc||"");
+const needTr=p=>!p.tr||!p.tr.en||!p.tr.uz||p.tr.h!==trHash(p.name,p.desc||"");
 function dProd(){
  const l=P.filter(p=>(pcf==="all"||p.cat===pcf)&&(!q||p.name.toLowerCase().includes(q)));
  $("#v").innerHTML=`<div class="bar"><input id="sq" placeholder="Поиск товара" value="${esc(q)}"><button class="b" id="add">+ Добавить товар</button></div><div class="chips">${[["all","Все ("+P.length+")"],...Object.entries(CATN).map(([k,v])=>[k,v+" ("+P.filter(x=>x.cat===k).length+")"])].map(c=>`<button data-pcf="${c[0]}" class="${pcf===c[0]?"on":""}">${c[1]}</button>`).join("")}</div><button class="b s" id="imp" style="margin-bottom:8px">Импорт старых постов из канала</button>${P.some(x=>!x.desc)?`<button class="b s" id="aidall" style="margin-bottom:12px">✨ Придумать описания для товаров без описания (${P.filter(x=>!x.desc).length})</button>`:""}${P.some(needTr)?`<button class="b s" id="trall" style="margin-bottom:12px">🌐 Перевести товары на English и O'zbek (${P.filter(needTr).length})</button>`:""}${P.length?`<button class="b s" id="aidre" style="margin-bottom:12px">✨ Переписать все описания заново по фото (${P.length})</button>`:""}<details class="hint"><summary>Как добавить товар через Telegram-канал</summary><p>Опубликуйте в канале пост с фото и такой подписью — товар сам появится на сайте:</p><pre>Название товара
