@@ -655,7 +655,7 @@ function toast(t){const e=$("#toast");e.textContent=t;e.classList.add("on");clea
 document.addEventListener("click",e=>{const b=e.target.closest("button,.btn,.tile,.chip");if(!b)return;const r=b.getBoundingClientRect(),d=Math.max(r.width,r.height),s=document.createElement("span");s.className="rip";s.style.cssText=`width:${d}px;height:${d}px;left:${e.clientX-r.left-d/2}px;top:${e.clientY-r.top-d/2}px`;if(getComputedStyle(b).position==="static")b.style.position="relative";b.style.overflow="hidden";b.appendChild(s);setTimeout(()=>s.remove(),600)});
 const go=id=>{closeAll();$("#"+id).scrollIntoView({behavior:"smooth"})};
 $$("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go));
-const closeAll=()=>{document.body.classList.remove("cart-open");$$(".ov").forEach(o=>o.classList.remove("on"));$("#dr").classList.remove("on");$("#nav").classList.remove("m");$("#dd").classList.remove("open");setTab(0)};
+let PGT=0;const closeAll=()=>{PGT++;["#ovf2","#dr","#ovp"].forEach(k=>{const el=document.querySelector(k);if(el){el.style.transition="";el.style.transform="";el.style.willChange="";el.style.boxShadow=""}});document.body.classList.remove("cart-open");$$(".ov").forEach(o=>o.classList.remove("on"));$("#dr").classList.remove("on");$("#nav").classList.remove("m");$("#dd").classList.remove("open");setTab(0)};
 document.addEventListener("click",e=>{const cb=e.target.closest("[data-close]");if(cb||(e.target.classList.contains("ov")&&e.target.id!=="ovx")){const ov=(cb&&cb.closest(".ov"))||(e.target.classList.contains("ov")?e.target:null);if(ov&&ov.id!=="ovp"&&ov.id!=="ovf2"&&($("#ovp").classList.contains("on")||$("#ovf2").classList.contains("on")))ov.classList.remove("on");else closeAll()}if(!e.target.closest("#dd"))$("#dd").classList.remove("open")});
 /* меню */
 $("#burger").onclick=()=>$("#nav").classList.toggle("m");
@@ -1075,7 +1075,9 @@ document.addEventListener("gesturestart",e=>e.preventDefault());
 /* свайп между вкладками: каталог → избранное → корзина → профиль */
 let curTab=0;
 function setTab(i){curTab=i;$$(".bar .bb").forEach((b,k)=>b.classList.toggle("act",k===i))}
-function goTab(i){if(i===0){closeAll();setTab(0)}else if(i===1)openFavPage();else if(i===2)openCart();else openPr()}
+const PAGES=()=>[$("#ovf2"),$("#dr"),$("#ovp")].filter(Boolean);
+function resetPages(){PAGES().forEach(el=>{el.style.transition="";el.style.transform="";el.style.willChange="";el.style.boxShadow=""})}
+function goTab(i){resetPages();if(i===0){closeAll();setTab(0)}else if(i===1)openFavPage();else if(i===2)openCart();else openPr()}
 /* перелистывание вкладок: страницы едут за пальцем */
 // каталог (длинная страница) не двигаем — двигаются только экраны поверх него: так нет огромного слоя и лагов на iPhone
 const pgEls=i=>i===0?[]:[i===1?$("#ovf2"):i===2?$("#dr"):$("#ovp")];
@@ -1083,8 +1085,8 @@ const pgPrep=b=>{pgEls(b).forEach(el=>el.classList.add("noanim"));if(b===1)rende
 const pgBlock=t=>!!(t.closest&&t.closest(".hero,.gal,.hscroll,.perks,.chips,.ph-l,input,textarea,select,.bl,.themes,.chatpg,.fq-b,.tb"))||$$(".ov.on").some(x=>x.id!=="ovp"&&x.id!=="ovf2");
 let SWP=false;
 function goTabInstant(n){document.body.classList.add("notr");SWP=true;try{goTab(n)}finally{SWP=false}requestAnimationFrame(()=>requestAnimationFrame(()=>document.body.classList.remove("notr")))}
-let dg=null;
-document.addEventListener("touchstart",e=>{dg=(e.touches.length===1&&!pgBlock(e.target))?{x:e.touches[0].clientX,y:e.touches[0].clientY,t:Date.now(),mode:0,b:-1,dx:0,W:window.innerWidth}:null},{passive:true});
+let dg=null,PGANIM=false;
+document.addEventListener("touchstart",e=>{if(PGANIM){dg=null;return}dg=(e.touches.length===1&&!pgBlock(e.target))?{x:e.touches[0].clientX,y:e.touches[0].clientY,t:Date.now(),mode:0,b:-1,dx:0,W:window.innerWidth}:null},{passive:true});
 document.addEventListener("touchmove",e=>{
  if(!dg)return;const x=e.touches[0].clientX-dg.x,y=e.touches[0].clientY-dg.y;
  if(dg.mode===0){
@@ -1101,11 +1103,13 @@ function endDrag(cancel){
  if(!dg||dg.mode!==1){dg=null;return}
  const d=dg;dg=null;const W=d.W,dir=d.b>curTab?-1:1,vel=Math.abs(d.dx)/Math.max(1,Date.now()-d.t);
  const commit=!cancel&&(Math.abs(d.dx)>W*.3||(vel>.45&&Math.abs(d.dx)>40));
- const cur=pgEls(curTab),nb=pgEls(d.b),all=[...cur,...nb];
+ const cur=pgEls(curTab),nb=pgEls(d.b),all=[...cur,...nb];PGANIM=true;const tok=PGT;
  all.forEach(el=>el.style.transition="transform .34s cubic-bezier(.22,1,.36,1)");
  cur.forEach(el=>el.style.transform=`translateX(${commit?dir*W:0}px)`);
  nb.forEach(el=>el.style.transform=`translateX(${commit?0:-dir*W}px)`);
- setTimeout(()=>{all.forEach(el=>{el.style.transition="";el.style.transform="";el.style.willChange="";el.style.boxShadow=""});if(commit)goTabInstant(d.b)},360);
+ setTimeout(()=>{try{all.forEach(el=>{el.style.transition="";el.style.transform="";el.style.willChange="";el.style.boxShadow=""});if(tok!==PGT){}else if(commit)goTabInstant(d.b);else{resetPages();pgEls(d.b).forEach(el=>el.classList.remove("noanim"))}}finally{PGANIM=false;
+  // страховка: на экране всегда только текущая вкладка
+  const want=curTab===1?$("#ovf2"):curTab===2?$("#dr"):curTab===3?$("#ovp"):null;PAGES().forEach(el=>{if(el!==want&&el.classList.contains("on")&&!(el.id==="dr"&&document.body.classList.contains("cart-open")&&curTab===2))el.classList.remove("on")})}},360);
 }
 document.addEventListener("touchend",()=>endDrag(false),{passive:true});
 document.addEventListener("touchcancel",()=>endDrag(true),{passive:true});
