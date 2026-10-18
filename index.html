@@ -528,6 +528,10 @@ html body #ovp .md,html body #ovf2 .md{padding-bottom:calc(120px + env(safe-area
 .sz small.szp{display:block;font-size:10px;opacity:.65;font-weight:500;margin-top:1px;line-height:1}
 @media(max-width:860px){.ppg{position:relative}}.pfav{position:absolute;top:14px;right:14px;z-index:5;width:44px;height:44px;border-radius:50%;background:#fff;color:#000;border:2px solid #000;display:grid;place-items:center;box-shadow:3px 3px 0 #000;cursor:pointer}.pfav .hs{width:22px;height:22px}.pfav .hs.on{fill:#e5484d;stroke:#e5484d}.pfav.pop{animation:fpop .35s cubic-bezier(.3,1.6,.5,1)}@keyframes fpop{0%{transform:scale(1)}40%{transform:scale(1.25)}100%{transform:scale(1)}}
 .grid .pc{content-visibility:auto;contain-intrinsic-size:auto 340px}
+.bar{overflow:hidden}.bar .bb{z-index:1;flex:1 1 0}.bar .bind{position:absolute;left:0;top:6px;width:25%;height:calc(100% - 12px - env(safe-area-inset-bottom,0px));pointer-events:none;z-index:0;transition:transform .38s cubic-bezier(.22,1,.36,1)}
+.bar .bind::before{content:"";position:absolute;inset:0 14%;border-radius:16px;background:rgba(255,255,255,.14);box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
+@media(min-width:861px){.bar .bind{display:none}}
+@media(max-width:860px){.dr{z-index:56!important;bottom:calc(68px + env(safe-area-inset-bottom,0px))!important;padding-bottom:16px!important}body.cart-open main,body.cart-open header{transform:none!important}}
 </style>
 </head>
 <body>
@@ -598,6 +602,7 @@ html body #ovp .md,html body #ovf2 .md{padding-bottom:calc(120px + env(safe-area
  <button class="bb hr" id="bf"><span class="st"><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></span>Избранное</button>
  <button class="bb bg" id="bc2"><span class="st"><svg viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6zM9 8a3 3 0 0 1 6 0"/></svg></span><span class="cnt" id="cc2" hidden>0</span>Корзина</button>
  <button class="bb us" id="bp2"><span class="bdg" id="pbdg"></span><span class="st"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5c0-4 3.5-6 7.5-6s7.5 2 7.5 6"/></svg></span>Профиль</button>
+ <i class="bind" aria-hidden="true"></i>
 </div>
 
 <div class="ov" id="ovs"><div class="md"><button class="x" data-close>✕</button><h3>Поиск</h3><div class="sr"><input class="inp" id="si" placeholder="Название товара"><button class="btn d" id="sgo" style="margin:0">Найти</button></div><div class="grid" id="sres" style="grid-template-columns:1fr 1fr;margin-top:14px"></div></div></div>
@@ -647,7 +652,7 @@ let PRODUCTS=[];
 const CATS=[["new","Новые"],["top","Верх"],["bottom","Низ"],["shoes","Обувь"],["acc","Аксессуары"],["tech","Техника"],["fast","Доставка 1 день"]];
 const $=s=>document.querySelector(s),$$=(s,c=document)=>[...c.querySelectorAll(s)];
 const ls={g:(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},s:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
-let cart=ls.g("cart",[]),promo=ls.g("promo",false),promoPct=ls.g("ppct",5),promoCode=ls.g("pcode",""),cat="all",fav=ls.g("fav",[]);
+let cart=ls.g("cart",[]),promo=ls.g("promo",false),promoPct=ls.g("ppct",5),promoCode=ls.g("pcode",""),cat="all",fav=ls.g("fav",[]),favC=ls.g("favc",{});
 const HEART=on=>`<svg class="hs${on?" on":""}" viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>`;
 const fmt=n=>n.toLocaleString("ru-RU").replace(/,/g," ")+" сум";
 function toast(t){const e=$("#toast");e.textContent=t;e.classList.add("on");clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove("on"),2200)}
@@ -707,13 +712,14 @@ const qLeft=(p,c)=>!qTr(p)?null:qByC(p)?(c!==undefined&&c!==null?(+p.qtyC[c]||0)
 const inCart=(id,c)=>cart.filter(i=>i.id===id&&(c===undefined||!qByC(PRODUCTS.find(x=>x.id===id)||{})||i.col===c)).reduce((a,i)=>a+i.q,0);
 const PZ=(p,sz)=>{const v=p&&p.szP&&sz?+p.szP[sz]:0;return v>0?v:(p?p.price:0)},pPr=p=>(p.sizes||[]).length?p.sizes.map(x=>PZ(p,x)):[p.price],pMin=p=>Math.min(...pPr(p)),pMax=p=>Math.max(...pPr(p)),PL=p=>{const v=fmt(pMin(p));return pMin(p)<pMax(p)?(LANG==="en"?"from "+v:LANG==="uz"?v+"dan":"от "+v):v};
 const colImg=(p,c)=>{if(!c)return p.img;const i=(p.galc||[]).findIndex(x=>x&&x===c);return i>=0?(p.galt||p.gal)[i]:p.img};
-function openP(id){const p=PRODUCTS.find(x=>x.id===id);if(!p)return;let sz=(p.sizes||[]).length===1?p.sizes[0]:null,qn=1,col=pcolors(p).length===1?pcolors(p)[0]:null;$$(".ov.on").forEach(o=>{if(o.id!=="ovf2"&&o.id!=="ovp")o.classList.remove("on")});$("#dr").classList.remove("on");document.body.classList.remove("cart-open");
+function openP(id){const p=PRODUCTS.find(x=>x.id===id);if(!p)return;const fromFav=$("#ovf2").classList.contains("on")&&favC[id]&&pcolors(p).includes(favC[id]);let sz=(p.sizes||[]).length===1?p.sizes[0]:null,qn=1,col=fromFav?favC[id]:pcolors(p).length===1?pcolors(p)[0]:null;$$(".ov.on").forEach(o=>{if(o.id!=="ovf2"&&o.id!=="ovp")o.classList.remove("on")});$("#dr").classList.remove("on");document.body.classList.remove("cart-open");
  $("#pm").innerHTML=`<div class="pgtop"><button class="pback" data-close aria-label="Назад"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><span>${p.name}</span></div><div class="pp"><div class="ppg"><button class="pfav" data-pfav="${p.id}" aria-label="В избранное">${HEART(fav.includes(p.id))}</button>${p.gal&&p.gal.length>1?`<div class="gal">${p.gal.map((u,i)=>`<img src="${u}" data-col="${esc((p.galc||[])[i]||"")}" alt="">`).join("")}</div><div class="gdots">${p.gal.map((_,i)=>`<i class="${i?"":"on"}"></i>`).join("")}</div>`:p.full?`<img class="ph-fr" src="${p.full}" alt="">`:""}<p class="zhint">Нажмите на фото, чтобы увеличить</p></div><div class="ppi"><h3>${p.name}</h3><b class="ppr">${PL(p)}</b>${pcolors(p).length?`<p style="margin-top:10px;color:#777">Цвет:</p><div class="cols">${pcolors(p).map(c=>`<button data-gc="${esc(c)}" class="${c===col?"on":""}${qByC(p)&&qTr(p)&&!qLeft(p,c)?" out":""}">${esc(LB(p,c))}${qByC(p)&&qTr(p)?`<small class="${qCls(qLeft(p,c))}">${qLeft(p,c)} шт</small>`:""}</button>`).join("")}</div>`:""}${p.desc?`<p class="pdesc" data-noi18n>${esc(p.desc)}</p>`:""}${p.sizes?.length?`<p style="margin-top:10px;color:#777">Размер:</p><div class="sizes">${p.sizes.map(s=>`<button class="sz${s===sz?" on":""}" data-v="${esc(s)}">${esc(LB(p,s))}${PZ(p,s)!==pMin(p)?`<small class="szp">+${fmt(PZ(p,s)-pMin(p)).replace(/\s*сум$/,"")}</small>`:""}</button>`).join("")}</div>`:""}${p.fast?`<div class="fastl">Доставка за 1 день · Карго: 0 сум</div>`:""}${qTr(p)?`<p class="qleft" id="qlf">${qByC(p)&&!col?"Выберите цвет — покажем, сколько осталось":stockBadge({...p,qty:qLeft(p,qByC(p)?col:undefined),qtyC:undefined})}</p>`:""}<div class="q" style="margin:14px 0"><span>Количество:</span><button id="qm">−</button><b id="qv">1</b><button id="qp">+</button></div><button class="btn d" id="pad" ${p.stock===false?"disabled":""} style="width:100%;text-align:center">${p.stock===false?"Нет в наличии":"Добавить в корзину"}</button></div></div><div class="rvs" id="rvs"></div>`;
  $("#ovx").scrollTop=0;
  $$("#pm .gal img,#pm .ph-fr").forEach((im,k)=>im.onclick=()=>openZoom(p.gal&&p.gal.length?p.gal:[p.full],p.gal&&p.gal.length>1?k:0));
  drawReviews(p);
- {const fb=$("#pm [data-pfav]");if(fb)fb.onclick=e=>{e.stopPropagation();toggleFav(p.id);fb.innerHTML=HEART(fav.includes(p.id));fb.classList.remove("pop");void fb.offsetWidth;fb.classList.add("pop")}}
+ {const fb=$("#pm [data-pfav]");if(fb)fb.onclick=e=>{e.stopPropagation();toggleFav(p.id,col);fb.innerHTML=HEART(fav.includes(p.id));fb.classList.remove("pop");void fb.offsetWidth;fb.classList.add("pop")}}
  $$("#pm .sz").forEach(b=>b.onclick=()=>{$$("#pm .sz").forEach(x=>x.classList.remove("on"));b.classList.add("on");sz=b.dataset.v;$("#pm .ppr").textContent=fmt(PZ(p,sz))});
+ if(col){const g=document.querySelector(".gal"),im=g&&[...g.children].find(i=>i.dataset.col===col);if(im)g.scrollLeft=im.offsetLeft-(g.clientWidth-im.offsetWidth)/2}
  {const g=document.querySelector(".gal");if(g){const im=[...g.children],up=()=>{let k=0,best=1e9;const c=g.scrollLeft+g.clientWidth/2;im.forEach((x,i)=>{const d=Math.abs(x.offsetLeft+x.offsetWidth/2-c);if(d<best){best=d;k=i}});im.forEach((x,i)=>x.classList.toggle("cur",i===k));$$(".gdots i").forEach((d,i)=>d.classList.toggle("on",i===k));if(g.dataset.lock)return;const cc=[im[k].dataset.col||""].filter(c=>c&&pcolors(p).includes(c));if(cc.length&&!cc.includes(col)){col=cc[0];$$("[data-gc]").forEach(x=>x.classList.toggle("on",x.dataset.gc===col))}};g.addEventListener("scroll",()=>requestAnimationFrame(up),{passive:true});up();$$(".gdots i").forEach((d,i)=>d.onclick=()=>im[i].scrollIntoView({behavior:"smooth",inline:"center",block:"nearest"}))}}
  $$("[data-gc]").forEach(b=>b.onclick=()=>{col=b.dataset.gc;$$("[data-gc]").forEach(x=>x.classList.toggle("on",x===b));{const e=$("#qlf");if(e)e.innerHTML=stockBadge({...p,qty:qLeft(p,col),qtyC:undefined})}const g=document.querySelector(".gal"),im=[...document.querySelectorAll(".gal img")].find(i=>i.dataset.col===col);if(g&&im){g.dataset.lock="1";clearTimeout(g._lt);g._lt=setTimeout(()=>delete g.dataset.lock,900);g.scrollTo({left:im.offsetLeft-(g.clientWidth-im.offsetWidth)/2,behavior:"smooth"})}});
  $("#qm").onclick=()=>{qn=Math.max(1,qn-1);$("#qv").textContent=qn};$("#qp").onclick=()=>{qn=Math.min(20,qn+1);$("#qv").textContent=qn};
@@ -1047,10 +1053,10 @@ if(v==="sup"){const key="chat:"+(me||"guest"),draw=()=>{const c=$("#cl");if(!c)r
  $("#cs2").onclick=send;$("#cm").onkeydown=e=>{if(e.key==="Enter")send()};return}
 }
 /* избранное и «1 день» */
-function toggleFav(id){fav=fav.includes(id)?fav.filter(x=>x!==id):[...fav,id];ls.s("fav",fav);renderAll();if($("#ovf2").classList.contains("on"))renderFavPage();else toast(fav.includes(id)?"Добавлено в избранное":"Убрано из избранного")}
+function toggleFav(id,col){fav=fav.includes(id)?fav.filter(x=>x!==id):[...fav,id];if(fav.includes(id)&&col)favC[id]=col;else if(!fav.includes(id))delete favC[id];ls.s("favc",favC);ls.s("fav",fav);renderAll();if($("#ovf2").classList.contains("on"))renderFavPage();else toast(fav.includes(id)?"Добавлено в избранное":"Убрано из избранного")}
 function openList(t,l,e){closeAll();$("#lt").textContent=t;$("#lg").innerHTML=l.length?l.map(card).join(""):'<div class="empty">'+e+'</div>';$("#ovl").classList.add("on")}
 const openFav=()=>openFavPage();
-function renderFavPage(){const l=PRODUCTS.filter(p=>fav.includes(p.id));$("#fpage").innerHTML=`<h2 class="pt">Избранное</h2>${l.length?`<div class="grid">${l.map(card).join("").replace(/ loading="lazy"/g,"")}</div>`:'<div class="empty">Здесь пока пусто.<br>Нажмите на сердечко у товара, чтобы сохранить его.</div>'}`}
+function renderFavPage(){const l=PRODUCTS.filter(p=>fav.includes(p.id));$("#fpage").innerHTML=`<h2 class="pt">Избранное</h2>${l.length?`<div class="grid">${l.map(p=>card(favC[p.id]?{...p,img:colImg(p,favC[p.id])||p.img}:p)).join("").replace(/ loading="lazy"/g,"")}</div>`:'<div class="empty">Здесь пока пусто.<br>Нажмите на сердечко у товара, чтобы сохранить его.</div>'}`}
 function openFavPage(){closeAll();if(!SWP){$("#ovf2").classList.remove("noanim");renderFavPage()}$("#ovf2").classList.add("on");setTab(1)}
 const openFast=()=>openList("Доставка за 1 день",PRODUCTS.filter(p=>p.fast),"Товары с доставкой за 1 день скоро появятся");
 $("#bf").onclick=$("#bf2").onclick=openFav;$("#bt2").onclick=openFast;
@@ -1074,7 +1080,8 @@ $("#pa").onclick=async()=>{const c=$("#pc").value.trim();if(!c)return toast("В�
 document.addEventListener("gesturestart",e=>e.preventDefault());
 /* свайп между вкладками: каталог → избранное → корзина → профиль */
 let curTab=0;
-function setTab(i){curTab=i;$$(".bar .bb").forEach((b,k)=>b.classList.toggle("act",k===i))}
+function setTab(i){curTab=i;$$(".bar .bb").forEach((b,k)=>b.classList.toggle("act",k===i));bindTo(i,true)}
+function bindTo(pos,anim){const el=$(".bar .bind");if(!el)return;el.style.transition=anim?"":"none";el.style.transform=`translateX(${pos*100}%)`}
 const PAGES=()=>[$("#ovf2"),$("#dr"),$("#ovp")].filter(Boolean);
 function resetPages(){PAGES().forEach(el=>{el.style.transition="";el.style.transform="";el.style.willChange="";el.style.boxShadow=""})}
 function goTab(i){resetPages();if(i===0){closeAll();setTab(0)}else if(i===1)openFavPage();else if(i===2)openCart();else openPr()}
@@ -1098,13 +1105,14 @@ document.addEventListener("touchmove",e=>{
  const dir=dg.b>curTab?-1:1,dx=dir*Math.max(0,dir*x);dg.dx=dx;
  pgEls(curTab).forEach(el=>el.style.transform=`translateX(${dx}px)`);
  pgEls(dg.b).forEach(el=>el.style.transform=`translateX(${dx-dir*dg.W}px)`);
+ bindTo(curTab+(dg.b-curTab)*Math.min(1,Math.abs(dx)/dg.W),false);
 },{passive:false});
 function endDrag(cancel){
  if(!dg||dg.mode!==1){dg=null;return}
  const d=dg;dg=null;const W=d.W,dir=d.b>curTab?-1:1,vel=Math.abs(d.dx)/Math.max(1,Date.now()-d.t);
  const commit=!cancel&&(Math.abs(d.dx)>W*.3||(vel>.45&&Math.abs(d.dx)>40));
  const cur=pgEls(curTab),nb=pgEls(d.b),all=[...cur,...nb];PGANIM=true;const tok=PGT;
- all.forEach(el=>el.style.transition="transform .34s cubic-bezier(.22,1,.36,1)");
+ all.forEach(el=>el.style.transition="transform .34s cubic-bezier(.22,1,.36,1)");bindTo(commit?d.b:curTab,true);
  cur.forEach(el=>el.style.transform=`translateX(${commit?dir*W:0}px)`);
  nb.forEach(el=>el.style.transform=`translateX(${commit?0:-dir*W}px)`);
  setTimeout(()=>{try{all.forEach(el=>{el.style.transition="";el.style.transform="";el.style.willChange="";el.style.boxShadow=""});if(tok!==PGT){}else if(commit)goTabInstant(d.b);else{resetPages();pgEls(d.b).forEach(el=>el.classList.remove("noanim"))}}finally{PGANIM=false;
@@ -1112,6 +1120,18 @@ function endDrag(cancel){
   const want=curTab===1?$("#ovf2"):curTab===2?$("#dr"):curTab===3?$("#ovp"):null;PAGES().forEach(el=>{if(el!==want&&el.classList.contains("on")&&!(el.id==="dr"&&document.body.classList.contains("cart-open")&&curTab===2))el.classList.remove("on")})}},360);
 }
 document.addEventListener("touchend",()=>endDrag(false),{passive:true});
+/* нажатие на вкладку внизу — тоже плавное перелистывание */
+function animTab(b){
+ if(b===curTab||PGANIM||$$(".ov.on").some(x=>x.id!=="ovp"&&x.id!=="ovf2")||window.innerWidth>860){goTab(b);return}
+ const W=window.innerWidth,dir=b>curTab?-1:1,cur=pgEls(curTab),nb=pgEls(b),all=[...cur,...nb],tok=PGT;PGANIM=true;
+ pgPrep(b);nb.forEach(el=>{el.style.transition="none";el.style.transform=`translateX(${-dir*W}px)`;el.style.willChange="transform";el.style.boxShadow="0 0 40px rgba(0,0,0,.25)"});
+ cur.forEach(el=>{el.style.transition="none";el.style.willChange="transform"});
+ void document.body.offsetWidth;bindTo(b,true);
+ requestAnimationFrame(()=>{all.forEach(el=>el.style.transition="transform .38s cubic-bezier(.22,1,.36,1)");cur.forEach(el=>el.style.transform=`translateX(${dir*W}px)`);nb.forEach(el=>el.style.transform="translateX(0)")});
+ setTimeout(()=>{try{all.forEach(el=>{el.style.transition="";el.style.transform="";el.style.willChange="";el.style.boxShadow=""});if(tok===PGT)goTabInstant(b)}finally{PGANIM=false}},400);
+}
+$(".bar").addEventListener("click",e=>{const btn=e.target.closest(".bb");if(!btn)return;const i=[...$(".bar").querySelectorAll(".bb")].indexOf(btn);if(i<0)return;
+ if(i===0&&curTab===0){return}e.stopPropagation();e.preventDefault();animTab(i)},true);
 document.addEventListener("touchcancel",()=>endDrag(true),{passive:true});
 /* фильтры */
 const pcolors=p=>p.colors&&p.colors.length?p.colors:(p.color?[p.color]:[]);
