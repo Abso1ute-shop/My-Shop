@@ -591,6 +591,12 @@ html body .trk-s i{width:28px;height:28px}
 .okt span{display:flex;flex-direction:column;gap:2px;padding-top:3px}.okt b{font-size:14.5px}.okt small{font-size:12.5px;color:var(--mut)}
 .okt>div{opacity:0;transform:translateY(8px);animation:okin .45s ease forwards}.okt>div:nth-child(1){animation-delay:.9s}.okt>div:nth-child(2){animation-delay:1.02s}.okt>div:nth-child(3){animation-delay:1.14s}@keyframes okin{to{opacity:1;transform:none}}
 .okb{display:block;width:100%;margin-top:10px;padding:12px;border:0;background:none;color:var(--fg);font-weight:600;font-size:15px;text-decoration:underline;text-underline-offset:4px;cursor:pointer}
+.oli{display:flex;flex-direction:column;gap:8px;margin:10px 0 10px}
+.olr{display:flex;align-items:center;gap:12px;cursor:pointer}
+.olp{position:relative;flex:none;width:58px;height:58px;border-radius:12px;border:1.5px solid var(--fg);background:var(--card);overflow:hidden}
+.olp img{width:100%;height:100%;object-fit:cover;display:block}
+.olp em{position:absolute;right:3px;bottom:3px;font-style:normal;font-size:11px;font-weight:800;padding:1px 5px;border-radius:7px;background:var(--fg);color:var(--bg)}
+.olt{display:flex;flex-direction:column;gap:2px;min-width:0}.olt b{font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.olt small{font-size:12.5px;color:var(--mut)}
 </style>
 </head>
 <body>
@@ -1020,13 +1026,16 @@ function trackHTML(o){
  const i=TRS[o.st],idx=i===undefined?-1:i,p=Math.max(idx,0)/(TRK.length-1);
  return`<div class="trk" style="--p:${p}"><div class="trk-l"><div class="trk-f" style="width:${p*100}%"></div></div><div class="trk-t">${TSV(idx)}</div><div class="trk-n">${TRK.map((t,k)=>`<div class="trk-s${k<=idx?" on":""}${k===idx?" cur":""}"><i>${TSV(k)}</i><span>${TRKL[k]}</span></div>`).join("")}</div></div>`;
 }
+function olines(o){const L=(o.lines||[]).filter(l=>l&&(l.name||l.id));if(!L.length)return`<div style="margin:8px 0;line-height:1.5">${esc(o.items)}</div>`;
+ return`<div class="oli">${L.map(l=>{const p=PRODUCTS.find(x=>x.id===l.id),iid=l.img||(p&&p.imgs&&p.imgs[0])||"",th=p&&(p.th||[]).includes(iid),src=iid?API+"/img/"+iid+(th?"?t=1":""):"",ex=[l.col,l.sz].filter(Boolean).map(v=>LB(p,v)).join(", ");
+  return`<div class="olr"${p?` data-p="${p.id}"`:""}><span class="olp">${src?`<img src="${src}" alt="" loading="lazy" decoding="async" onerror="this.remove()">`:""}${l.q>1?`<em>×${l.q}</em>`:""}</span><span class="olt"><b>${esc(p?p.name:l.name)}</b>${ex?`<small>${esc(ex)}</small>`:""}</span>${l.q>1?"":""}</div>`}).join("")}</div>`}
 function orderCard(o){
  const cg=o.cargo;let box="";
  if(cg)box=`<div class="cgb"><div class="r2"><span>Вес: <b>${cg.kg} кг</b> · ${cg.type==="avia"?"Авиа":"Авто"}</span><b>${fmt(cg.sum)}</b></div>${(cg.items||[]).length>1?`<div class="cgi">${cg.items.map(x=>esc(x.name)+(x.col?" ("+esc(x.col)+")":"")+": "+x.kg+" кг — "+fmt(x.sum)).join("<br>")}</div>`:""}${cg.paid?'<div class="ok2">✅ Карго оплачено</div>':cg.pending?'<div class="mu2">Чек отправлен — ждём подтверждения</div>':["Ожидает оплаты карго","В пути","На складе"].includes(o.st)?`${o.st==="На складе"?`<div class="whp"><svg viewBox="0 0 24 24"><path d="M3 20V9l9-5 9 5v11"/><path d="M7 20v-7h10v7"/></svg><span><b>Заказ уже на нашем складе.</b> Чтобы мы отправили его вам, оплатите карго.</span></div>`:""}<button class="btn d" data-cg="${esc(o.id)}" style="width:100%;text-align:center;margin-top:10px">Оплатить карго ${fmt(cg.sum)}</button>`:""}</div>`;
  const rv=ls.g("rv:"+me,{d:[],c:[]}),todo=(o.st==="Завершён"||o.st==="Доставлен")?(o.lines||[]).filter((l,k,a)=>rv.c.includes(l.id)&&a.findIndex(x=>x.id===l.id)===k):[];
  if(todo.length)box+=`<div class="orv"><b>Оцените покупку</b>${todo.map(l=>`<div class="orl"><span>${esc(l.name)}</span><span class="ors">${[1,2,3,4,5].map(n=>`<button data-rvo="${l.id}" data-rvs="${n}" aria-label="${n}"><svg viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.8l-5.2 2.8 1-5.8-4.3-4.1 5.9-.8z"/></svg></button>`).join("")}</span></div>`).join("")}</div>`;
  if(o.ship&&!cg)box=`<div class="cgi">Доставка: ${o.ship==="avia"?"Авиа, 5–7 дней":o.ship==="fast"?"за 1 день, карго 0 сум":"Авто, 13–15 дней"}</div>`+box;
- return`<div class="ord"><div class="r2"><b>№${esc(o.id)}</b><span class="stc">${esc(STT[o.st]||o.st)}</span></div><div class="mu2">${esc(o.d)}</div><div style="margin:8px 0;line-height:1.5">${esc(o.items)}</div><b>${fmt(o.sum)}</b>${trackHTML(o)}${box}</div>`;
+ return`<div class="ord"><div class="r2"><b>№${esc(o.id)}</b><span class="stc">${esc(STT[o.st]||o.st)}</span></div><div class="mu2">${esc(o.d)}</div>${olines(o)}<b>${fmt(o.sum)}</b>${trackHTML(o)}${box}</div>`;
 }
 function payUI(amount,bal){
  const fz=!!((getU()[me]||{}).frz),can=!fz&&bal>=amount,st={method:can?"bal":"card",receipt:""};
