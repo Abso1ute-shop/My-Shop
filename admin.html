@@ -210,7 +210,7 @@ const trKey=p=>{const l=trLabels(p);return l.length?trHash(p.name,String(p.desc|
 const needTr=p=>!p.tr||!p.tr.en||!p.tr.uz||p.tr.h!==trKey(p);
 function dProd(){
  const l=P.filter(p=>(pcf==="all"||(pcf==="fast"?p.fast:pcf==="out"?p.stock===false:p.cat===pcf))&&(!q||p.name.toLowerCase().includes(q)));
- $("#v").innerHTML=`<div class="bar"><input id="sq" placeholder="Поиск товара" value="${esc(q)}"><button class="b" id="add">+ Добавить товар</button></div><div class="chips">${[["all","Все ("+P.length+")"],["fast","⚡ Доставка 1 день ("+P.filter(x=>x.fast).length+")"],["out","Нет в наличии ("+P.filter(x=>x.stock===false).length+")"],...Object.entries(CATN).map(([k,v])=>[k,v+" ("+P.filter(x=>x.cat===k).length+")"])].map(c=>`<button data-pcf="${c[0]}" class="${pcf===c[0]?"on":""}">${c[1]}</button>`).join("")}</div><button class="b s" id="imp" style="margin-bottom:8px">Импорт старых постов из канала</button>${P.some(x=>!x.desc)?`<button class="b s" id="aidall" style="margin-bottom:12px">✨ Придумать описания для товаров без описания (${P.filter(x=>!x.desc).length})</button>`:""}${P.some(needTh)?`<button class="b s" id="thall" style="margin-bottom:12px">⚡ Ускорить сайт: мини-фото для каталога (${P.reduce((a,x)=>a+thMissing(x).length,0)} фото)</button>`:""}${P.some(x=>badName(x.name))?`<button class="b s" id="nmall" style="margin-bottom:12px">✨ Исправить названия по фото (${P.filter(x=>badName(x.name)).length})</button>`:""}${P.some(needTr)?`<button class="b s" id="trall" style="margin-bottom:12px">🌐 Перевести товары на English и O'zbek (${P.filter(needTr).length})</button>`:""}${P.length?`<button class="b s" id="aidre" style="margin-bottom:12px">✨ Переписать все описания заново по фото (${P.length})</button>`:""}<details class="hint"><summary>Как добавить товар через Telegram-канал</summary><p>Опубликуйте в канале пост с фото и такой подписью — товар сам появится на сайте:</p><pre>Название товара
+ $("#v").innerHTML=`<div class="bar"><input id="sq" placeholder="Поиск товара" value="${esc(q)}"><button class="b" id="add">+ Добавить товар</button></div><div class="chips">${[["all","Все ("+P.length+")"],["fast","⚡ Доставка 1 день ("+P.filter(x=>x.fast).length+")"],["out","Нет в наличии ("+P.filter(x=>x.stock===false).length+")"],...Object.entries(CATN).map(([k,v])=>[k,v+" ("+P.filter(x=>x.cat===k).length+")"])].map(c=>`<button data-pcf="${c[0]}" class="${pcf===c[0]?"on":""}">${c[1]}</button>`).join("")}</div><button class="b s" id="imp" style="margin-bottom:8px">Импорт старых постов из канала</button>${P.some(x=>!x.desc)?`<button class="b s" id="aidall" style="margin-bottom:12px">✨ Придумать описания для товаров без описания (${P.filter(x=>!x.desc).length})</button>`:""}${P.some(needTh)?`<button class="b s" id="thall" style="margin-bottom:12px">⚡ Ускорить сайт: мини-фото для каталога (${P.reduce((a,x)=>a+thMissing(x).length,0)} фото)</button>`:""}${P.some(x=>badName(x.name))?`<button class="b s" id="nmall" style="margin-bottom:12px">✨ Исправить названия по фото (${P.filter(x=>badName(x.name)).length})</button>`:""}${P.some(x=>(x.imgs||[]).length)?`<button class="b s" id="colall" style="margin-bottom:12px">🎨 Заново определить цвета по фото (${P.filter(x=>(x.imgs||[]).length).length} товаров)</button>`:""}${P.some(needTr)?`<button class="b s" id="trall" style="margin-bottom:12px">🌐 Перевести товары на English и O'zbek (${P.filter(needTr).length})</button>`:""}${P.length?`<button class="b s" id="aidre" style="margin-bottom:12px">✨ Переписать все описания заново по фото (${P.length})</button>`:""}<details class="hint"><summary>Как добавить товар через Telegram-канал</summary><p>Опубликуйте в канале пост с фото и такой подписью — товар сам появится на сайте:</p><pre>Название товара
 Цена: 250000
 Категория: верх / низ / обувь / аксессуары / техника
 Размеры: S-XL (по желанию)
@@ -229,6 +229,10 @@ function dProd(){
    const cat=r.cat||x.cat,sizes=cat!==x.cat&&(!(x.sizes||[]).length||(x.sizes||[]).join(" ")===defSz(x.cat).join(" ")||/^(XS |S )/.test((x.sizes||[]).join(" ")))?(r.sizes||defSz(cat)):x.sizes;
    const s2=await call("/admin/product",{p:{...x,name:r.name,cat,sizes,colorsSet:!!x.colorsSet,addColors:[]},add:[]});if(s2&&s2.ok){ok++;b.textContent=`✨ Пишу описание… ${i+1} из ${l.length}`;await call("/admin/product/describe",{id:x.id,img,force:true})}else er=(s2&&s2.err)||"не сохранилось"}
   if(ok<l.length&&er)alert("Исправлено: "+ok+" из "+l.length+"\nОшибка: "+er);else toast("Исправлено названий: "+ok);show("prod")};
+ if($("#colall"))$("#colall").onclick=async()=>{const l=P.filter(x=>(x.imgs||[]).length),b=$("#colall");if(!confirm("ИИ заново посмотрит на фото "+l.length+" товаров и подпишет цвета (только товар, без фона; одинаковые варианты — одно название, разные — разные). Цвета, введённые вручную, не меняются. Займёт примерно "+Math.max(1,Math.ceil(l.length*20/60))+" мин. Не закрывайте страницу. Продолжить?"))return;b.disabled=true;let ok=0,er="";
+  for(let i=0;i<l.length;i++){if(!document.body.contains(b))break;const x=l[i];b.textContent=`🎨 Смотрю на фото… ${i+1} из ${l.length}`;const imgs={};for(const iid of (x.imgs||[]).slice(0,10)){try{imgs[iid]=await smallOf(API+"/img/"+iid,448)}catch(e){}}
+   const r=await call("/admin/product/colors",{id:x.id,imgs,force:true});if(r&&r.ok){ok++;if(r.item)Object.assign(x,r.item)}else{er=(r&&r.err)||"нет связи";if(/лимит/i.test(er))break}}
+  if(ok<l.length&&er)alert("Готово: "+ok+" из "+l.length+"\nОшибка: "+er);else toast("Цвета обновлены: "+ok+" товаров");show("prod")};
  if($("#trall"))$("#trall").onclick=async()=>{const l=P.filter(needTr),b=$("#trall");let er="";if(!confirm("ИИ переведёт названия и описания "+l.length+" товаров на английский и узбекский. Не закрывайте страницу. Продолжить?"))return;b.disabled=true;let ok=0;
   for(let i=0;i<l.length;i++){if(!document.body.contains(b))break;b.textContent=`🌐 Перевожу… ${i+1} из ${l.length}`;const r=await call("/admin/product/translate",{id:l[i].id});if(r&&r.ok){ok++;l[i].tr=r.tr}else{er=(r&&r.err)||"нет связи";if(/limit|3036|neuron/i.test(er))break}}
   if(ok<l.length&&er)alert("Переведено: "+ok+" из "+l.length+"\nПричина ошибки: "+er+(/limit|3036|neuron/i.test(er)?"\n\nЗакончился дневной лимит ИИ Cloudflare — продолжите завтра.":""));else toast("Переведено: "+ok);show("prod")};
@@ -260,21 +264,43 @@ function editP(id){
  let trDirty=false,trOpen=false;const trE={en:{n:(p.tr&&p.tr.en&&p.tr.en.n)||"",d:(p.tr&&p.tr.en&&p.tr.en.d)||""},uz:{n:(p.tr&&p.tr.uz&&p.tr.uz.n)||"",d:(p.tr&&p.tr.uz&&p.tr.uz.d)||""}};
  const origRu=trHash(p.name,p.desc||"");
  let ph=(p.imgs||[]).map(i=>({id:i,url:API+"/img/"+i,col:(p.imgColors||{})[i]||""}));
+ ph.forEach(x=>{const a=(p.imgAI||{})[x.id];if(x.col&&a&&a.b===x.col)x.ai=x.col});   // цвет поставил ИИ (не вручную)
+ let aiBusy=false;
+ const baseDesc=old?String(old.desc||""):"",baseImg=old?Object.fromEntries((old.imgs||[]).map(i=>[i,(old.imgColors||{})[i]||""])):{},baseColors=old?(old.colors||[]).slice():[];
  const origCols=(p.colors&&p.colors.length?p.colors:(p.color?[p.color]:[])).join("|");
  const sh=document.createElement("div");sh.className="sheet";document.body.appendChild(sh);
  qtyHTML=()=>{if(!p.fast)return"";const cols=(p.colors&&p.colors.length?p.colors:[]),qc=p.qtyC||{};
   return`<div class="card" id="qbox" style="margin-top:8px"><b>Сколько в наличии</b><p class="mu" style="margin:4px 0 10px;line-height:1.45">${cols.length?"Укажите штуки по каждому цвету. Когда цвет закончится, его нельзя будет заказать; когда закончатся все — товар станет «Нет в наличии».":"Укажите количество. Добавьте цвета выше, чтобы считать штуки по цветам. Пусто — не считать (1 заказ = товар уходит из наличия)."}</p>${cols.length?cols.map(c=>`<div class="r" style="margin-bottom:8px"><span>${esc(c)}</span><span style="display:flex;align-items:center;gap:6px"><input data-qc="${esc(c)}" type="number" inputmode="numeric" min="0" value="${qc[c]??0}" style="width:90px;margin:0;text-align:center"> шт</span></div>`).join("")+`<div class="r mu"><span>Всего</span><b id="qtot">${cols.reduce((a,c)=>a+(+qc[c]||0),0)}</b></div>`:`<div class="r"><span>Количество</span><span style="display:flex;align-items:center;gap:6px"><input id="qn" type="number" inputmode="numeric" min="0" value="${p.qty??""}" placeholder="—" style="width:90px;margin:0;text-align:center"> шт</span></div>`}</div>`};
+ // ИИ определяет цвета всех фото (новых и уже сохранённых). Ручные цвета не трогает, результат можно поправить до сохранения.
+ const detectCols=async auto=>{
+  if(aiBusy||!document.body.contains(sh))return;if($("#fn")){p.name=$("#fn").value;p.cat=$("#fc").value}$$("[data-pc]",sh).forEach(i=>{const x=ph[+i.dataset.pc];if(x)x.col=i.value.trim()});if(!ph.length)return;
+  if(!ph.some(x=>!x.col||x.col===x.ai)){if(!auto)toast("У всех фото цвет введён вручную — очистите поле под фото, чтобы ИИ определил заново");return}
+  aiBusy=true;const btn=()=>$("#ai");if(btn()){btn().disabled=true;btn().textContent="🎨 ИИ смотрит на фото…"}
+  try{
+   const imgs=[];for(const x of ph){try{imgs.push(await smallOf(x.url,448))}catch(e){imgs.push("")}}
+   const cols=ph.map(x=>x.col&&x.col!==x.ai?x.col:"");
+   const r=await call("/admin/colors",{name:p.name,cat:p.cat,imgs,cols});
+   if(!document.body.contains(sh))return;
+   if(!r||!r.ok){if(!auto||r)toast(r&&r.err||"Нет связи с сервером");return}
+   $$("[data-pc]",sh).forEach(i=>{const x=ph[+i.dataset.pc];if(x)x.col=i.value.trim()});   // то, что успели ввести, пока ИИ думал
+   let n=0;(r.names||[]).forEach((nm,i)=>{const x=ph[i];if(!x||!nm||(x.col&&x.col!==x.ai))return;x.col=nm;x.ai=nm;n++});
+   $$("[data-pc]",sh).forEach(i=>{const x=ph[+i.dataset.pc];if(x)i.value=x.col||""});
+   const all=[...new Set(ph.map(x=>x.col).filter(Boolean))];if($("#fo"))$("#fo").placeholder=all.join(", ")||"Чёрный, Белый";
+   toast(n?"Цвета по фото: "+all.join(", ")+" — проверьте и сохраните":"ИИ не смог определить цвета — впишите вручную");
+  }catch(e){if(!auto)toast("Ошибка: "+e.message)}
+  finally{aiBusy=false;const b=btn();if(b){b.disabled=false;b.textContent="🎨 Определить цвета по фото (ИИ)"}}
+ };
  const render=()=>{
   sh.innerHTML=`<div class="in"><div class="r"><h2>${old?"Изменить товар":"Новый товар"}</h2><button class="g" id="cl">Закрыть</button></div>
   <span class="lb">Фото (первое — главное)</span><div class="ph-l">${ph.map((x,i)=>`<div class="ph-i"><img src="${x.url}" alt=""><button class="x" data-rm="${i}">✕</button>${i>0&&x.id?`<button class="mk" data-mk="${i}">Сделать главным</button>`:""}<input class="pcol" data-pc="${i}" value="${esc(x.col||"")}" placeholder="Цвет" list="colist"></div>`).join("")}<label class="ph-add">+ Фото<input type="file" id="pf" accept="image/*" multiple hidden></label></div>
-  ${old&&ph.some(x=>x.id)?`<button class="b s" id="ai" style="margin-top:8px">Определить цвета по фото (ИИ)</button>`:""}<p class="mu" style="font-size:12px;margin:6px 0 0">Под каждым фото — его цвет. На сайте кнопка цвета листает к этому фото, а в корзине показывается фото выбранного цвета.</p>
+  ${ph.length?`<button class="b s" id="ai" style="margin-top:8px" ${aiBusy?"disabled":""}>${aiBusy?"🎨 ИИ смотрит на фото…":"🎨 Определить цвета по фото (ИИ)"}</button>`:""}<p class="mu" style="font-size:12px;margin:6px 0 0">Под каждым фото — его цвет. На сайте кнопка цвета листает к этому фото, а в корзине показывается фото выбранного цвета. ИИ смотрит только на сам товар (не на фон и не на другие вещи на фото); одинаковые варианты получают одно название, разные — разные (например «Белый» и «Чёрно-белый»). Цвет, введённый вручную, ИИ не меняет.</p>
   <datalist id="colist">${["Чёрный","Белый","Серый","Синий","Голубой","Красный","Бордовый","Зелёный","Хаки","Бежевый","Коричневый","Розовый","Фиолетовый","Жёлтый","Оранжевый","Чёрный/Белый"].map(c=>`<option value="${c}">`).join("")}</datalist><div class="r" style="margin-top:10px"><span class="lb" style="margin:0">Название</span><button class="g" id="ainm" style="font-weight:700;color:var(--fg)">✨ По фото</button></div><input id="fn" value="${esc(p.name)}" placeholder="Например: Худи Oversize">${badName(p.name)?`<p class="mu" style="color:#e5a50a;font-size:12px;margin:4px 0 0">Похоже, это не название товара — нажмите «✨ По фото»</p>`:""}
   <span class="lb">Цена, сум</span><input id="fp" type="number" inputmode="numeric" value="${esc(p.price)}" placeholder="250000">
   <span class="lb">Категория</span><select id="fc">${Object.entries(CATN).map(([k,v])=>`<option value="${k}" ${p.cat===k?"selected":""}>${v}</option>`).join("")}</select>
   <span class="lb">Размеры через пробел или запятую</span><input id="fs" value="${esc((p.sizes||[]).join(" "))}" placeholder="S M L XL">
   <div class="chips"><button data-sz="${CLS.join(' ')}">Одежда XS–5XL</button><button data-sz="${SHS.join(' ')}">Обувь 36–44</button><button data-sz="Маленький Средний Большой">Маленький / Средний / Большой</button><button data-sz="Стандарт">Стандарт</button><button data-sz="">Без размеров</button></div>
   ${(p.sizes||[]).length>1?`<div class="card" id="szbox" style="margin-top:8px"><div class="r"><b>Цена по размерам</b><button class="g" id="szc">Очистить</button></div><p class="mu" style="margin:4px 0 10px;line-height:1.45">Пусто — обычная цена. На сайте будет «от …», а при выборе размера покажется его цена.</p>${p.sizes.map(z=>`<div class="r" style="margin-bottom:8px"><span>${esc(z)}</span><span style="display:flex;align-items:center;gap:6px"><input data-szp="${esc(z)}" type="number" inputmode="numeric" min="0" value="${(p.szP||{})[z]??""}" placeholder="${esc(p.price||"цена")}" style="width:130px;margin:0;text-align:center"> сум</span></div>`).join("")}</div>`:""}
-  <span class="lb">Цвета через запятую (для товаров из канала определяются по фото сами)</span><input id="fo" value="${esc((p.colors&&p.colors.length?p.colors:(p.color?[p.color]:[])).join(", "))}" placeholder="Чёрный, Белый">
+  <span class="lb">Цвета через запятую (пусто — возьмутся с фото)</span><input id="fo" value="${esc((p.colors&&p.colors.length?p.colors:(p.color?[p.color]:[])).join(", "))}" placeholder="${esc([...new Set(ph.map(x=>x.col).filter(Boolean))].join(", ")||"Чёрный, Белый")}">
   <div class="r" style="margin-top:10px"><span class="lb" style="margin:0">Описание</span><button class="g" id="aid" style="font-weight:700;color:var(--fg)">✨ Придумать</button></div><textarea id="fd" placeholder="Материал, посадка, особенности — или нажмите «Придумать»">${esc(p.desc)}</textarea>
   <details class="card trbox" id="trbox" ${trOpen?"open":""} style="margin-top:10px"><summary style="cursor:pointer;font-weight:700;display:flex;justify-content:space-between;gap:8px"><span>🌐 Перевод EN / UZ</span><span class="mu" style="font-weight:500">${trE.en.n||trE.uz.n?(trDirty?"изменён":"есть"):"нет — переведётся при сохранении"}</span></summary>
    <button class="b s" id="trai" style="margin:10px 0 4px">🌐 Перевести ИИ сейчас</button><p class="mu" style="font-size:12px;margin:0 0 6px">Проверьте и при необходимости поправьте. Если поля пустые — ИИ переведёт сам при сохранении.</p>
@@ -297,38 +323,33 @@ function editP(id){
    p.name=r.name;const defs=defSz(p.cat).join(" ");if(r.cat&&r.cat!==p.cat){p.cat=r.cat;if(!p.sizes.length||p.sizes.join(" ")===defs||/^(XS |S )/.test(p.sizes.join(" ")))p.sizes=(r.sizes&&r.sizes.length?r.sizes:defSz(r.cat)).slice()}render();toast("Название: "+r.name+(r.cat?" · "+(CATN[r.cat]||""):""))};
   ["#ten","#ted","#tun","#tud"].forEach(k=>$(k).oninput=()=>{trDirty=true});
   $("#trai").onclick=async()=>{keep();if(!p.name.trim())return toast("Сначала введите название");const b=$("#trai");b.disabled=true;b.textContent="🌐 Перевожу…";
-   const r=await call("/admin/translate",{name:p.name,desc:p.desc});b.disabled=false;b.textContent="🌐 Перевести ИИ ещё раз";
+   const r=await call("/admin/translate",{name:p.name,desc:p.desc,labels:trLabels({colors:p.colors,sizes:p.sizes,imgColors:Object.fromEntries(ph.map((x,i)=>[i,x.col||""]))})});b.disabled=false;b.textContent="🌐 Перевести ИИ ещё раз";
    if(!r||!r.ok)return toast(r&&r.err||"Нет связи");if(r.tr.en){trE.en={n:r.tr.en.n,d:r.tr.en.d||""}}if(r.tr.uz){trE.uz={n:r.tr.uz.n,d:r.tr.uz.d||""}}trDirty=true;trOpen=true;render();toast(r.partial?"Переведено частично — проверьте поля":"Переведено — проверьте и сохраните")};
   $("#aid").onclick=async()=>{keep();if(!p.name.trim())return toast("Сначала введите название");const b=$("#aid");b.disabled=true;b.textContent="✨ Пишу…";
-   let img="";if(ph[0]){b.textContent="✨ Смотрю на фото…";try{img=await smallOf(ph[0].url,512)}catch(e){}b.textContent="✨ Пишу…"}
+   let img="";if(ph[0]){b.textContent="✨ Смотрю на фото…";try{img=await smallOf(ph[0].url,512)}catch(e){}b.textContent="✨ Пишу… (до минуты)"}
    const r=await call("/admin/describe",{name:p.name,cat:p.cat,colors:p.colors.length?p.colors:ph.map(x=>x.col).filter(Boolean),sizes:p.sizes,hint:"",img});b.disabled=false;b.textContent="✨ Ещё вариант";
    if(!r||!r.ok)return toast(r&&r.err||"Нет связи");$("#fd").value=r.text;p.desc=r.text};
-  if($("#ai"))$("#ai").onclick=async()=>{keep();const b=$("#ai");b.disabled=true;b.textContent="Определяю цвета…";
-   try{const imgs={};for(const x of ph.filter(y=>y.id))imgs[x.id]=await smallOf(x.url);
-    const r=await call("/admin/product/colors",{id:old.id,imgs});
-    if(!r||!r.ok){toast(r&&r.err||"Нет связи с сервером");b.disabled=false;b.textContent="Определить цвета по фото (ИИ)";return}
-    const ic=(r.item&&r.item.imgColors)||{};ph.forEach(x=>{if(x.id&&ic[x.id])x.col=ic[x.id]});
-    if(r.item&&!r.item.colorsSet){p.colors=r.item.colors||[];$("#fo").value=p.colors.join(", ")}
-    Object.assign(old,r.item||{});toast(r.found?"Цвета определены: "+r.found+" фото":"ИИ не смог определить цвета");render()}
-   catch(e){toast("Ошибка: "+e.message);b.disabled=false;b.textContent="Определить цвета по фото (ИИ)"}};
+  if($("#ai"))$("#ai").onclick=()=>detectCols(false);
   $("#fc").onchange=()=>{keep();p.sizes=defSz(p.cat).slice();render()};
   $("#t4").onchange=()=>{keep();render()};const soft=()=>{keep();clearTimeout(sh._rt);const go=()=>{const b=$("#sv");if(!document.body.contains(sh)||(b&&b.disabled))return;const a=document.activeElement;if(a&&sh.contains(a)&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)&&a.type!=="checkbox"&&a.type!=="file"){a.addEventListener("blur",()=>{clearTimeout(sh._rt);sh._rt=setTimeout(go,450)},{once:true});return}keep();const y=sh.scrollTop;render();sh.scrollTop=y};sh._rt=setTimeout(go,450)};$("#fs").onchange=soft;$("#fp").onchange=soft;if($("#szc"))$("#szc").onclick=()=>{keep();p.szP={};render()};$("#fo").onchange=soft;
   $$("[data-qc],#qn",sh).forEach(i=>i.oninput=()=>{const t=$$("[data-qc]",sh).reduce((a,x)=>a+(Math.max(0,+x.value)||0),0);const e=$("#qtot");if(e)e.textContent=t});
   $$("[data-sz]",sh).forEach(b=>b.onclick=()=>{keep();p.sizes=b.dataset.sz.split(" ").filter(Boolean);render()});
   $$("[data-rm]",sh).forEach(b=>b.onclick=()=>{keep();ph.splice(+b.dataset.rm,1);render()});
   $$("[data-mk]",sh).forEach(b=>b.onclick=()=>{keep();const i=+b.dataset.mk;ph.unshift(ph.splice(i,1)[0]);render()});
-  $("#pf").onchange=e=>{keep();const fs=[...e.target.files].slice(0,10-ph.length);let n=fs.length;if(!n)return;fs.forEach(f=>shrink(f,d=>{ph.push({data:d,url:d});if(--n===0){if(document.body.contains(sh)&&$("#fn"))soft();else render()}}))};
+  $("#pf").onchange=e=>{keep();const fs=[...e.target.files].slice(0,10-ph.length);let n=fs.length;if(!n)return;fs.forEach(f=>shrink(f,d=>{ph.push({data:d,url:d});if(--n===0){if(document.body.contains(sh)&&$("#fn"))soft();else render();if(ph.some(x=>!x.col))setTimeout(()=>detectCols(true),600)}}))};
   $("#sv").onclick=async()=>{keep();const price=Math.round(+p.price);
    if(!p.name.trim())return toast("Введите название");if(!(price>0))return toast("Введите цену");
    const btn=$("#sv");btn.disabled=true;btn.textContent="Сохраняю…";
-   const body={p:{id:old?old.id:undefined,name:p.name,price,cat:p.cat,sizes:p.sizes,szP:p.szP||{},colors:p.colors,colorsSet:p.colors.join("|")===origCols?!!(old&&old.colorsSet):p.colors.length>0,desc:p.desc,trManual:trDirty&&(trE.en.n||trE.uz.n)?trE:undefined,stock:p.stock,isNew:p.isNew,pop:p.pop,fast:p.fast,preorder:p.preorder,qty:p.fast&&!p.colors.length?(p.qty??""):"",qtyC:p.fast&&p.colors.length?(p.qtyC||{}):{},imgs:ph.filter(x=>x.id).map(x=>x.id),imgColors:Object.fromEntries(ph.filter(x=>x.id).map(x=>[x.id,x.col||""])),addColors:ph.filter(x=>x.data).map(x=>x.col||"")},add:ph.filter(x=>x.data).map(x=>x.data)};
+   const body={p:{id:old?old.id:undefined,name:p.name,price,cat:p.cat,sizes:p.sizes,szP:p.szP||{},colors:p.colors,colorsSet:p.colors.join("|")===origCols?!!(old&&old.colorsSet):p.colors.length>0,desc:p.desc,trManual:trDirty&&(trE.en.n||trE.uz.n)?trE:undefined,stock:p.stock,isNew:p.isNew,pop:p.pop,fast:p.fast,preorder:p.preorder,qty:p.fast&&!p.colors.length?(p.qty??""):"",qtyC:p.fast&&p.colors.length?(p.qtyC||{}):{},imgs:ph.filter(x=>x.id).map(x=>x.id),imgColors:Object.fromEntries(ph.filter(x=>x.id).map(x=>[x.id,x.col||""])),addColors:ph.filter(x=>x.data).map(x=>x.col||""),
+    aiCols:Object.fromEntries(ph.filter(x=>x.id&&x.ai&&x.ai===x.col).map(x=>[x.id,x.col])),addAI:ph.filter(x=>x.data).map(x=>x.ai&&x.ai===x.col?x.col:""),base:old?{desc:baseDesc,imgColors:baseImg,colors:baseColors}:undefined},add:ph.filter(x=>x.data).map(x=>x.data)};
    const r=await call("/admin/product",body);
    if(r&&r.ok&&r.item){const kept=ph.filter(x=>x.id).map(x=>x.id),nw=(r.item.imgs||[]).filter(i=>!kept.includes(i)),nd=ph.filter(x=>x.data),done=[];
     for(let i=0;i<nw.length&&i<nd.length;i++){btn.textContent="Готовлю мини-фото…";try{const t=await smallOf(nd[i].data,480);const q=await call("/admin/thumb",{iid:nw[i],data:t,save:false});if(q&&q.ok)done.push(nw[i])}catch(e){}}
     if(done.length)await call("/admin/thumbs/save",{map:{[r.item.id]:done}})}
    btn.disabled=false;btn.textContent="Сохранить";
    if(!r)return toast("Нет связи с сервером");if(!r.ok)return toast(r.err||"Ошибка");
-   toast("Сохранено");sh.remove();show("prod")};
+   const ai=r.ai||{},w=[ai.c&&"цвета",ai.d&&"описание",ai.t&&"перевод"].filter(Boolean);
+   toast(w.length?"Сохранено. ИИ сделает "+w.join(", ")+" за 1–5 минут"+(ai.c||ai.d?" — пришлю в Telegram":""):"Сохранено");sh.remove();show("prod")};
  };
  render();
 }
