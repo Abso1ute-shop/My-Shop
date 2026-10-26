@@ -208,24 +208,31 @@ const hm=ts=>new Date(ts).toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-d
 function aiCard(st){
  if(!st||!st.ok)return`<b>🤖 ИИ</b><div class="mu" style="margin-top:4px">Не удалось узнать состояние${st&&st.err?": "+esc(st.err):""}</div>`;
  if(!st.ai)return`<b>🤖 ИИ</b><div style="margin-top:4px;color:#ff6b6b">❌ ИИ не подключён на сервере: в Cloudflare у воркера нет привязки AI. В wrangler.jsonc должно быть: "ai": { "binding": "AI" }</div>`;
- const pct=Math.min(100,Math.round((st.use||0)/(st.free||10000)*100)),now=Date.now();
- const line=st.paused?`⏸ Лимит Cloudflare на сегодня закончился — ИИ продолжит сам в <b>${hm(st.paused)}</b>`:st.total?`⏳ В очереди: <b>${st.total}</b> — ИИ работает (обычно 1–5 минут на товар)`:"✅ Очередь пуста — всё сделано";
+ const g=st.gm||{},pct=Math.min(100,Math.round((st.use||0)/(st.free||10000)*100)),now=Date.now();
+ const line=st.paused?`⏸ Лимиты ИИ на сегодня закончились — продолжит сам в <b>${hm(st.paused)}</b>`:st.total?`⏳ В очереди: <b>${st.total}</b> — ИИ работает (обычно 1–5 минут на товар)`:"✅ Очередь пуста — всё сделано";
  const q=(st.queue||[]).filter(j=>!j.old).slice(0,6),old=(st.queue||[]).filter(j=>j.old).length;
  const cron=st.cron?(now-st.cron<2.2*3600e3?`работает (${hm(st.cron)})`:`<span style="color:#e5a50a">давно не запускалось (${new Date(st.cron).toLocaleString("ru-RU")})</span>`):`<span class="mu">ещё не отметилось (появится в течение часа)</span>`;
+ const gline=!g.key?`<div style="margin:2px 0 4px;color:#e5a50a">🧠 Gemini не подключён — сейчас работает только Cloudflare, его хватает примерно на 5–10 товаров в день</div>`
+  :g.on?`<div style="margin:2px 0 4px">🧠 Gemini — <b style="color:#4cd964">подключён</b>${st.gq?` · сегодня запросов: ${st.gq}`:""}</div>${g.err?`<div class="mu" style="font-size:12px;margin-bottom:4px">${esc(g.err)}</div>`:""}`
+  :`<div style="margin:2px 0 4px;color:#e5a50a">🧠 Gemini сейчас не отвечает${g.err?": "+esc(g.err):""}</div>`;
+ const how=`<details class="hint" style="margin:6px 0 8px"${g.key?"":" open"}><summary>${g.key?"Как подключён Gemini":"Как убрать лимит (бесплатно, 3 минуты)"}</summary><p style="line-height:1.5">1. Откройте в Safari <b>aistudio.google.com</b> и войдите в свой Google-аккаунт.<br>2. Нажмите <b>Get API key</b> → <b>Create API key</b> и скопируйте ключ (начинается с AIza…). Никому его не отправляйте.<br>3. Откройте <b>dash.cloudflare.com</b> → Workers &amp; Pages → <b>abso1ute-shop</b> → Settings → Variables and Secrets → <b>Add</b>.<br>4. Type: <b>Secret</b>, Name: <b>GEMINI_KEY</b>, Value: вставьте ключ → <b>Deploy</b>.<br>5. Вернитесь сюда и нажмите «🧪 Проверить ИИ» — должно быть «✅ Gemini — работает».<br><span class="mu">Gemini от Google бесплатно делает сотни запросов в день — этого хватает на десятки товаров. Cloudflare остаётся запасным.</span></p></details>`;
  return`<div class="r"><b>🤖 ИИ: цвета, описания, перевод</b></div>
  <div style="margin:6px 0 4px;line-height:1.45">${line}</div>
- <div class="mu" style="font-size:12px">Расход сегодня: ~${(st.use||0).toLocaleString("ru-RU")} из ${(st.free||10000).toLocaleString("ru-RU")} бесплатных нейронов</div>
- <div style="height:6px;border-radius:3px;background:var(--ln);margin:6px 0 8px;overflow:hidden"><div style="height:100%;width:${pct}%;background:${pct>85?"#ff6b6b":pct>60?"#e5a50a":"#4cd964"}"></div></div>
+ ${gline}
+ <div class="mu" style="font-size:12px">☁️ Cloudflare${g.key?" (запасной)":""}: ~${(st.use||0).toLocaleString("ru-RU")} из ${(st.free||10000).toLocaleString("ru-RU")} нейронов сегодня${st.cfday?` — <span style="color:#e5a50a">на сегодня закончился (до ${hm(st.cfday)})</span>`:""}</div>
+ <div style="height:6px;border-radius:3px;background:var(--ln);margin:6px 0 8px;overflow:hidden"><div style="height:100%;width:${st.cfday?100:pct}%;background:${st.cfday||pct>85?"#ff6b6b":pct>60?"#e5a50a":"#4cd964"}"></div></div>
  ${q.length?`<div style="font-size:13px;line-height:1.5;margin-bottom:6px">${q.map(j=>`• ${esc(j.name)} — ${j.steps.map(k=>AISTEP[k]).join(", ")||"отчёт"}${j.fail&&j.fail.length?` <span style="color:#e5a50a">(не вышло: ${j.fail.map(k=>AISTEP[k]).join(", ")})</span>`:""}`).join("<br>")}</div>`:""}
- ${old?`<div class="mu" style="font-size:12px;margin-bottom:6px">Старые товары на дозаполнении: ${old} (только пока лимит позволяет — новые всегда первые)</div>`:""}
+ ${old?`<div class="mu" style="font-size:12px;margin-bottom:6px">Старые товары на дозаполнении: ${old} (новые всегда первые)</div>`:""}
  ${st.err&&(st.total||st.paused)?`<div style="font-size:12px;line-height:1.45;margin-bottom:6px;color:#e5a50a">Последняя ошибка (${new Date(st.err.t).toLocaleString("ru-RU",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})}): ${esc(st.err.m)}</div>`:""}
+ ${how}
  <div class="mu" style="font-size:12px;margin-bottom:8px">Расписание (cron): ${cron}</div>
  <div class="bar" style="margin:0"><button class="b s" id="airun" style="padding:10px">▶️ Запустить сейчас</button><button class="b s" id="aitest" style="padding:10px">🧪 Проверить ИИ</button></div><div id="aitr" class="mu" style="font-size:12px;margin-top:6px"></div>`;
 }
-let aiPumpT=0;
+let aiPumpT=0,AIST=null;
 async function aiStat(st){
  const box=$("#aist");if(!box)return;
  if(!st)st=await call("/admin/ai/status");
+ if(st&&st.ok)AIST=st;
  if(!document.body.contains(box))return;
  box.innerHTML=aiCard(st);
  // подстраховка: если новый товар ждёт дольше 6 минут (расписание не успело), админка сама подтолкнёт ИИ
@@ -240,10 +247,10 @@ async function aiStat(st){
  if(test)test.onclick=async()=>{run.disabled=true;test.disabled=true;test.textContent="⏳ Проверяю…";
   const r=await call("/admin/ai/test",{});run.disabled=false;test.disabled=false;test.textContent="🧪 Проверить ИИ";
   const out=$("#aitr");if(!r||!r.ok){if(out)out.innerHTML=`<span style="color:#ff6b6b">${esc(r&&r.err||"Нет связи с сервером")}</span>`;return}
-  if(out)out.innerHTML=r.tests.map(t=>t.ok?`✅ ${esc(t.k)} — работает (${(t.ms/1000).toFixed(1)} с)`:`❌ ${esc(t.k)}: ${esc(t.err)}`).join("<br>")+(r.paused?`<br>⏸ Дневной лимит Cloudflare исчерпан — ИИ продолжит в ${hm(r.paused)}`:"");
+  if(out)out.innerHTML=r.tests.map(t=>t.ok?`✅ ${esc(t.k)} — работает (${(t.ms/1000).toFixed(1)} с)`:`${t.nokey?"⚪":"❌"} ${esc(t.k)}: ${esc(t.err)}`).join("<br>")+(r.paused?`<br>⏸ Лимиты ИИ на сегодня закончились — продолжит в ${hm(r.paused)}`:"");
   const s2=await call("/admin/ai/status");if(s2&&s2.ok){const keep=$("#aitr")&&$("#aitr").innerHTML;await aiStat(s2);if($("#aitr"))$("#aitr").innerHTML=keep}};
 }
-const LIMNOTE="\n\nВажно: бесплатный лимит ИИ Cloudflare — примерно на 15–20 товаров в сутки. Если он закончится, новые товары из канала будут ждать до 05:05.";
+const LIMNOTE=()=>AIST&&AIST.gm&&AIST.gm.on?"":"\n\nВажно: без Gemini бесплатного лимита ИИ Cloudflare хватает примерно на 5–10 товаров в сутки. Если он закончится, новые товары из канала будут ждать до 05:05. Как убрать лимит — в карточке «🤖 ИИ».";
 
 /* ---------- товары ---------- */
 const thMissing=p=>(p.imgs||[]).filter(i=>!(p.th||[]).includes(i)),needTh=p=>thMissing(p).length>0;
@@ -267,23 +274,23 @@ function dProd(){
   for(const x of l){for(const iid of thMissing(x)){if(!document.body.contains(b))return flush();k++;b.textContent=`⚡ Мини-фото… ${k} из ${tot}`;try{const t=await smallOf(API+"/img/"+iid,480);const r=await call("/admin/thumb",{iid,data:t,save:false});if(r&&r.ok)(map[x.id]=map[x.id]||[]).push(iid);else er=(r&&r.err)||"нет связи"}catch(e){er=e.message}}
    if(Object.keys(map).length>=15)await flush()}
   await flush();toast(er?"Готово, но были ошибки: "+er:"Готово! Каталог теперь грузится быстрее");show("prod")};
- if($("#nmall"))$("#nmall").onclick=async()=>{const l=P.filter(x=>badName(x.name)),b=$("#nmall");if(!confirm("ИИ посмотрит на фото и придумает названия для "+l.length+" товаров, поправит категорию и размеры и заново напишет описания."+LIMNOTE+"\n\nПродолжить?"))return;b.disabled=true;let ok=0,er="";
+ if($("#nmall"))$("#nmall").onclick=async()=>{const l=P.filter(x=>badName(x.name)),b=$("#nmall");if(!confirm("ИИ посмотрит на фото и придумает названия для "+l.length+" товаров, поправит категорию и размеры и заново напишет описания."+LIMNOTE()+"\n\nПродолжить?"))return;b.disabled=true;let ok=0,er="";
   for(let i=0;i<l.length;i++){if(!document.body.contains(b))break;b.textContent=`✨ Смотрю на фото… ${i+1} из ${l.length}`;const x=l[i];let img="";try{if((x.imgs||[])[0])img=await smallOf(API+"/img/"+x.imgs[0],512)}catch(e){}
    const r=await call("/admin/name",{img,id:x.id});if(!r||!r.ok){er=(r&&r.err)||"нет связи";continue}
    const cat=r.cat||x.cat,sizes=cat!==x.cat&&(!(x.sizes||[]).length||(x.sizes||[]).join(" ")===defSz(x.cat).join(" ")||/^(XS |S )/.test((x.sizes||[]).join(" ")))?(r.sizes||defSz(cat)):x.sizes;
    const s2=await call("/admin/product",{p:{...x,name:r.name,cat,sizes,colorsSet:!!x.colorsSet,addColors:[]},add:[]});if(s2&&s2.ok){ok++;b.textContent=`✨ Пишу описание… ${i+1} из ${l.length}`;await call("/admin/product/describe",{id:x.id,img,force:true})}else er=(s2&&s2.err)||"не сохранилось"}
   if(ok<l.length&&er)alert("Исправлено: "+ok+" из "+l.length+"\nОшибка: "+er);else toast("Исправлено названий: "+ok);show("prod")};
- if($("#colall"))$("#colall").onclick=async()=>{const l=P.filter(x=>(x.imgs||[]).length),b=$("#colall");if(!confirm("ИИ заново посмотрит на фото "+l.length+" товаров и подпишет цвета (только товар, без фона; одинаковые варианты — одно название, разные — разные). Цвета, введённые вручную, не меняются. Займёт примерно "+Math.max(1,Math.ceil(l.length*20/60))+" мин. Не закрывайте страницу."+LIMNOTE+"\n\nПродолжить?"))return;b.disabled=true;let ok=0,er="";
+ if($("#colall"))$("#colall").onclick=async()=>{const l=P.filter(x=>(x.imgs||[]).length),b=$("#colall");if(!confirm("ИИ заново посмотрит на фото "+l.length+" товаров и подпишет цвета (только товар, без фона; одинаковые варианты — одно название, разные — разные). Цвета, введённые вручную, не меняются. Займёт примерно "+Math.max(1,Math.ceil(l.length*20/60))+" мин. Не закрывайте страницу."+LIMNOTE()+"\n\nПродолжить?"))return;b.disabled=true;let ok=0,er="";
   for(let i=0;i<l.length;i++){if(!document.body.contains(b))break;const x=l[i];b.textContent=`🎨 Смотрю на фото… ${i+1} из ${l.length}`;const imgs={};for(const iid of (x.imgs||[]).slice(0,10)){try{imgs[iid]=await smallOf(API+"/img/"+iid,336)}catch(e){}}
    const r=await call("/admin/product/colors",{id:x.id,imgs,force:true});if(r&&r.ok){ok++;if(r.item)Object.assign(x,r.item)}else{er=(r&&r.err)||"нет связи";if(/лимит/i.test(er))break}}
   if(ok<l.length&&er)alert("Готово: "+ok+" из "+l.length+"\nОшибка: "+er);else toast("Цвета обновлены: "+ok+" товаров");show("prod")};
- if($("#trall"))$("#trall").onclick=async()=>{const l=P.filter(needTr),b=$("#trall");let er="";if(!confirm("ИИ переведёт названия и описания "+l.length+" товаров на английский и узбекский. Не закрывайте страницу."+LIMNOTE+"\n\nПродолжить?"))return;b.disabled=true;let ok=0;
+ if($("#trall"))$("#trall").onclick=async()=>{const l=P.filter(needTr),b=$("#trall");let er="";if(!confirm("ИИ переведёт названия и описания "+l.length+" товаров на английский и узбекский. Не закрывайте страницу."+LIMNOTE()+"\n\nПродолжить?"))return;b.disabled=true;let ok=0;
   for(let i=0;i<l.length;i++){if(!document.body.contains(b))break;b.textContent=`🌐 Перевожу… ${i+1} из ${l.length}`;const r=await call("/admin/product/translate",{id:l[i].id});if(r&&r.ok){ok++;l[i].tr=r.tr}else{er=(r&&r.err)||"нет связи";if(/limit|3036|neuron/i.test(er))break}}
   if(ok<l.length&&er)alert("Переведено: "+ok+" из "+l.length+"\nПричина ошибки: "+er+(/limit|3036|neuron/i.test(er)?"\n\nЗакончился дневной лимит ИИ Cloudflare — продолжите завтра.":""));else toast("Переведено: "+ok);show("prod")};
  $$("[data-pcf]").forEach(b=>b.onclick=()=>{pcf=b.dataset.pcf;dProd()});
  $("#imp").onclick=openImport;
  aiStat();
- const aiAll=async(b,l)=>{if(!confirm("ИИ посмотрит на фото и напишет описания для "+l.length+" товаров. Это займёт примерно "+Math.max(1,Math.ceil(l.length*8/60))+" мин. Не закрывайте страницу."+LIMNOTE+"\n\nПродолжить?"))return;b.disabled=true;let ok=0,er="";
+ const aiAll=async(b,l)=>{if(!confirm("ИИ посмотрит на фото и напишет описания для "+l.length+" товаров. Это займёт примерно "+Math.max(1,Math.ceil(l.length*8/60))+" мин. Не закрывайте страницу."+LIMNOTE()+"\n\nПродолжить?"))return;b.disabled=true;let ok=0,er="";
   for(let i=0;i<l.length;i++){if(!document.body.contains(b))break;b.textContent=`✨ Пишу описания… ${i+1} из ${l.length}`;let img="";try{if((l[i].imgs||[])[0])img=await smallOf(API+"/img/"+l[i].imgs[0],512)}catch(e){}const r=await call("/admin/product/describe",{id:l[i].id,img,force:true});if(r&&r.ok){ok++;l[i].desc=r.text}else{er=(r&&r.err)||"нет связи";if(/лимит/i.test(er))break}}
   if(er&&ok<l.length)alert("Готово описаний: "+ok+" из "+l.length+"\nОшибка: "+er);else toast("Готово: описаний "+ok);show("prod")};
  if($("#aidall"))$("#aidall").onclick=()=>aiAll($("#aidall"),P.filter(x=>!x.desc));
@@ -295,7 +302,7 @@ function dProd(){
 function shrink(f,cb){
  const im=new Image();im.onload=()=>{let k=Math.min(1,1000/Math.max(im.width,im.height)),qu=.82,out;
   for(let i=0;i<4;i++){const c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext("2d").drawImage(im,0,0,c.width,c.height);out=c.toDataURL("image/jpeg",qu);if(out.length<800000)break;k*=.8;qu-=.08}
-  cb(out)};im.src=URL.createObjectURL(f);
+  cb(out)};im.onerror=()=>cb(null);im.src=URL.createObjectURL(f);
 }
 async function smallOf(url,mx=320){
  const bl=await (await fetch(url)).blob(),u=URL.createObjectURL(bl);
@@ -381,7 +388,7 @@ function editP(id){
   $$("[data-sz]",sh).forEach(b=>b.onclick=()=>{keep();p.sizes=b.dataset.sz.split(" ").filter(Boolean);render()});
   $$("[data-rm]",sh).forEach(b=>b.onclick=()=>{keep();ph.splice(+b.dataset.rm,1);render()});
   $$("[data-mk]",sh).forEach(b=>b.onclick=()=>{keep();const i=+b.dataset.mk;ph.unshift(ph.splice(i,1)[0]);render()});
-  $("#pf").onchange=e=>{keep();const fs=[...e.target.files].slice(0,10-ph.length);let n=fs.length;if(!n)return;fs.forEach(f=>shrink(f,d=>{ph.push({data:d,url:d});if(--n===0){if(document.body.contains(sh)&&$("#fn"))soft();else render();if(ph.some(x=>!x.col))setTimeout(()=>detectCols(true),600)}}))};
+  $("#pf").onchange=e=>{keep();const fs=[...e.target.files].slice(0,10-ph.length);let n=fs.length;if(!n)return;const slots=[];fs.forEach((f,i)=>shrink(f,d=>{slots[i]=d?{data:d,url:d}:null;if(--n===0){ph.push(...slots.filter(Boolean));if(document.body.contains(sh)&&$("#fn"))soft();else render();if(ph.some(x=>!x.col))setTimeout(()=>detectCols(true),600)}}))};
   $("#sv").onclick=async()=>{keep();const price=Math.round(+p.price);
    if(!p.name.trim())return toast("Введите название");if(!(price>0))return toast("Введите цену");
    const btn=$("#sv");btn.disabled=true;btn.textContent="Сохраняю…";
