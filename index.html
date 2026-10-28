@@ -484,12 +484,12 @@ body::after{content:"";position:fixed;inset:-30%;z-index:-1;pointer-events:none;
 .perk{border:1px solid var(--line);box-shadow:0 6px 18px #00000010}
 .tb .inp{box-shadow:0 6px 18px #0000000f}
 .cols{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.cols button{padding:7px 14px;border-radius:16px;background:var(--card);color:var(--fg);font-size:13px;font-weight:600;border:2px solid transparent;transition:.3s}.cols button.on{border-color:var(--fg)}
-.sw{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:-2px;margin:0 7px 0 0;box-shadow:inset 0 0 0 1px rgba(128,128,128,.55);flex:none}
-.cols button .sw{width:15px;height:15px;vertical-align:-3px}
-.cols button.out .sw{opacity:.4}
-:root[data-theme=dark] .sw{box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.42)}
-:root[data-theme=gray] .sw{box-shadow:inset 0 0 0 1px rgba(0,0,0,.28)}
-.chip .sw{width:13px;height:13px;margin-right:6px}
+.cdot{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:-2px;margin:0 7px 0 0;box-shadow:inset 0 0 0 1px rgba(128,128,128,.55);flex:none}
+.cols button .cdot{width:15px;height:15px;vertical-align:-3px}
+.cols button.out .cdot{opacity:.4}
+:root[data-theme=dark] .cdot{box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.42)}
+:root[data-theme=gray] .cdot{box-shadow:inset 0 0 0 1px rgba(0,0,0,.28)}
+.chip .cdot{width:13px;height:13px;margin-right:6px}
 .csd.cc{gap:6px;padding:4px 7px}
 .csd i.c{width:8px;height:8px;background:var(--c)!important;box-shadow:0 0 0 1.5px rgba(255,255,255,.85);border-radius:50%}
 .csd i.c.on{width:8px;border-radius:50%;transform:scale(1.4);box-shadow:0 0 0 1.5px #fff}
@@ -946,7 +946,7 @@ function swBg(name){
  else if(weak)bg=weak;
  else if(lone)bg=lone>0?"#e3e6ea":"#3a3b3e";
  SWC.set(key,bg);return bg}
-const SW=c=>{const b=swBg(c);return b?`<i class="sw" style="background:${b}"></i>`:""};
+const SW=c=>{const b=swBg(c);return b?`<i class="cdot" style="background:${b}"></i>`:""};
 const csList=p=>{const seen=new Set(),out=[];(p.galc||[]).forEach((c,i)=>{if(c&&!seen.has(c)){seen.add(c);out.push((p.galt||p.gal)[i])}});return out.length>1?out:[]};
 const csAttr=p=>{const l=csList(p);return l.length?` data-cs="${l.map(esc).join("|")}"${p.isNew?" data-auto":""}`:""};
 const csNames=p=>{const seen=new Set(),out=[];(p.galc||[]).forEach(c=>{if(c&&!seen.has(c)){seen.add(c);out.push(c)}});return out};

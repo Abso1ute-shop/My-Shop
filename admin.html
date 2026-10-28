@@ -63,7 +63,7 @@ main{padding:0 16px;max-width:760px;margin:0 auto}
 .thr{display:flex;gap:10px;overflow-x:auto;margin:8px 0}.th1{flex:none;width:92px;font-size:12px;color:var(--mu);line-height:1.3}.th1 img{width:92px;height:110px;object-fit:cover;border-radius:12px;display:block;margin-bottom:4px;border:2px solid #333}
 .ph-i .pcol{display:block;width:100%;margin:4px 0 0;padding:6px 8px;font-size:16px;border-radius:8px;box-sizing:border-box}
 .ph-i .psw{position:absolute;left:6px;top:84px;width:20px;height:20px;border-radius:50%;box-shadow:0 0 0 2px #fff,0 2px 6px rgba(0,0,0,.45);pointer-events:none}
-.sw{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:-2px;margin-right:7px;box-shadow:inset 0 0 0 1px rgba(128,128,128,.6)}
+.cdot{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:-2px;margin-right:7px;box-shadow:inset 0 0 0 1px rgba(128,128,128,.6)}
 button.g.d,.b.s.d{color:var(--no)}
 nav{position:sticky;top:57px;z-index:4;background:#0b0b0bf2;scrollbar-width:none}nav::-webkit-scrollbar{display:none}
 nav button{display:flex;align-items:center;gap:7px;position:relative}nav button svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:none}
@@ -219,7 +219,7 @@ function aiCard(st){
  const gline=!g.key?`<div style="margin:2px 0 4px;color:#e5a50a">🧠 Gemini не подключён — сейчас работает только Cloudflare, его хватает примерно на 5–10 товаров в день</div>`
   :g.on?`<div style="margin:2px 0 4px">🧠 Gemini — <b style="color:#4cd964">подключён</b>${st.gq?` · сегодня запросов: ${st.gq}`:""}</div>${g.err?`<div class="mu" style="font-size:12px;margin-bottom:4px">${esc(g.err)}</div>`:""}`
   :`<div style="margin:2px 0 4px;color:#e5a50a">🧠 Gemini сейчас не отвечает${g.err?": "+esc(g.err):""}</div>`;
- const how=`<details class="hint" style="margin:6px 0 8px"${g.key?"":" open"}><summary>${g.key?"Как подключён Gemini":"Как убрать лимит (бесплатно, 3 минуты)"}</summary><p style="line-height:1.5">1. Откройте в Safari <b>aistudio.google.com</b> и войдите в свой Google-аккаунт.<br>2. Нажмите <b>Get API key</b> → <b>Create API key</b> и скопируйте ключ (начинается с AIza…). Никому его не отправляйте.<br>3. Откройте <b>dash.cloudflare.com</b> → Workers &amp; Pages → <b>abso1ute-shop</b> → Settings → Variables and Secrets → <b>Add</b>.<br>4. Type: <b>Secret</b>, Name: <b>GEMINI_KEY</b>, Value: вставьте ключ → <b>Deploy</b>.<br>5. Вернитесь сюда и нажмите «🧪 Проверить ИИ» — должно быть «✅ Gemini — работает».<br><span class="mu">Gemini от Google бесплатно делает сотни запросов в день — этого хватает на десятки товаров. Cloudflare остаётся запасным.</span></p></details>`;
+ const how=`<details class="hint" style="margin:6px 0 8px"${g.key?"":" open"}><summary>${g.key?"Как подключён Gemini":"Как убрать лимит (бесплатно, 3 минуты)"}</summary><p style="line-height:1.5">1. Откройте в Safari <b>aistudio.google.com</b> и войдите в свой Google-аккаунт.<br>2. Нажмите <b>Get API key</b> → <b>Create API key</b> и скопируйте ключ (начинается с AQ.… или AIza… — подходят оба). Никому его не отправляйте.<br>3. Откройте <b>dash.cloudflare.com</b> → Workers &amp; Pages → <b>abso1ute-shop</b> → Settings → Variables and Secrets → <b>Add</b>.<br>4. Type: <b>Secret</b>, Name: <b>GEMINI_KEY</b>, Value: вставьте ключ → <b>Deploy</b>.<br>5. Вернитесь сюда и нажмите «🧪 Проверить ИИ» — должно быть «✅ Gemini — работает».<br><span class="mu">Gemini от Google бесплатно делает сотни запросов в день — этого хватает на десятки товаров. Cloudflare остаётся запасным.</span></p></details>`;
  return`<div class="r"><b>🤖 ИИ: цвета, описания, перевод</b></div>
  <div style="margin:6px 0 4px;line-height:1.45">${line}</div>
  ${gline}
@@ -348,7 +348,7 @@ function swBg(name){
  else if(weak)bg=weak;
  else if(lone)bg=lone>0?"#e3e6ea":"#3a3b3e";
  SWC.set(key,bg);return bg}
-const SW=c=>{const b=swBg(c);return b?`<i class="sw" style="background:${b}"></i>`:""};
+const SW=c=>{const b=swBg(c);return b?`<i class="cdot" style="background:${b}"></i>`:""};
 function editP(id){
  let qtyHTML=()=>"";
  const old=id?P.find(x=>x.id===id):null,p=old?JSON.parse(JSON.stringify(old)):{name:"",price:"",cat:"top",sizes:CLS.slice(),colors:[],desc:"",stock:true,isNew:true,pop:false,fast:false,imgs:[]};
