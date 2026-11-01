@@ -53,6 +53,11 @@ main{padding:0 16px;max-width:760px;margin:0 auto}
 .ph-i{position:relative;flex:none;width:96px}.ph-i img{width:96px;height:110px;object-fit:cover;border-radius:12px}
 .ph-i .x{position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:50%;background:#000a;font-size:13px}
 .ph-i .mk{display:block;width:100%;font-size:12px;color:var(--mu);padding:4px 0}
+.ph-i{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;transition:transform .18s ease}.ph-i input{-webkit-user-select:text;user-select:text}
+.ph-i img{-webkit-user-drag:none;-webkit-touch-callout:none;pointer-events:none}
+.ph-i.drg{transition:none;z-index:5;filter:drop-shadow(0 10px 18px rgba(0,0,0,.55))}.ph-i.drg img{outline:2px solid var(--fg);outline-offset:-2px}
+.ph-i .cov{position:absolute;right:5px;top:87px;padding:2px 5px;border-radius:7px;background:#000c;color:#fff;font-size:10px;font-weight:700;pointer-events:none}
+.ph-l.dragging{overflow-x:hidden}
 .ph-add{flex:none;width:96px;height:110px;border:1px dashed #444;border-radius:12px;display:grid;place-items:center;color:var(--mu);font-size:13px;text-align:center;cursor:pointer}
 .bal{font-size:22px;font-weight:700}
 .toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 14px);transform:translate(-50%,-20px);background:#fff;color:#000;padding:12px 20px;border-radius:24px;font-weight:600;opacity:0;pointer-events:none;transition:.3s;z-index:50;max-width:90%;text-align:center}
@@ -384,7 +389,7 @@ function editP(id){
  };
  const render=()=>{
   sh.innerHTML=`<div class="in"><div class="r"><h2>${old?"Изменить товар":"Новый товар"}</h2><button class="g" id="cl">Закрыть</button></div>
-  <span class="lb">Фото (первое — главное)</span><div class="ph-l">${ph.map((x,i)=>`<div class="ph-i"><img src="${x.url}" alt=""><i class="psw" data-psw="${i}" style="${swBg(x.col)?"background:"+swBg(x.col):"display:none"}"></i><button class="x" data-rm="${i}">✕</button>${i>0&&x.id?`<button class="mk" data-mk="${i}">Сделать главным</button>`:""}<input class="pcol" data-pc="${i}" value="${esc(x.col||"")}" placeholder="Цвет" list="colist"></div>`).join("")}<label class="ph-add">+ Фото<input type="file" id="pf" accept="image/*" multiple hidden></label></div>
+  <span class="lb">Фото — первое станет обложкой. Зажмите фото и перетащите, чтобы поменять порядок</span><div class="ph-l">${ph.map((x,i)=>`<div class="ph-i" data-pi="${i}"><img src="${x.url}" alt="" draggable="false">${i===0?`<span class="cov">Обложка</span>`:""}<i class="psw" data-psw="${i}" style="${swBg(x.col)?"background:"+swBg(x.col):"display:none"}"></i><button class="x" data-rm="${i}">✕</button>${i>0?`<button class="mk" data-mk="${i}">Сделать главным</button>`:`<span class="mk" style="visibility:hidden">Сделать главным</span>`}<input class="pcol" data-pc="${i}" value="${esc(x.col||"")}" placeholder="Цвет" list="colist"></div>`).join("")}<label class="ph-add">+ Фото<input type="file" id="pf" accept="image/*" multiple hidden></label></div>
   ${ph.length?`<button class="b s" id="ai" style="margin-top:8px" ${aiBusy?"disabled":""}>${aiBusy?"🎨 ИИ смотрит на фото…":"🎨 Определить цвета по фото (ИИ)"}</button>`:""}<p class="mu" style="font-size:12px;margin:6px 0 0">Под каждым фото — его цвет. На сайте кнопка цвета листает к этому фото, а в корзине показывается фото выбранного цвета. ИИ смотрит только на сам товар (не на фон и не на другие вещи на фото); одинаковые варианты получают одно название, разные — разные (например «Белый» и «Чёрно-белый»). Цвет, введённый вручную, ИИ не меняет.</p>
   <datalist id="colist">${["Чёрный","Белый","Серый","Синий","Голубой","Красный","Бордовый","Зелёный","Хаки","Бежевый","Коричневый","Розовый","Фиолетовый","Жёлтый","Оранжевый","Чёрный/Белый"].map(c=>`<option value="${c}">`).join("")}</datalist><div class="r" style="margin-top:10px"><span class="lb" style="margin:0">Название</span><button class="g" id="ainm" style="font-weight:700;color:var(--fg)">✨ По фото</button></div><input id="fn" value="${esc(p.name)}" placeholder="Например: Худи Oversize">${badName(p.name)?`<p class="mu" style="color:#e5a50a;font-size:12px;margin:4px 0 0">Похоже, это не название товара — нажмите «✨ По фото»</p>`:""}
   <span class="lb">Цена, сум</span><input id="fp" type="number" inputmode="numeric" value="${esc(p.price)}" placeholder="250000">
@@ -428,11 +433,12 @@ function editP(id){
   $$("[data-sz]",sh).forEach(b=>b.onclick=()=>{keep();p.sizes=b.dataset.sz.split(" ").filter(Boolean);render()});
   $$("[data-rm]",sh).forEach(b=>b.onclick=()=>{keep();ph.splice(+b.dataset.rm,1);render()});
   $$("[data-mk]",sh).forEach(b=>b.onclick=()=>{keep();const i=+b.dataset.mk;ph.unshift(ph.splice(i,1)[0]);render()});
+  phDrag(sh,(from,to)=>{keep();ph.splice(to,0,ph.splice(from,1)[0]);render()});
   $("#pf").onchange=e=>{keep();const fs=[...e.target.files].slice(0,10-ph.length);let n=fs.length;if(!n)return;const slots=[];fs.forEach((f,i)=>shrink(f,d=>{slots[i]=d?{data:d,url:d}:null;if(--n===0){ph.push(...slots.filter(Boolean));if(document.body.contains(sh)&&$("#fn"))soft();else render();if(ph.some(x=>!x.col))setTimeout(()=>detectCols(true),600)}}))};
   $("#sv").onclick=async()=>{keep();const price=Math.round(+p.price);
    if(!p.name.trim())return toast("Введите название");if(!(price>0))return toast("Введите цену");
    const btn=$("#sv");btn.disabled=true;btn.textContent="Сохраняю…";
-   const body={p:{id:old?old.id:undefined,name:p.name,price,cat:p.cat,sizes:p.sizes,szP:p.szP||{},colors:p.colors,colorsSet:p.colors.join("|")===origCols?!!(old&&old.colorsSet):p.colors.length>0,desc:p.desc,trManual:trDirty&&(trE.en.n||trE.uz.n)?trE:undefined,stock:p.stock,isNew:p.isNew,pop:p.pop,fast:p.fast,preorder:p.preorder,qty:p.fast&&!p.colors.length?(p.qty??""):"",qtyC:p.fast&&p.colors.length?(p.qtyC||{}):{},imgs:ph.filter(x=>x.id).map(x=>x.id),imgColors:Object.fromEntries(ph.filter(x=>x.id).map(x=>[x.id,x.col||""])),addColors:ph.filter(x=>x.data).map(x=>x.col||""),
+   const body={p:{id:old?old.id:undefined,name:p.name,price,cat:p.cat,sizes:p.sizes,szP:p.szP||{},colors:p.colors,colorsSet:p.colors.join("|")===origCols?!!(old&&old.colorsSet):p.colors.length>0,desc:p.desc,trManual:trDirty&&(trE.en.n||trE.uz.n)?trE:undefined,stock:p.stock,isNew:p.isNew,pop:p.pop,fast:p.fast,preorder:p.preorder,qty:p.fast&&!p.colors.length?(p.qty??""):"",qtyC:p.fast&&p.colors.length?(p.qtyC||{}):{},imgs:ph.filter(x=>x.id).map(x=>x.id),ord:(()=>{let k=0;return ph.map(x=>x.id?x.id:"+"+(k++))})(),imgColors:Object.fromEntries(ph.filter(x=>x.id).map(x=>[x.id,x.col||""])),addColors:ph.filter(x=>x.data).map(x=>x.col||""),
     aiCols:Object.fromEntries(ph.filter(x=>x.id&&x.ai&&x.ai===x.col).map(x=>[x.id,x.col])),addAI:ph.filter(x=>x.data).map(x=>x.ai&&x.ai===x.col?x.col:""),base:old?{desc:baseDesc,imgColors:baseImg,colors:baseColors}:undefined},add:ph.filter(x=>x.data).map(x=>x.data)};
    const r=await call("/admin/product",body);
    if(r&&r.ok&&r.item){const kept=ph.filter(x=>x.id).map(x=>x.id),nw=(r.item.imgs||[]).filter(i=>!kept.includes(i)),nd=ph.filter(x=>x.data),done=[];
@@ -579,6 +585,34 @@ function promoP(code){
 }
 
 tok?start():login();
+
+// Перетаскивание фото в редакторе товара: зажать (≈0.35 с на телефоне) → тянуть → отпустить. Первое фото — обложка.
+function phDrag(sh,done){
+ const box=sh.querySelector(".ph-l");if(!box)return;const items=[...box.querySelectorAll(".ph-i")];if(items.length<2)return;
+ let st=null;
+ if(!box._tm){box._tm=1;box.addEventListener("touchmove",e=>{if(box._drag)e.preventDefault()},{passive:false})}
+ const finish=ok=>{if(!st)return;const s=st;st=null;box._drag=false;box.classList.remove("dragging");clearInterval(s.auto);
+  window.removeEventListener("pointermove",move);window.removeEventListener("pointerup",up);window.removeEventListener("pointercancel",cancel);
+  items.forEach(x=>{x.style.transform="";x.classList.remove("drg")});if(ok&&s.to!==s.from)done(s.from,s.to)};
+ const place=()=>{const s=st,dx=s.cx-s.x0+(box.scrollLeft-s.sl0);s.el.style.transform=`translateX(${dx}px) scale(1.06)`;
+  const to=Math.max(0,Math.min(items.length-1,s.from+Math.round(dx/s.w)));s.to=to;
+  items.forEach((x,j)=>{if(j===s.from)return;x.style.transform=s.from<j&&j<=to?`translateX(${-s.w}px)`:to<=j&&j<s.from?`translateX(${s.w}px)`:""})};
+ const move=e=>{if(!st)return;st.cx=e.clientX;place()};
+ const up=()=>finish(true),cancel=()=>finish(false);
+ const begin=(el,i,x)=>{const r=box.getBoundingClientRect(),gap=parseFloat(getComputedStyle(box).columnGap)||10;
+  st={el,from:i,to:i,x0:x,cx:x,sl0:box.scrollLeft,w:el.offsetWidth+gap};box._drag=true;box.classList.add("dragging");el.classList.add("drg");
+  try{navigator.vibrate&&navigator.vibrate(12)}catch(e){}
+  st.auto=setInterval(()=>{if(!st)return;const k=st.cx<r.left+44?-1:st.cx>r.right-44?1:0;if(k){box.scrollLeft+=k*9;place()}},16);
+  window.addEventListener("pointermove",move);window.addEventListener("pointerup",up);window.addEventListener("pointercancel",cancel)};
+ items.forEach((el,i)=>{
+  el.addEventListener("contextmenu",e=>e.preventDefault());
+  el.addEventListener("pointerdown",e=>{if(st||e.button>0||e.target.closest("button,input,label"))return;
+   const sx=e.clientX,sy=e.clientY;let lx=sx;
+   const t=setTimeout(()=>{off();begin(el,i,lx)},e.pointerType==="mouse"?140:350);
+   const pre=ev=>{lx=ev.clientX;if(Math.abs(ev.clientX-sx)>8||Math.abs(ev.clientY-sy)>8){clearTimeout(t);off()}},
+    stop=()=>{clearTimeout(t);off()},off=()=>{window.removeEventListener("pointermove",pre);window.removeEventListener("pointerup",stop);window.removeEventListener("pointercancel",stop)};
+   window.addEventListener("pointermove",pre);window.addEventListener("pointerup",stop);window.addEventListener("pointercancel",stop)})})
+}
 </script>
 </body>
 </html>
