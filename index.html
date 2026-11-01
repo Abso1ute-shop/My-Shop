@@ -1467,7 +1467,7 @@ function openCam(){closeAll();let img="";
  const force=async note=>{const r=await api("/photoreq",{img,note,force:1},30000);if(!r){toast("Нет связи с сервером. Попробуйте позже");return false}if(!r.ok){toast(r.err||"Не удалось отправить");return false}logReq(note);return true};
  const found=(list,note)=>{
   $("#cbody").innerHTML=`<h3>Нашли в каталоге 🎉</h3><p style="color:var(--mut);line-height:1.5;margin:4px 0 12px">${list.length>1?"Похоже, это один из этих товаров:":"Похоже, это этот товар:"}</p><div class="pfl">${list.map(p=>`<button class="pfr" data-pf="${p.id}"><span class="pfi">${p.img?`<img src="${p.img}" alt="" loading="lazy">`:""}</span><span class="pft"><b>${esc(p.name)}</b><span>${PL(p)}</span><small>${p.stock===false?"Нет в наличии":"Открыть товар"}</small></span><svg class="chv" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg></button>`).join("")}</div><button class="btn" id="cnt" style="width:100%;text-align:center;margin-top:12px;background:var(--card);color:var(--fg)">Это не то — поищите для меня</button>`;
-  $$("#cbody [data-pf]").forEach(b=>b.onclick=()=>{const id=+b.dataset.pf;closeAll();openP(id)});
+  $$("#cbody [data-pf]").forEach(b=>b.onclick=()=>{const p=PRODUCTS.find(x=>String(x.id)===b.dataset.pf);closeAll();if(p)openP(p.id)});
   $("#cnt").onclick=async()=>{const bt=$("#cnt");if(bt.disabled)return;bt.disabled=true;bt.textContent="Отправляю…";if(await force(note))sent();else{bt.disabled=false;bt.textContent="Это не то — поищите для меня"}}};
  async function go(){if(!img)return toast("Сначала добавьте фото");const note=($("#cn").value||"").trim();
   if(!API){logReq(note);return sent()}
@@ -1475,7 +1475,7 @@ function openCam(){closeAll();let img="";
   if($("#csd").disabled)return;busy(true);
   const rr=await api("/photoreq",{img,note},60000);busy(false);
   if(!rr)return toast("Нет связи с сервером. Попробуйте позже");if(!rr.ok)return toast(rr.err||"Не удалось отправить");
-  const list=(rr.found||[]).map(f=>PRODUCTS.find(p=>p.id===f.id)).filter(Boolean);
+  const list=(rr.found||[]).map(f=>{let p=PRODUCTS.find(x=>String(x.id)===String(f.id));if(!p&&f.p&&f.p.name){p=mapP(f.p);PRODUCTS.push(p)}return p}).filter(p=>p&&!p.hide&&!p.hidden);   // товар может прийти с сервера, даже если каталог в телефоне устарел
   if(list.length)return found(list,note);
   if(!rr.sent){busy(true);const ok=await force(note);busy(false);if(!ok)return}else logReq(note);
   sent()}
