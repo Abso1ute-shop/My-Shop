@@ -359,7 +359,7 @@ function editP(id){
  const old=id?P.find(x=>x.id===id):null,p=old?JSON.parse(JSON.stringify(old)):{name:"",price:"",cat:"top",sizes:CLS.slice(),colors:[],desc:"",stock:true,isNew:true,pop:false,fast:false,imgs:[]};
  let trDirty=false,trOpen=false;const trE={en:{n:(p.tr&&p.tr.en&&p.tr.en.n)||"",d:(p.tr&&p.tr.en&&p.tr.en.d)||""},uz:{n:(p.tr&&p.tr.uz&&p.tr.uz.n)||"",d:(p.tr&&p.tr.uz&&p.tr.uz.d)||""}};
  const origRu=trHash(p.name,p.desc||"");
- let ph=(p.imgs||[]).map(i=>({id:i,url:API+"/img/"+i,col:(p.imgColors||{})[i]||""}));
+ let ph=(p.imgs||[]).map(i=>({id:i,url:API+"/img/"+i,col:(p.imgColors||{})[i]||"",noc:(p.noCol||[]).includes(i)}));
  ph.forEach(x=>{const a=(p.imgAI||{})[x.id];if(x.col&&a&&a.b===x.col)x.ai=x.col});   // цвет поставил ИИ (не вручную)
  let aiBusy=false;
  const baseDesc=old?String(old.desc||""):"",baseImg=old?Object.fromEntries((old.imgs||[]).map(i=>[i,(old.imgColors||{})[i]||""])):{},baseColors=old?(old.colors||[]).slice():[];
@@ -380,7 +380,7 @@ function editP(id){
    if(!document.body.contains(sh))return;
    if(!r||!r.ok){if(!auto||r)toast(r&&r.err||"Нет связи с сервером");return}
    $$("[data-pc]",sh).forEach(i=>{const x=ph[+i.dataset.pc];if(x)x.col=i.value.trim()});   // то, что успели ввести, пока ИИ думал
-   let n=0;(r.names||[]).forEach((nm,i)=>{const x=ph[i];if(!x||!nm||(x.col&&x.col!==x.ai))return;x.col=nm;x.ai=nm;n++});
+   let n=0;(r.names||[]).forEach((nm,i)=>{const x=ph[i];if(x)x.tried=1;if(!x||!nm||(x.col&&x.col!==x.ai))return;if(auto&&!x.col&&(x.noc||x.id||x.had))return;x.col=nm;x.ai=nm;x.noc=false;n++});
    $$("[data-pc]",sh).forEach(i=>{const x=ph[+i.dataset.pc];if(x)i.value=x.col||""});
    const all=[...new Set(ph.map(x=>x.col).filter(Boolean))];if($("#fo"))$("#fo").placeholder=all.join(", ")||"Чёрный, Белый";
    toast(n?"Цвета по фото: "+all.join(", ")+" — проверьте и сохраните":"ИИ не смог определить цвета — впишите вручную");
@@ -411,7 +411,7 @@ function editP(id){
   <div class="tgl"><span>Популярное</span><label class="sw"><input type="checkbox" id="t3" ${p.pop?"checked":""}><i></i></label></div>
   <div class="tgl"><span>Доставка за 1 день (в наличии)</span><label class="sw"><input type="checkbox" id="t4" ${p.fast?"checked":""}><i></i></label></div>${qtyHTML()}
   <button class="b" id="sv" style="margin-top:14px">Сохранить</button></div>`;
-  const keep=()=>{$$("[data-pc]",sh).forEach(x=>{const o=ph[+x.dataset.pc];if(o)o.col=x.value.trim()});p.name=$("#fn").value;p.price=$("#fp").value;p.cat=$("#fc").value;p.sizes=$("#fs").value.split(/[\s,]+/).filter(Boolean);p.colors=$("#fo").value.split(/[,;]+/).map(x=>x.trim()).filter(Boolean);
+  const keep=()=>{$$("[data-pc]",sh).forEach(x=>{const o=ph[+x.dataset.pc];if(o){o.col=x.value.trim();if(o.col)o.had=1}});p.name=$("#fn").value;p.price=$("#fp").value;p.cat=$("#fc").value;p.sizes=$("#fs").value.split(/[\s,]+/).filter(Boolean);p.colors=$("#fo").value.split(/[,;]+/).map(x=>x.trim()).filter(Boolean);
   if($("#szbox")){const o={};$$("[data-szp]",sh).forEach(i=>{const v=Math.round(+i.value);if(v>0)o[i.dataset.szp]=v});p.szP=o}
   if($("#qbox")){const qc=$$("[data-qc]",sh);if(qc.length){p.qtyC={};qc.forEach(i=>p.qtyC[i.dataset.qc]=Math.max(0,Math.round(+i.value)||0));p.qty=undefined}else{const v=$("#qn").value.trim();p.qty=v===""?undefined:Math.max(0,Math.round(+v)||0);p.qtyC=undefined}}p.desc=$("#fd").value;if($("#ten")){trOpen=$("#trbox").open;trE.en.n=$("#ten").value.trim();trE.en.d=$("#ted").value.trim();trE.uz.n=$("#tun").value.trim();trE.uz.d=$("#tud").value.trim()}p.stock=$("#t1").checked;p.isNew=$("#t2").checked;p.pop=$("#t3").checked;p.fast=$("#t4").checked;p.preorder=$("#t5").checked};
   $("#cl").onclick=()=>sh.remove();
@@ -438,7 +438,7 @@ function editP(id){
   $("#sv").onclick=async()=>{keep();const price=Math.round(+p.price);
    if(!p.name.trim())return toast("Введите название");if(!(price>0))return toast("Введите цену");
    const btn=$("#sv");btn.disabled=true;btn.textContent="Сохраняю…";
-   const body={p:{id:old?old.id:undefined,name:p.name,price,cat:p.cat,sizes:p.sizes,szP:p.szP||{},colors:p.colors,colorsSet:p.colors.join("|")===origCols?!!(old&&old.colorsSet):p.colors.length>0,desc:p.desc,trManual:trDirty&&(trE.en.n||trE.uz.n)?trE:undefined,stock:p.stock,isNew:p.isNew,pop:p.pop,fast:p.fast,preorder:p.preorder,qty:p.fast&&!p.colors.length?(p.qty??""):"",qtyC:p.fast&&p.colors.length?(p.qtyC||{}):{},imgs:ph.filter(x=>x.id).map(x=>x.id),ord:(()=>{let k=0;return ph.map(x=>x.id?x.id:"+"+(k++))})(),imgColors:Object.fromEntries(ph.filter(x=>x.id).map(x=>[x.id,x.col||""])),addColors:ph.filter(x=>x.data).map(x=>x.col||""),
+   const body={p:{id:old?old.id:undefined,name:p.name,price,cat:p.cat,sizes:p.sizes,szP:p.szP||{},colors:p.colors,colorsSet:p.colors.join("|")===origCols?!!(old&&old.colorsSet):p.colors.length>0,desc:p.desc,trManual:trDirty&&(trE.en.n||trE.uz.n)?trE:undefined,stock:p.stock,isNew:p.isNew,pop:p.pop,fast:p.fast,preorder:p.preorder,qty:p.fast&&!p.colors.length?(p.qty??""):"",qtyC:p.fast&&p.colors.length?(p.qtyC||{}):{},imgs:ph.filter(x=>x.id).map(x=>x.id),ord:(()=>{let k=0;return ph.map(x=>x.id?x.id:"+"+(k++))})(),noCol:(()=>{let k=0;const o=[];for(const x of ph){const t=x.id?x.id:"+"+(k++);if(!x.col&&(x.id||x.noc||x.had||x.tried))o.push(t)}return o})(),imgColors:Object.fromEntries(ph.filter(x=>x.id).map(x=>[x.id,x.col||""])),addColors:ph.filter(x=>x.data).map(x=>x.col||""),
     aiCols:Object.fromEntries(ph.filter(x=>x.id&&x.ai&&x.ai===x.col).map(x=>[x.id,x.col])),addAI:ph.filter(x=>x.data).map(x=>x.ai&&x.ai===x.col?x.col:""),base:old?{desc:baseDesc,imgColors:baseImg,colors:baseColors}:undefined},add:ph.filter(x=>x.data).map(x=>x.data)};
    const r=await call("/admin/product",body);
    if(r&&r.ok&&r.item){const kept=ph.filter(x=>x.id).map(x=>x.id),nw=(r.item.imgs||[]).filter(i=>!kept.includes(i)),nd=ph.filter(x=>x.data),done=[];
