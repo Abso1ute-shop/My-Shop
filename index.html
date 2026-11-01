@@ -1637,6 +1637,76 @@ if(!navigator.onLine)netBar(true);
 {const isF=el=>el&&(/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)&&!/^(checkbox|radio|button|submit|file|range|color)$/i.test(el.type||""))||(el&&el.isContentEditable);
  let kbT=0;const upd=()=>{clearTimeout(kbT);kbT=setTimeout(()=>{const vv=window.visualViewport,shrunk=vv?window.innerHeight-vv.height>120:false,on=isF(document.activeElement)&&(shrunk||matchMedia("(pointer:coarse)").matches);document.body.classList.toggle("kb",!!on)},60)};
  document.addEventListener("focusin",upd);document.addEventListener("focusout",upd);if(window.visualViewport)visualViewport.addEventListener("resize",upd)}
+/* ===== кнопка «Назад» телефона / браузера: шаг назад по экранам сайта, а не выход с сайта =====
+   Каждый переход (вкладка, товар, корзина, оформление, разделы профиля, поиск…) записывается в историю браузера.
+   «Назад» возвращает предыдущий экран; открытое поверх окно (фото на весь экран, выбор размера, подтверждение, меню)
+   просто закрывается. С сайта «Назад» уводит только с самого первого экрана. */
+(function(){
+ if(!window.history||!history.pushState)return;
+ try{if("scrollRestoration" in history)history.scrollRestoration="manual"}catch(e){}
+ const isOn=id=>{const e=document.getElementById(id);return !!(e&&e.classList.contains("on"))};
+ const AUTH="#lcd,#atg,#rcd,#agn,#fid",AUTH_DEEP="#lcd,#rcd,#agn,#fid";
+ function navState(){const s={};
+  if(isOn("ovp")){s.b="p";s.pv=$("#pbody").querySelector(AUTH)?"auth":(PV||"")}
+  else if(isOn("ovf2"))s.b="f";else if(isOn("dr"))s.b="c";else s.b="h";
+  for(const id of ["ovo","ovs","ovf","ovc","ovl","ovr"])if(isOn(id)){s.m=id;break}
+  if(s.m==="ovs")s.q=($("#si").value||"").trim();
+  if(s.m==="ovo"&&$("#ob .okx"))s.done=1;
+  if(isOn("ovx")&&CURP)s.x=CURP;
+  return s}
+ const key=s=>JSON.stringify([s.b,s.pv||"",s.m||"",s.done||0,s.x||0]);
+ let busy=0,timer=0,cur=navState();
+ function sync(){timer=0;if(busy)return;const s=navState();if(key(s)===key(cur))return;const was=cur;cur=s;
+  // вход выполнен или заказ оформлен — экран входа / форму заказа в истории не оставляем
+  if((was.pv==="auth"&&s.b==="p"&&s.pv!=="auth")||(was.m==="ovo"&&s.m==="ovo"&&s.done))history.replaceState({abs:1,nav:s},"");
+  else history.pushState({abs:1,nav:s},"")}
+ const later=()=>{if(!timer)timer=setTimeout(sync,30)};
+ const mo=new MutationObserver(later);
+ [...document.querySelectorAll(".ov"),$("#dr")].forEach(el=>el&&mo.observe(el,{attributes:true,attributeFilter:["class"]}));
+ ["#pbody","#ob","#pm"].forEach(s=>{const el=$(s);if(el)mo.observe(el,{childList:true})});
+ // всплывающие окна поверх экрана: «Назад» закрывает только их
+ function closePopup(){
+  const cf=document.querySelector(".cfm.on");if(cf){const b=cf.querySelector('[data-cf="0"]');b?b.click():cf.remove();return 1}
+  const vs=document.querySelector(".vsh.on");if(vs){const b=vs.querySelector("[data-vx]");b?b.click():vs.remove();return 1}
+  const zv=document.querySelector(".zv.on");if(zv){const b=zv.querySelector(".zx");b?b.click():zv.remove();return 1}
+  const lb=document.querySelector(".lbx");if(lb){lb.remove();return 1}
+  if($("#nav").classList.contains("m")||$("#dd").classList.contains("open")){$("#nav").classList.remove("m");$("#dd").classList.remove("open");return 1}
+  return 0}
+ function openModal(s){
+  if(s.m==="ovs"){closeAll();$("#ovs").classList.add("on");$("#si").value=s.q||"";doS();return 1}
+  if(s.m==="ovo"){if(s.done||!me||!cart.length)return 0;$("#co").onclick();return isOn("ovo")}
+  if(s.m==="ovf"){$("#fb").onclick();return 1}
+  if(s.m==="ovc"){openCam();return 1}
+  if(s.m==="ovl"){openFast();return 1}
+  if(s.m==="ovr"){closeAll();$("#ovr").classList.add("on");return 1}
+  return 0}
+ function restore(s){const c=navState();
+  if(c.b!==s.b||(c.m||"")!==(s.m||"")||(s.b==="p"&&(c.pv||"")!==(s.pv||""))){
+   if(!(s.m&&openModal(s))){
+    if(s.b==="f")openFavPage();else if(s.b==="c")openCart();
+    else if(s.b==="p"){openPr();if(s.pv&&s.pv!=="auth")drawAcc(s.pv)}
+    else closeAll()}}
+  if(s.x){if(!(isOn("ovx")&&CURP===s.x)&&PRODUCTS.some(p=>p.id===s.x))openP(s.x)}
+  else if(isOn("ovx"))$("#ovx").classList.remove("on")}
+ window.addEventListener("popstate",e=>{
+  clearTimeout(timer);timer=0;
+  const here=cur;
+  // 1) открыто окно поверх экрана (или шаг кода входа) — закрываем его и остаёмся на этом экране
+  let stay=closePopup();
+  if(!stay&&isOn("ovp")){const deep=$("#pbody").querySelector(AUTH_DEEP),bk=$("#bk");if(deep&&bk){bk.click();stay=1}}
+  if(stay){history.pushState({abs:1,nav:here},"");return}
+  // 2) обычный шаг назад — восстанавливаем предыдущий экран
+  const target=e.state&&e.state.abs&&e.state.nav?e.state.nav:{b:"h"};
+  busy=1;try{restore(target)}catch(err){try{closeAll()}catch(x){}}
+  setTimeout(()=>{busy=0;const s=navState();const same=key(s)===key(here);cur=s;history.replaceState({abs:1,nav:s},"");
+   // этот шаг ничего не поменял на экране (например, заказ уже оформлен) — идём ещё на шаг назад
+   if(same)history.back()},150)});
+ // ссылки «Главная» и логотип — без «#home» в адресе (иначе лишний шаг в истории)
+ $$('a[href="#home"]').forEach(a=>a.addEventListener("click",ev=>{ev.preventDefault();closeAll();try{window.scrollTo({top:0,behavior:"smooth"})}catch(x){window.scrollTo(0,0)}}));
+ // текст поиска запоминаем в текущем шаге — «Назад» из товара вернёт те же результаты
+ const si=$("#si");if(si)si.addEventListener("input",()=>{if(isOn("ovs")&&!busy){cur=navState();history.replaceState({abs:1,nav:cur},"")}});
+ history.replaceState({abs:1,nav:cur},"");
+})();
 </script>
 </body>
 </html>
