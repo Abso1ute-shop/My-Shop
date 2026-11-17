@@ -687,7 +687,7 @@ function dBon(){
  const L=(BQ&&BQ.items)||[],log=(BQ&&BQ.log)||[],act=L.filter(x=>x.st==="wait"||(x.kind==="gift"&&x.st==="В пути")),old=L.filter(x=>!act.includes(x));
  const pn=id=>{const p=(P||[]).find(x=>x.id===id);return p?p.name:"товар #"+id};
  const why=e=>e.k==="rv"?"отзыв на «"+esc(pn(e.pid))+"»":e.k==="promo"?"обмен на промокод":e.k==="gift"?"обмен на подарок":e.k==="back"?"возврат: заявка отменена":esc(e.why||"вручную");
- $("#v").innerHTML=`<div class="card bqh"><b>Бонусы покупателей</b><div class="mu">Отзыв — +100 · промокод — 200 · подарок-сюрприз — 500</div></div>
+ $("#v").innerHTML=`<div class="card bqh"><b>Бонусы покупателей</b><div class="mu">Отзыв на 5 звёзд — +100 · промокод — 200 · подарок-сюрприз — 500</div></div>
  <h3 class="bqt">Заявки${act.length?" · "+act.length:""}</h3>${act.length?act.map(bqCard).join(""):'<div class="empty">Новых заявок нет</div>'}
  <h3 class="bqt">Начислить или списать</h3><div class="card"><span class="lb">Ник покупателя</span><input id="ban" placeholder="nick" autocapitalize="off" spellcheck="false"><span class="lb">Бонусы: 100 — начислить, −100 — списать</span><input id="bad" type="number" inputmode="numeric" placeholder="100"><span class="lb">Причина (увидит покупатель)</span><input id="baw" placeholder="Например: подарок за отзыв в Instagram"><div class="r" style="margin-top:10px"><button class="b" id="bas">Сохранить</button><button class="g" id="bal">Проверить бонусы</button></div><div id="bau"></div></div>
  ${old.length?`<h3 class="bqt">Выполненные</h3>${old.slice(0,40).map(bqCard).join("")}`:""}
