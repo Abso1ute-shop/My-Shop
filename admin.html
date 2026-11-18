@@ -115,6 +115,17 @@ nav .nb{font-style:normal;background:#e5282b;color:#fff;border-radius:999px;min-
 .blg span{flex:1;min-width:0}
 .blg small{color:var(--mu);white-space:nowrap}
 .bqu{margin-top:12px;padding-top:10px;border-top:1px solid #ffffff1a}
+.bur{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid #ffffff12}
+.bur:first-child{border-top:0;margin-top:6px}
+.bur>div{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.bur small{color:var(--mu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bub{font-weight:800;font-size:17px}
+.bzn{margin:6px 0 18px;padding:14px;border-radius:16px;border:1px solid #ffffff1f}
+.bzv{font-size:24px}
+.bzq{display:flex;gap:8px;margin:10px 0 4px;flex-wrap:wrap}
+.bzq .g{border:1px solid #ffffff2e;border-radius:20px;padding:7px 14px}
+.bzn .bar .g{border:1px solid #ffffff2e;border-radius:12px;padding:10px 14px}
+#bzh{margin-top:12px}
 </style>
 </head>
 <body>
@@ -211,7 +222,7 @@ async function show(t){
  const r=await call(t==="dash"?"/admin/stats":t==="prod"?"/admin/products":t==="ord"?"/admin/orders":t==="promo"?"/admin/promos":t==="bon"?"/admin/bonus":t==="rev"?"/admin/reviews":"/admin/users");
  if(!r)return $("#v").innerHTML='<div class="empty">Нет связи с сервером</div>';
  if(!r.ok)return $("#v").innerHTML='<div class="empty">'+esc(r.err||"Ошибка")+'</div>';
- if((t==="ord"||t==="bon")&&!(P&&P.length)){const rp=await call("/admin/products");if(rp&&rp.ok)P=rp.items}
+ if((t==="ord"||t==="bon"||t==="usr")&&!(P&&P.length)){const rp=await call("/admin/products");if(rp&&rp.ok)P=rp.items}if(t==="bon"&&!(U&&U.length)){const ru=await call("/admin/users");if(ru&&ru.ok)U=ru.items}
  if(t==="prod")P=r.items;if(t==="ord")O=r.items;if(t==="usr")U=r.items;if(t==="promo")PR=r.items;if(t==="rev")R=r.items;if(t==="bon")BQ=r;if(t==="dash"){ST=r;navBadges()}
  draw();
 }
@@ -649,31 +660,54 @@ function dRev(){
 
 /* ---------- пользователи ---------- */
 function dUsr(){
- const l=U.filter(u=>(ufl==="all"||(ufl==="ban"?u.ban:u.frz))&&(!q||(u.nick+" "+u.n+" "+u.t+" "+u.tgu).toLowerCase().includes(q)));
- $("#v").innerHTML=`<div class="bar"><input id="sq" placeholder="Поиск: ник, имя, телефон" value="${esc(q)}"></div><div class="chips">${[["all","Все ("+U.length+")"],["ban","Заблокированные ("+U.filter(u=>u.ban).length+")"],["frz","Заморожен баланс ("+U.filter(u=>u.frz).length+")"]].map(c=>`<button data-uf="${c[0]}" class="${ufl===c[0]?"on":""}">${c[1]}</button>`).join("")}</div>${l.length?l.map(u=>`<div class="card"><div class="r"><b>@${esc(u.nick)}</b><span class="bal">${fmt(u.bal)}</span></div><div class="mu" style="margin:4px 0 10px">${esc(u.n)||"без имени"}${u.t?" · "+cpb(u.t,"Номер скопирован"):""}<br>Заказов: ${u.orders}${u.tg?" · Telegram"+(u.tgu?" @"+esc(u.tgu):""):""}${u.ts?" · с "+new Date(u.ts).toLocaleDateString("ru-RU"):""}</div>${u.ban||u.frz?`<div class="ubd">${u.ban?`<span class="ub ban">⛔ Заблокирован${u.ban!=="без причины"?": "+esc(u.ban):""}</span>`:""}${u.frz?'<span class="ub frz">❄️ Баланс заморожен</span>':""}</div>`:""}<button class="b s" data-bl="${esc(u.nick)}">Управлять</button></div>`).join(""):'<div class="empty">Никого нет</div>'}`;
+ const l=U.filter(u=>(ufl==="all"||(ufl==="ban"?u.ban:ufl==="bon"?u.bon>0:u.frz))&&(!q||(u.nick+" "+u.n+" "+u.t+" "+u.tgu).toLowerCase().includes(q)));
+ $("#v").innerHTML=`<div class="bar"><input id="sq" placeholder="Поиск: ник, имя, телефон" value="${esc(q)}"></div><div class="chips">${[["all","Все ("+U.length+")"],["ban","Заблокированные ("+U.filter(u=>u.ban).length+")"],["frz","Заморожен баланс ("+U.filter(u=>u.frz).length+")"],["bon","С бонусами ("+U.filter(u=>u.bon>0).length+")"]].map(c=>`<button data-uf="${c[0]}" class="${ufl===c[0]?"on":""}">${c[1]}</button>`).join("")}</div>${l.length?l.map(u=>`<div class="card"><div class="r"><b>@${esc(u.nick)}</b><span class="bal">${fmt(u.bal)}</span></div><div class="mu" style="margin:4px 0 10px">${esc(u.n)||"без имени"}${u.t?" · "+cpb(u.t,"Номер скопирован"):""}<br>Заказов: ${u.orders} · Бонусы: <b>${u.bon||0}</b>${u.tg?" · Telegram"+(u.tgu?" @"+esc(u.tgu):""):""}${u.ts?" · с "+new Date(u.ts).toLocaleDateString("ru-RU"):""}</div>${u.ban||u.frz?`<div class="ubd">${u.ban?`<span class="ub ban">⛔ Заблокирован${u.ban!=="без причины"?": "+esc(u.ban):""}</span>`:""}${u.frz?'<span class="ub frz">❄️ Баланс заморожен</span>':""}</div>`:""}<button class="b s" data-bl="${esc(u.nick)}">Управлять</button></div>`).join(""):'<div class="empty">Никого нет</div>'}`;
  $("#sq").oninput=e=>{q=e.target.value.trim().toLowerCase();const pos=e.target.selectionStart;dUsr();const s=$("#sq");s.focus();s.setSelectionRange(pos,pos)};
  $$("[data-uf]").forEach(b=>b.onclick=()=>{ufl=b.dataset.uf;dUsr()});
  $$("[data-bl]").forEach(b=>b.onclick=()=>balP(b.dataset.bl));
 }
 function balP(nick){
- const u=U.find(x=>x.nick===nick),sh=document.createElement("div");sh.className="sheet";document.body.appendChild(sh);
+ const BK=tab==="bon"?"bon":"usr";let bch=false;
+ const u=U.find(x=>x.nick===nick)||{nick,bal:0,bon:0},sh=document.createElement("div");sh.className="sheet";document.body.appendChild(sh);
  sh.innerHTML=`<div class="in"><div class="r"><h2>@${esc(nick)}</h2><button class="g" id="cl">Закрыть</button></div><div class="mu">Текущий баланс</div><div class="bal" style="margin-bottom:16px">${fmt(u.bal)}</div><span class="lb">Сумма, сум</span><input id="am" type="number" inputmode="numeric" placeholder="50000"><div class="bar"><button class="b" id="pl">Пополнить</button><button class="b r" id="mi">Списать</button></div><p class="mu">Клиент получит сообщение об изменении баланса в чате на сайте.</p>
+ <div class="bzn"><div class="r"><b>🎁 Бонусы</b><b class="bzv" id="bzv">${u.bon||0}</b></div>
+ <div class="bzq">${[50,100,200,500].map(v=>`<button class="g" data-bq1="${v}">${v}</button>`).join("")}</div>
+ <span class="lb">Сколько бонусов</span><input id="bza" type="number" inputmode="numeric" placeholder="100">
+ <span class="lb">Причина (покупатель увидит в уведомлении)</span><input id="bzw" placeholder="Например: подарок за отзыв в Instagram">
+ <div class="bar"><button class="b" id="bzp">Начислить</button><button class="b r" id="bzm">Списать</button></div>
+ <div class="bar"><button class="g" id="bzs">Сделать ровно</button><button class="g" id="bz0">Обнулить</button></div>
+ <div id="bzh" class="mu">Загружаю историю…</div></div>
  <div class="uz"><span class="lb">Причина (необязательно, клиент увидит её в Telegram)</span><input id="rs" placeholder="Например: подозрение на мошенничество">
  <div class="ur"><div><b>❄️ Заморозить баланс</b><small>Клиент не сможет платить с баланса и пополнять его. Деньги останутся на счёте.</small></div><button class="b s${u.frz?"":" r"}" id="fz">${u.frz?"Разморозить":"Заморозить"}</button></div>
  <div class="ur"><div><b>⛔ Заблокировать аккаунт</b><small>Клиента выкинет с сайта, войти и зарегистрироваться на этот Telegram он не сможет.</small></div><button class="b s${u.ban?"":" r"}" id="bn">${u.ban?"Разблокировать":"Заблокировать"}</button></div>
  <div class="ur"><div><b>🗑 Удалить аккаунт</b><small>Удаляется насовсем вместе с балансом (${fmt(u.bal)}). Его заказы останутся в «Заказах». Ник и Telegram освободятся.</small></div><button class="b s r" id="dl">Удалить</button></div></div></div>`;
- $("#cl").onclick=()=>sh.remove();
+ $("#cl").onclick=()=>{sh.remove();if(bch)show(BK)};
+ const bzHist=async()=>{const r=await call("/admin/bonus/user",{nick});if(!r||!r.ok){$("#bzh").textContent=r&&r.err||"Нет связи";return}u.bon=r.bon;$("#bzv").textContent=r.bon;
+  $("#bzh").innerHTML=(r.bh||[]).length?'<span class="lb">История бонусов</span>'+r.bh.slice(0,15).map(e=>`<div class="blg"><b class="${e.d>0?"p":"m"}">${e.d>0?"+":"−"}${Math.abs(e.d)}</b><span>${bWhy(e)}</span><small>${bWhen(e.ts)}</small></div>`).join(""):"Начислений пока не было"};
+ bzHist();
+ sh.querySelectorAll("[data-bq1]").forEach(b=>b.onclick=()=>{$("#bza").value=b.dataset.bq1});
+ const bz=async(body,msg)=>{const r=await call("/admin/bonus/adjust",{nick,why:$("#bzw").value.trim(),...body});if(!r||!r.ok)return toast(r&&r.err||"Нет связи");bch=true;u.bon=r.bon;$("#bzv").textContent=r.bon;$("#bza").value="";toast(msg+" Теперь у @"+nick+": "+r.bon+" бонусов");bzHist()};
+ const bzN=()=>Math.round(+$("#bza").value);
+ $("#bzp").onclick=()=>{const a=bzN();if(!(a>0))return toast("Введите количество бонусов");if(confirm(`Начислить ${a} бонусов @${nick}?`))bz({d:a},"Начислено.")};
+ $("#bzm").onclick=()=>{const a=bzN();if(!(a>0))return toast("Введите количество бонусов");if(confirm(`Списать ${a} бонусов у @${nick}?`))bz({d:-a},"Списано.")};
+ $("#bzs").onclick=()=>{const v=$("#bza").value.trim(),a=bzN();if(v===""||!(a>=0))return toast("Введите, сколько бонусов должно быть");if(confirm(`Сделать у @${nick} ровно ${a} бонусов?`))bz({set:a},"Готово.")};
+ $("#bz0").onclick=()=>{if(confirm(`Обнулить бонусы @${nick}?`))bz({set:0},"Бонусы обнулены.")};
  const go=async sg=>{const a=Math.round(+$("#am").value);if(!(a>0))return toast("Введите сумму");if(!confirm((sg>0?"Пополнить":"Списать")+" "+fmt(a)+" — @"+nick+"?"))return;
-  const r=await call("/admin/balance",{nick,delta:sg*a});if(!r||!r.ok)return toast(r&&r.err||"Нет связи");toast("Баланс: "+fmt(r.bal));sh.remove();show("usr")};
+  const r=await call("/admin/balance",{nick,delta:sg*a});if(!r||!r.ok)return toast(r&&r.err||"Нет связи");toast("Баланс: "+fmt(r.bal));sh.remove();show(BK)};
  $("#pl").onclick=()=>go(1);$("#mi").onclick=()=>go(-1);
- const act=async(path,on,ok,extra={})=>{const r=await call(path,{nick,on,reason:$("#rs").value.trim(),...extra});if(!r||!r.ok)return toast(r&&r.err||"Нет связи");toast(ok);sh.remove();show("usr")};
+ const act=async(path,on,ok,extra={})=>{const r=await call(path,{nick,on,reason:$("#rs").value.trim(),...extra});if(!r||!r.ok)return toast(r&&r.err||"Нет связи");toast(ok);sh.remove();show(BK)};
  $("#fz").onclick=()=>{const on=!u.frz;if(confirm((on?"Заморозить":"Разморозить")+" баланс @"+nick+"?"))act("/admin/user/freeze",on,on?"Баланс заморожен":"Баланс разморожен")};
  $("#bn").onclick=()=>{const on=!u.ban;if(confirm((on?"Заблокировать":"Разблокировать")+" аккаунт @"+nick+"?"))act("/admin/user/ban",on,on?"Аккаунт заблокирован":"Аккаунт разблокирован")};
  $("#dl").onclick=()=>{const c=prompt("Удаление нельзя отменить. Баланс "+fmt(u.bal)+" пропадёт.\nЧтобы подтвердить, введите ник: "+nick);if(c===null)return;if(c.trim().replace(/^@/,"").toLowerCase()!==nick)return toast("Ник введён неверно — аккаунт не удалён");act("/admin/user/delete",true,"Аккаунт удалён",{confirm:nick})};
 }
 
 /* ---------- бонусы и подарки ---------- */
-let BQ=null;
+let BQ=null,bSq="";
+const bPn=id=>{const p=(P||[]).find(x=>x.id===id);return p?p.name:"товар #"+id};
+const bWhy=e=>e.k==="rv"?"отзыв на «"+esc(bPn(e.pid))+"»":e.k==="promo"?"обмен на промокод":e.k==="gift"?"обмен на подарок":e.k==="back"?"возврат: заявка отменена":esc(e.why||"вручную");
+// покупатели: по умолчанию — у кого есть бонусы, при поиске — все подходящие
+function bUsers(){const l=(U||[]).filter(u=>bSq?(u.nick+" "+(u.n||"")).toLowerCase().includes(bSq.replace(/^@/,"")):(u.bon||0)>0).sort((a,b)=>(b.bon||0)-(a.bon||0)).slice(0,40);
+ return l.length?l.map(u=>`<div class="bur"><div><b>@${esc(u.nick)}</b><small>${esc(u.n||"без имени")}</small></div><span class="bub">${u.bon||0}</span><button class="b s" data-bu="${esc(u.nick)}">Управлять</button></div>`).join(""):`<div class="mu" style="margin-top:10px">${bSq?"Никого не нашли":"Пока ни у кого нет бонусов — найдите покупателя по нику, чтобы начислить"}</div>`}
 const bWhen=ts=>new Date(ts).toLocaleString("ru-RU",{timeZone:"Asia/Tashkent",day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
 const bCode=()=>"BON"+Math.random().toString(36).slice(2,7).toUpperCase().replace(/[^A-Z0-9]/g,"7");
 function bqCard(x){
@@ -685,11 +719,10 @@ function bqCard(x){
  return`<div class="card bqc" data-bq="${esc(x.id)}">${head("🎁 Подарок · "+x.cost+" бонусов",st,cls)}<div class="bqa">${esc(x.n||"")}<br>${cpb(x.t,"Телефон скопирован")}<br>${cpb(x.bts,"Адрес скопирован")}</div>${x.st==="Отменён"?(x.why?`<div class="mu">Причина: ${esc(x.why)}</div>`:""):`<div class="r bqs">${["В пути","В пункте выдачи"].map(s=>`<button class="${x.st===s?"b":"g"}" data-gs="${s}">${s}</button>`).join("")}${x.st!=="В пункте выдачи"?'<button class="g" style="color:var(--no)" data-bx>Отменить</button>':""}</div>`}</div>`}
 function dBon(){
  const L=(BQ&&BQ.items)||[],log=(BQ&&BQ.log)||[],act=L.filter(x=>x.st==="wait"||(x.kind==="gift"&&x.st==="В пути")),old=L.filter(x=>!act.includes(x));
- const pn=id=>{const p=(P||[]).find(x=>x.id===id);return p?p.name:"товар #"+id};
- const why=e=>e.k==="rv"?"отзыв на «"+esc(pn(e.pid))+"»":e.k==="promo"?"обмен на промокод":e.k==="gift"?"обмен на подарок":e.k==="back"?"возврат: заявка отменена":esc(e.why||"вручную");
+ const why=bWhy;
  $("#v").innerHTML=`<div class="card bqh"><b>Бонусы покупателей</b><div class="mu">Отзыв на 5 звёзд — +100 · промокод — 200 · подарок-сюрприз — 500</div></div>
  <h3 class="bqt">Заявки${act.length?" · "+act.length:""}</h3>${act.length?act.map(bqCard).join(""):'<div class="empty">Новых заявок нет</div>'}
- <h3 class="bqt">Начислить или списать</h3><div class="card"><span class="lb">Ник покупателя</span><input id="ban" placeholder="nick" autocapitalize="off" spellcheck="false"><span class="lb">Бонусы: 100 — начислить, −100 — списать</span><input id="bad" type="number" inputmode="numeric" placeholder="100"><span class="lb">Причина (увидит покупатель)</span><input id="baw" placeholder="Например: подарок за отзыв в Instagram"><div class="r" style="margin-top:10px"><button class="b" id="bas">Сохранить</button><button class="g" id="bal">Проверить бонусы</button></div><div id="bau"></div></div>
+ <h3 class="bqt">Бонусы покупателей</h3><div class="card"><input id="bsq" placeholder="Найти покупателя: ник или имя" autocapitalize="off" spellcheck="false" value="${esc(bSq)}"><div id="bul">${bUsers()}</div></div>
  ${old.length?`<h3 class="bqt">Выполненные</h3>${old.slice(0,40).map(bqCard).join("")}`:""}
  <h3 class="bqt">Последние начисления</h3>${log.length?`<div class="card">${log.slice(0,60).map(e=>`<div class="blg"><b class="${e.d>0?"p":"m"}">${e.d>0?"+":"−"}${Math.abs(e.d)}</b><span>@${esc(e.nick)} · ${why(e)}</span><small>${bWhen(e.ts)}</small></div>`).join("")}</div>`:'<div class="empty">Пока пусто</div>'}`;
  const ok=(r,msg)=>{if(!r||!r.ok){toast(r&&r.err||"Нет связи");return false}toast(msg);show("bon");return true};
@@ -697,9 +730,8 @@ function dBon(){
   const g=c.querySelector("[data-bgo]");if(g)g.onclick=async()=>{const code=c.querySelector("[data-bc]").value.trim().toUpperCase(),pct=+c.querySelector("[data-bp]").value;g.disabled=true;const r=await call("/admin/bonus/promo",{id,code,pct});g.disabled=false;ok(r,"Промокод выдан — покупатель увидит его в «Бонусах»")};
   c.querySelectorAll("[data-gs]").forEach(b=>b.onclick=async()=>{if(x&&x.st===b.dataset.gs)return;b.disabled=true;const r=await call("/admin/bonus/gift",{id,st:b.dataset.gs});b.disabled=false;ok(r,"Статус подарка: "+b.dataset.gs)});
   const xb=c.querySelector("[data-bx]");if(xb)xb.onclick=async()=>{const w=prompt(`Отменить заявку и вернуть ${x?x.cost:""} бонусов @${x?x.nick:""}?\nПричина (необязательно):`,"");if(w===null)return;const r=await call("/admin/bonus/cancel",{id,why:w});ok(r,"Заявка отменена, бонусы возвращены")}});
- $("#bas").onclick=async()=>{const r=await call("/admin/bonus/adjust",{nick:$("#ban").value,d:+$("#bad").value,why:$("#baw").value});if(!r||!r.ok)return toast(r&&r.err||"Нет связи");toast("Готово: у покупателя "+r.bon+" бонусов");show("bon")};
- $("#bal").onclick=async()=>{const r=await call("/admin/bonus/user",{nick:$("#ban").value});if(!r||!r.ok)return toast(r&&r.err||"Нет связи");
-  $("#bau").innerHTML=`<div class="bqu"><b>@${esc(r.nick)}${r.name?" · "+esc(r.name):""}: ${r.bon} бонусов</b>${(r.bh||[]).map(e=>`<div class="blg"><b class="${e.d>0?"p":"m"}">${e.d>0?"+":"−"}${Math.abs(e.d)}</b><span>${why(e)}</span><small>${bWhen(e.ts)}</small></div>`).join("")||'<div class="mu">Начислений пока не было</div>'}</div>`};
+ const bindU=()=>$$("#bul [data-bu]").forEach(b=>b.onclick=()=>balP(b.dataset.bu));bindU();
+ $("#bsq").oninput=e=>{bSq=e.target.value.trim().toLowerCase();$("#bul").innerHTML=bUsers();bindU()};
 }
 function dPromo(){
  $("#v").innerHTML=`<div class="bar"><button class="b" id="addp">+ Создать промокод</button></div>${PR.length?PR.map(x=>`<div class="card"><div class="r"><b style="font-size:18px;letter-spacing:1px">${esc(x.code)}</b><span class="st ${x.active?"d":"c"}">−${x.pct}%</span></div><div class="mu" style="margin:6px 0 12px">Использовано: ${x.uses||0}${x.max?" из "+x.max:""}${x.exp?" · до "+new Date(x.exp).toLocaleDateString("ru-RU"):" · без срока"}</div><div class="r"><div class="r" style="gap:10px"><span>Действует</span><label class="sw"><input type="checkbox" data-pa="${esc(x.code)}" ${x.active?"checked":""}><i></i></label></div><div><button class="g" data-pe="${esc(x.code)}">Редактировать</button>&nbsp;&nbsp;<button class="g" style="color:var(--no)" data-pd="${esc(x.code)}">Удалить</button></div></div></div>`).join(""):'<div class="empty">Промокодов пока нет</div>'}`;
