@@ -1155,7 +1155,6 @@ html body .gtrk.w{margin-top:20px}
 body,button,input,textarea,select{font-family:var(--fb)}
 body{background:var(--bg);color:var(--fg);-webkit-font-smoothing:antialiased;padding-bottom:calc(98px + env(safe-area-inset-bottom,0px))!important}
 h1,h2,h3{font-family:var(--fh);letter-spacing:-.01em;text-transform:none}
-.logo{font-family:Oswald,Impact,sans-serif!important}
 
 /* свет на фоне страницы */
 body::before{background:radial-gradient(70% 26% at 50% -4%,var(--lt1),transparent 70%),radial-gradient(55% 22% at 100% 12%,rgba(var(--acc-rgb),var(--glowA)),transparent 72%),radial-gradient(60% 20% at -8% 58%,rgba(var(--acc-rgb),calc(var(--glowA)*.6)),transparent 70%)!important}
@@ -1366,6 +1365,18 @@ html body .shp button.on,html body .wzi.on{border-color:transparent!important;bo
 .fq-n{font:700 12px var(--fh)!important}
 .steps i{font-family:var(--fh)!important}
 
+
+/* логотип ABSO1UTE SHOP UZ */
+.logo{display:inline-flex!important;flex-direction:column;align-items:flex-start;gap:5px;line-height:1!important;font-style:normal!important;text-decoration:none;color:var(--fg)!important;font-family:var(--fh)!important;font-size:inherit!important;letter-spacing:0!important}
+.logo .lgw{display:block;font:700 20px/1 var(--fh);letter-spacing:.035em;background:linear-gradient(105deg,var(--fg) 0 38%,rgba(var(--acc-rgb),.95) 48%,#fff 50%,rgba(var(--acc-rgb),.95) 52%,var(--fg) 62% 100%);background-size:280% 100%;background-position:100% 0;-webkit-background-clip:text;background-clip:text;color:transparent;animation:lgShine 7s cubic-bezier(.4,0,.2,1) 1.5s infinite}
+:root:not([data-theme=dark]) .logo .lgw{background-image:linear-gradient(105deg,var(--fg) 0 38%,rgba(var(--acc-rgb),.9) 48%,rgba(var(--acc-rgb),.6) 50%,rgba(var(--acc-rgb),.9) 52%,var(--fg) 62% 100%)}
+@keyframes lgShine{0%,78%{background-position:100% 0}100%{background-position:0 0}}
+.logo small{display:flex!important;align-items:center;gap:7px;margin:0!important;font:800 9px/1 var(--fb)!important;letter-spacing:.5em!important;color:var(--mut)!important;text-transform:uppercase}
+.logo small i{width:3px;height:3px;border-radius:50%;background:var(--mut);font-size:0}
+.logo small b{color:var(--acc);font-weight:800;text-shadow:0 0 10px rgba(var(--acc-rgb),.55)}
+@media (min-width:861px){.logo .lgw{font-size:24px}.logo small{font-size:10px!important}}
+@media (prefers-reduced-motion:reduce){.logo .lgw{animation:none}}
+
 /* смена темы — плавно */
 html.thx body,html.thx header,html.thx .hero,html.thx .sl h1,html.thx .sl p,html.thx .sl .btn,html.thx .fxc,html.thx .pc,html.thx .bar,html.thx .chip,html.thx .rvb,html.thx .perk,html.thx .tb .inp{transition:background-color .45s ease,color .45s ease,border-color .45s ease,box-shadow .45s ease!important}
 
@@ -1389,7 +1400,7 @@ html.thx body,html.thx header,html.thx .hero,html.thx .sl h1,html.thx .sl p,html
 <script>(function(){var H=document.documentElement;if(!H.classList.contains("spl"))return;var st=0,fo=null;function start(){if(st)return;st=1;if(fo!==true)H.classList.add("spnf");requestAnimationFrame(function(){requestAnimationFrame(function(){window.__spgoT=Date.now();H.classList.add("spgo")})})}function chk(){if(!st&&window.__main&&fo!==null)start()}function wf(){try{Promise.all([document.fonts.load("700 64px Oswald"),document.fonts.load("600 13px Inter")]).then(function(){fo=document.fonts.check("700 64px Oswald");chk()},function(){fo=false;chk()})}catch(e){fo=false;chk()}}if(window.__gf)wf();else document.addEventListener("gfload",wf,{once:true});document.addEventListener("mainready",chk);setTimeout(function(){if(fo===null)fo=false;chk()},700);setTimeout(start,1800)})();</script>
 <header>
  <button class="ib burger" id="burger" aria-label="Меню"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
- <a href="#home" class="logo">ABSO1UTE<small>SHOP</small></a>
+ <a href="#home" class="logo" aria-label="ABSO1UTE SHOP UZ"><span class="lgw">ABSO1UTE</span><small>SHOP<i></i><b>UZ</b></small></a>
  <nav id="nav">
   <a href="#home" class="on">Главная</a>
   <div class="dd" id="dd"><button id="ddb">Каталог ▾</button><div class="ddm" id="ddm"></div></div>
