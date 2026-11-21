@@ -1224,7 +1224,10 @@ header{background:var(--bg)!important;border-bottom:1px solid var(--line);-webki
 :root[data-theme=gray] .pc{background:var(--surf)!important}
 .pc:active{transform:scale(.97)!important;box-shadow:var(--sh)!important}
 .pc .pi{border:0!important;border-radius:14px!important;box-shadow:none!important;background:var(--surf-in)}
-.pc .pi img{transition:transform .8s cubic-bezier(.22,1,.36,1)}
+.pc .pi img:not(.csx){transition:transform .8s cubic-bezier(.22,1,.36,1)}
+/* смена цвета на фото — плавное растворение с лёгким «наездом» */
+.pi .csx{transition:opacity .5s ease,transform .5s cubic-bezier(.22,1,.36,1)!important;transform:scale(1.05);will-change:opacity,transform}
+.pi .csx.on{transform:scale(1)}
 .pc .pr{border-top:0!important;padding-top:6px!important}
 .pc .pr span{font-weight:800!important;letter-spacing:-.01em}
 .pc h4{font-weight:700!important;letter-spacing:-.005em}
@@ -1238,7 +1241,7 @@ header{background:var(--bg)!important;border-bottom:1px solid var(--line);-webki
 .sb.q5{color:var(--fg)}
 @media (hover:hover){
  .pc:hover{transform:translateY(-5px)!important;box-shadow:var(--sh-hover)!important;border-color:rgba(var(--acc-rgb),.35)!important}
- .pc:hover .pi img{transform:scale(1.045)}
+ .pc:hover .pi img:not(.csx){transform:scale(1.045)}
  .pc .add:hover{box-shadow:0 0 0 4px rgba(var(--acc-rgb),.22)}
  .chip:hover{border-color:rgba(var(--acc-rgb),.5)!important}
 }
