@@ -1326,8 +1326,27 @@ html body .shp button.on,html body .wzi.on{border-color:transparent!important;bo
 .bar .bb .st{transition:transform .45s cubic-bezier(.34,1.56,.64,1)}
 .bar .bb.act .st{transform:translateY(-1px) scale(1.08)}
 
+
+/* баннер под тему: белая — светлый «студийный», серая — графитово-серый светлый, чёрная — как был */
+:root:not([data-theme=dark]) .hero{background:radial-gradient(90% 80% at 85% -10%,rgba(255,255,255,1),rgba(255,255,255,0) 60%),radial-gradient(70% 70% at 0% 110%,rgba(var(--acc-rgb),.10),transparent 60%),linear-gradient(160deg,#FFFFFF 0%,#F1F1EE 55%,#E6E6E2 100%)!important;border:1px solid rgba(11,11,13,.06)!important;box-shadow:0 26px 50px rgba(17,18,24,.12),inset 0 1px 0 #fff!important;color:#0B0B0D}
+:root[data-theme=gray] .hero{background:radial-gradient(90% 80% at 85% -10%,rgba(255,255,255,.75),rgba(255,255,255,0) 60%),radial-gradient(70% 70% at 0% 110%,rgba(var(--acc-rgb),.16),transparent 60%),linear-gradient(160deg,#EFEFEC 0%,#DDDDD9 55%,#CACAC5 100%)!important;border:1px solid rgba(255,255,255,.6)!important;box-shadow:0 26px 50px rgba(30,30,40,.18),inset 0 1px 0 rgba(255,255,255,.8)!important}
+:root:not([data-theme=dark]) .hero::before{background:repeating-linear-gradient(135deg,rgba(11,11,13,.035) 0 2px,transparent 2px 20px)!important;opacity:.7}
+:root:not([data-theme=dark]) .deco::before{background:linear-gradient(90deg,transparent 12%,rgba(var(--acc-rgb),.20) 55%,transparent 88%)}
+:root:not([data-theme=dark]) .deco::after{background:radial-gradient(circle,rgba(255,255,255,.9),transparent 65%)}
+:root:not([data-theme=dark]) .deco i{border-color:rgba(11,11,13,.08)!important}
+:root:not([data-theme=dark]) .deco .wm{-webkit-text-stroke:1px rgba(11,11,13,.08)!important}
+:root:not([data-theme=dark]) .sl h1,:root:not([data-theme=dark]) .sl .big{color:#0B0B0D!important;text-shadow:none}
+:root:not([data-theme=dark]) .sl p{color:#55575D!important}
+:root:not([data-theme=dark]) .sl h1 .sc-i,:root:not([data-theme=dark]) .sl h1 .cm-i{stroke:#0B0B0D!important}
+:root:not([data-theme=dark]) .sl .btn{background:#0B0B0D!important;color:#fff!important;box-shadow:0 12px 28px rgba(var(--acc-rgb),.25)!important}
+:root:not([data-theme=dark]) .arr{background:rgba(255,255,255,.7)!important;border:1px solid rgba(11,11,13,.08)!important;color:#0B0B0D!important;box-shadow:0 6px 16px rgba(17,18,24,.08)}
+:root:not([data-theme=dark]) .dots i{background:rgba(11,11,13,.22)!important}
+:root:not([data-theme=dark]) .dots i.on{background:var(--acc)!important;box-shadow:0 0 12px rgba(var(--acc-rgb),.55)}
+:root:not([data-theme=dark]) .fxc{background:#fff!important;color:#0B0B0D!important;border:1px solid rgba(11,11,13,.06)!important;box-shadow:0 22px 40px rgba(17,18,24,.18),0 0 40px rgba(var(--acc-rgb),.14)!important}
+:root:not([data-theme=dark]) .fxc small{color:#6A6C72!important}
+
 /* смена темы — плавно */
-html.thx body,html.thx header,html.thx .pc,html.thx .bar,html.thx .chip,html.thx .rvb,html.thx .perk,html.thx .tb .inp{transition:background-color .45s ease,color .45s ease,border-color .45s ease,box-shadow .45s ease!important}
+html.thx body,html.thx header,html.thx .hero,html.thx .sl h1,html.thx .sl p,html.thx .sl .btn,html.thx .fxc,html.thx .pc,html.thx .bar,html.thx .chip,html.thx .rvb,html.thx .perk,html.thx .tb .inp{transition:background-color .45s ease,color .45s ease,border-color .45s ease,box-shadow .45s ease!important}
 
 /* компьютер */
 @media (min-width:861px){
