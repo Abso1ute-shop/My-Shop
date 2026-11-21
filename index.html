@@ -1085,29 +1085,29 @@ html body .gtrk.w{margin-top:20px}
 @media (hover:none){header{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;background:var(--bg)!important}body::before{animation:none!important}}
 /* баннер ушёл за экран — его анимации на паузе */
 .hero.off,.hero.off *{animation-play-state:paused!important}
-/* баннер 5:2 — в длину 5, в высоту 2 */
-#hero{aspect-ratio:5/2;min-height:0!important;height:auto}
-.p1 span{display:block}
+/* телефон: блок отзывов 5:2 — в длину 5, в высоту 2; карточка: фото товара слева, имя и звёзды, текст, «товар · размер · цвет» */
 @media (max-width:600px){
- #hero{border-radius:22px;margin-top:14px;box-shadow:0 10px 26px #0003}
- #hero .sl{padding:12px 18px 20px!important;gap:5px;justify-content:center}
- #hero .sl h1{font-size:clamp(18px,5.4vw,23px)!important;line-height:1.02}
- #hero .sl .big{font-size:clamp(26px,8vw,32px)!important;line-height:.95}
- #hero .sl p{font-size:11.5px;line-height:1.3;max-width:100%;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
- #hero .sl .btn{padding:6px 11px;font-size:11px;margin-top:2px;border-radius:9px;letter-spacing:.2px}
- #hero .fxs.fx h1,#hero .fxs.fx p,#hero .fxs.fx .btn{max-width:62%}
- #hero .fxs.fx .p0{display:none!important}#hero .fxs:not(.fx) .p1{display:none!important}
- #hero .fxs.fx .p1 span{display:inline}#hero .fxs.fx .p1 span+span::before{content:" · "}#hero .fxs.fx .p1 span:nth-child(3){display:none}
- #hero .arr{display:none}
- #hero .dots{bottom:7px!important;gap:6px}
- #hero .dots i{width:6px;height:6px}
- #hero .dots i.on{transform:scale(1.15)}
- #hero .fxk{right:12px;top:17%;transform:scale(.56);transform-origin:100% 0}
- #hero .deco .wm{font-size:30px;right:-6px;letter-spacing:3px}
- #hero .deco i:nth-child(1){width:110px;height:110px;right:-44px;top:8px}
- #hero .deco i:nth-child(2){width:70px;height:70px;left:-30px;bottom:18px}
- #hero .deco i:nth-child(3){width:26px;height:26px;right:22px;bottom:22px}
- #hero .sl h1 svg{width:.7em;height:.7em}
+ .rvb{aspect-ratio:5/2;display:flex;flex-direction:column;padding:11px 0 10px;margin-top:14px;border-radius:22px}
+ .rvbh{padding:0 14px 7px;gap:8px;flex:none}
+ .rvbt b{font-size:15px;white-space:nowrap}
+ .rvbt small{display:none}
+ .rvsc{gap:6px}
+ .rvsc .rvbig{font-size:24px}
+ .rvsc .stars svg{width:10px;height:10px}
+ .rvsc>span{display:flex;flex-direction:column;align-items:flex-start}
+ .rvsc small{font-size:10px;margin-top:1px}
+ .rvtk{flex:1;min-height:0;display:flex}
+ .rvtr{padding:0 14px;gap:8px;align-items:stretch}
+ .rvc{width:232px;height:auto;padding:7px 9px 7px 7px;border-radius:14px;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto auto;align-content:center;column-gap:9px;row-gap:2px;align-items:center}
+ .rvc1,.rvc2{display:contents}
+ .rvc .rvav{display:none}
+ .rvc2 img{grid-column:1;grid-row:1/4;width:60px;height:60px;border-radius:10px;align-self:center}
+ .rvc:not(:has(img)) .rvav{display:grid;grid-column:1;grid-row:1/4;width:44px;height:44px;font-size:16px}
+ .rvn{grid-column:2;grid-row:1;flex-direction:row;align-items:center;gap:6px}
+ .rvn b{font-size:12px;line-height:1.2;max-width:110px}
+ .rvn .stars svg{width:10px;height:10px}
+ .rvc2 p{grid-column:2;grid-row:2;font-size:11.5px;line-height:1.25;-webkit-line-clamp:2;max-height:2.5em;overflow:hidden}
+ .rvc .rvm{grid-column:2;grid-row:3;font-size:10px;line-height:1.25;margin-top:1px}
 }
 @media (min-width:900px){.rvb{padding:20px 0 18px}.rvbh{padding:0 22px 14px}.rvbt b{font-size:24px}.rvtr{padding:2px 22px 4px;gap:12px}.rvc{width:300px;height:164px}}
 </style>
@@ -1136,7 +1136,7 @@ html body .gtrk.w{margin-top:20px}
 
 <main id="home">
  <div class="hero" id="hero">
-  <div class="deco"><i></i><i></i><i></i><span class="wm">ABSO1UTE</span></div>  <div class="sl on fxs"><h1>Доставка 1 день <svg class="fl-i" viewBox="0 0 24 24"><path d="M12 2c1 4 6 6 6 12a6 6 0 0 1-12 0c0-3 2-4 3-6 0 2 1 3 2 3 0-3-1-5 1-9z"/></svg></h1><p class="p0">Доставка за день • Карго — 0 сум<br>Товары в наличии по всему Узбекистану</p><p class="p1"><span>Товары в наличии</span><span>Карго — 0 сум</span><span>По всему Узбекистану</span></p><button class="btn" id="fgo">СМОТРЕТЬ КАТАЛОГ →</button><div class="fxk" id="fxk"></div></div>
+  <div class="deco"><i></i><i></i><i></i><span class="wm">ABSO1UTE</span></div>  <div class="sl on fxs"><h1>Доставка 1 день <svg class="fl-i" viewBox="0 0 24 24"><path d="M12 2c1 4 6 6 6 12a6 6 0 0 1-12 0c0-3 2-4 3-6 0 2 1 3 2 3 0-3-1-5 1-9z"/></svg></h1><p class="p0">Доставка за день • Карго — 0 сум<br>Товары в наличии по всему Узбекистану</p><p class="p1">Товары в наличии<br>Карго — 0 сум<br>По всему Узбекистану</p><button class="btn" id="fgo">СМОТРЕТЬ КАТАЛОГ →</button><div class="fxk" id="fxk"></div></div>
   <div class="sl"><h1>Не нашли товар? <svg class="cm-i" viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></h1><p>Загрузите фото — мы найдём такой же</p><button class="btn" id="ctac">ПОИСК ПО ФОТО →</button></div>
   <div class="sl"><h1>Узнать вес товара? <svg class="sc-i" viewBox="0 0 24 24"><path d="M12 4v16M6 20h12M5 8h14"/><path d="M5 8l-3 6.5a3 3 0 0 0 6 0zM19 8l-3 6.5a3 3 0 0 0 6 0z"/></svg></h1><p>Посчитайте примерный вес посылки и стоимость карго за пару секунд</p><button class="btn" id="wgtb">ПОСЧИТАТЬ ВЕС →</button></div>
   <div class="sl"><div class="big">СКИДКИ</div><p>Акции, скидки и промокоды — в нашем Telegram-канале</p><a class="btn" href="https://t.me/Abso1ute_Shop" target="_blank" rel="noopener">ПЕРЕЙТИ В TELEGRAM →</a></div>
