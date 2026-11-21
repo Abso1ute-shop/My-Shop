@@ -1377,6 +1377,24 @@ html body .shp button.on,html body .wzi.on{border-color:transparent!important;bo
 @media (min-width:861px){.logo .lgw{font-size:24px}.logo small{font-size:10px!important}}
 @media (prefers-reduced-motion:reduce){.logo .lgw{animation:none}}
 
+
+/* телефон: корзина до самого низа (под стеклянным меню не видно каталога) */
+@media (max-width:860px){
+ html body .dr{bottom:0!important;padding-bottom:calc(104px + env(safe-area-inset-bottom,0px))!important}
+ /* оформление заказа — на весь экран, плавно выезжает снизу */
+ #ovo{padding:0!important;place-items:stretch!important}
+ #ovo .md{width:100%!important;max-width:none!important;max-height:none!important;height:100%!important;box-sizing:border-box;border-radius:0!important;overflow:auto!important;padding:calc(20px + env(safe-area-inset-top,0px)) 20px calc(34px + env(safe-area-inset-bottom,0px))!important;transform:translateY(28px)!important;opacity:.6;transition:transform .5s cubic-bezier(.22,1,.36,1),opacity .35s ease!important}
+ #ovo.on .md{transform:none!important;opacity:1}
+ #ovo h3{padding-right:46px;font-size:22px!important}
+ #ovo .x{top:calc(14px + env(safe-area-inset-top,0px))!important;right:14px!important;background:var(--surf-in);border:1px solid var(--brd)}
+}
+/* окна поверх страницы: фон затемнён и размыт — каталог за окном не читается */
+.ov:not(#ovp):not(#ovf2):not(#ovx){background:rgba(4,5,6,.8)!important}
+:root:not([data-theme=dark]) .ov:not(#ovp):not(#ovf2):not(#ovx){background:rgba(18,19,24,.6)!important}
+.ov.on:not(#ovp):not(#ovf2):not(#ovx){-webkit-backdrop-filter:blur(16px) saturate(1.1);backdrop-filter:blur(16px) saturate(1.1)}
+/* iPhone: текст с бликом (background-clip) поверх окон рисуется с ошибкой — на телефонах логотип без блика */
+@media (hover:none){.logo .lgw{animation:none!important;background:none!important;-webkit-background-clip:border-box!important;background-clip:border-box!important;color:var(--fg)!important;-webkit-text-fill-color:currentColor}}
+
 /* смена темы — плавно */
 html.thx body,html.thx header,html.thx .hero,html.thx .sl h1,html.thx .sl p,html.thx .sl .btn,html.thx .fxc,html.thx .pc,html.thx .bar,html.thx .chip,html.thx .rvb,html.thx .perk,html.thx .tb .inp{transition:background-color .45s ease,color .45s ease,border-color .45s ease,box-shadow .45s ease!important}
 
