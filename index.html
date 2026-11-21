@@ -1311,8 +1311,8 @@ html body #items .it img,html body #items .it .ph{border:0!important}
 
 
 /* все бывшие «нарисованные» рамки с тенью-уголком — в стекло */
-html body .empty,html body #fpage .empty,html body .aben,html body .cfb,html body .crte,html body .fqh,html body .mc,html body .netx,html body .nfi .ni,html body .okn,html body .olp,html body .rvf,html body .szeu,html body .fq-b p.szeu,html body .szt,html body .wzi .wm{border:1px solid var(--brd)!important;box-shadow:var(--sh)!important}
-html body .empty,html body #fpage .empty{background:var(--surf)!important;border-style:dashed!important;border-color:var(--line)!important;border-radius:22px!important}
+html body .empty:not(.dr),html body #fpage .empty,html body .aben,html body .cfb,html body .crte,html body .fqh,html body .mc,html body .netx,html body .nfi .ni,html body .okn,html body .olp,html body .rvf,html body .szeu,html body .fq-b p.szeu,html body .szt,html body .wzi .wm{border:1px solid var(--brd)!important;box-shadow:var(--sh)!important}
+html body .empty:not(.dr),html body #fpage .empty{background:var(--surf)!important;border-style:dashed!important;border-color:var(--line)!important;border-radius:22px!important}
 html body .fpc{border:1px solid var(--brd)!important;box-shadow:none!important;background:var(--surf-in)!important}
 :root:not([data-theme=dark]) body .fpc{background:#fff!important}
 html body .shp button.on,html body .wzi.on{border-color:transparent!important;box-shadow:0 0 0 2px var(--acc),0 8px 22px rgba(var(--acc-rgb),.22)!important}
@@ -1344,6 +1344,24 @@ html body .shp button.on,html body .wzi.on{border-color:transparent!important;bo
 :root:not([data-theme=dark]) .dots i.on{background:var(--acc)!important;box-shadow:0 0 12px rgba(var(--acc-rgb),.55)}
 :root:not([data-theme=dark]) .fxc{background:#fff!important;color:#0B0B0D!important;border:1px solid rgba(11,11,13,.06)!important;box-shadow:0 22px 40px rgba(17,18,24,.18),0 0 40px rgba(var(--acc-rgb),.14)!important}
 :root:not([data-theme=dark]) .fxc small{color:#6A6C72!important}
+
+
+/* выбор оплаты — как выбор доставки */
+.pm button{border:1px solid var(--brd)!important}
+.pm button.on{border-color:transparent!important;box-shadow:0 0 0 2px var(--acc),0 8px 22px rgba(var(--acc-rgb),.22)!important}
+/* остальные заголовки и числа — тем же шрифтом */
+#pbody .wzh h3{font:700 20px/1.12 var(--fh)!important}
+.wzb-w{font:700 21px/1.12 var(--fh)!important}
+.bonst .bonnum{font:700 18px var(--fh)!important}
+.bonbig{font:700 38px/1.1 var(--fh)!important}
+.gq{font:700 19px/1 var(--fh)!important}
+.olp.gq{font:700 24px/1 var(--fh)!important}
+.bth b{font:700 16px var(--fh)!important}
+.bcode{font:700 13px/1 var(--fh)!important;letter-spacing:.04em}
+.promo-card b{font:700 17px var(--fh)!important}
+.card-c span{font:700 11px var(--fh)!important}
+.fq-n{font:700 12px var(--fh)!important}
+.steps i{font-family:var(--fh)!important}
 
 /* смена темы — плавно */
 html.thx body,html.thx header,html.thx .hero,html.thx .sl h1,html.thx .sl p,html.thx .sl .btn,html.thx .fxc,html.thx .pc,html.thx .bar,html.thx .chip,html.thx .rvb,html.thx .perk,html.thx .tb .inp{transition:background-color .45s ease,color .45s ease,border-color .45s ease,box-shadow .45s ease!important}
