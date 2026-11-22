@@ -50,7 +50,7 @@ main{padding:0 16px;max-width:760px;margin:0 auto}
 .sheet h2{margin:6px 0 14px}.lb{font-size:13px;color:var(--mu);margin:4px 2px 6px;display:block}
 .tgl{display:flex;justify-content:space-between;align-items:center;padding:10px 2px}
 .ph-l{display:flex;gap:10px;overflow-x:auto;margin-bottom:12px;padding-bottom:4px}
-.ph-i{position:relative;flex:none;width:96px}.ph-i img{width:96px;height:110px;object-fit:cover;border-radius:12px}
+.ph-i{position:relative;flex:none;width:112px}.ph-i img{width:112px;height:110px;object-fit:cover;border-radius:12px}
 .ph-i .x{position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:50%;background:#000a;font-size:13px}
 .ph-i .mk{display:block;width:100%;font-size:12px;color:var(--mu);padding:4px 0}
 .ph-i{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;transition:transform .18s ease}.ph-i input{-webkit-user-select:text;user-select:text}
@@ -58,7 +58,7 @@ main{padding:0 16px;max-width:760px;margin:0 auto}
 .ph-i.drg{transition:none;z-index:5;filter:drop-shadow(0 10px 18px rgba(0,0,0,.55))}.ph-i.drg img{outline:2px solid var(--fg);outline-offset:-2px}
 .ph-i .cov{position:absolute;right:5px;top:87px;padding:2px 5px;border-radius:7px;background:#000c;color:#fff;font-size:10px;font-weight:700;pointer-events:none}
 .ph-l.dragging{overflow-x:hidden}
-.ph-add{flex:none;width:96px;height:110px;border:1px dashed #444;border-radius:12px;display:grid;place-items:center;color:var(--mu);font-size:13px;text-align:center;cursor:pointer}
+.ph-add{flex:none;width:112px;height:110px;border:1px dashed #444;border-radius:12px;display:grid;place-items:center;color:var(--mu);font-size:13px;text-align:center;cursor:pointer}
 .bal{font-size:22px;font-weight:700}
 .toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 14px);transform:translate(-50%,-20px);background:#fff;color:#000;padding:12px 20px;border-radius:24px;font-weight:600;opacity:0;pointer-events:none;transition:.3s;z-index:50;max-width:90%;text-align:center}
 .toast.on{opacity:1;transform:translate(-50%,0)}
@@ -73,6 +73,10 @@ main{padding:0 16px;max-width:760px;margin:0 auto}
 .th1 .thp{display:block;margin-top:4px;font-size:13px;color:var(--fg);font-weight:700}
 .th1 .thq{display:block;font-size:11px}.th1{flex:none;width:92px;font-size:12px;color:var(--mu);line-height:1.3}.th1 img{width:92px;height:110px;object-fit:cover;border-radius:12px;display:block;margin-bottom:4px;border:2px solid #333}
 .ph-i .pcol{display:block;width:100%;margin:4px 0 0;padding:6px 8px;font-size:16px;border-radius:8px;box-sizing:border-box}
+.ph-i .pcw{position:relative;display:block;margin-top:4px}.ph-i .pcw .pcol{margin:0;padding:6px 27px 6px 7px;text-overflow:ellipsis}
+.ph-i .pcol::-webkit-calendar-picker-indicator,.ph-i .pcol::-webkit-list-button{display:none!important;opacity:0;width:0}
+.ph-i .pcx{position:absolute;right:3px;top:50%;width:22px;height:22px;margin-top:-11px;border-radius:50%;background:rgba(128,128,128,.32);color:var(--fg);font-size:11px;font-weight:700;line-height:22px;text-align:center;padding:0;transition:transform .15s}
+.ph-i .pcx::after{content:"";position:absolute;inset:-8px}.ph-i .pcx:active{transform:scale(.85)}.ph-i .pcw.e .pcx{display:none}.ph-i .pcw.e .pcol{padding-right:7px}
 .ph-i .psw{position:absolute;left:6px;top:84px;width:20px;height:20px;border-radius:50%;box-shadow:0 0 0 2px #fff,0 2px 6px rgba(0,0,0,.45);pointer-events:none}
 .cdot{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:-2px;margin-right:7px;box-shadow:inset 0 0 0 1px rgba(128,128,128,.6)}
 button.g.d,.b.s.d{color:var(--no)}
@@ -437,11 +441,25 @@ function editP(id){
  const origRu=trHash(p.name,p.desc||"");
  let ph=(p.imgs||[]).map(i=>({id:i,url:API+"/img/"+i,col:(p.imgColors||{})[i]||"",noc:(p.noCol||[]).includes(i)}));
  ph.forEach(x=>{const a=(p.imgAI||{})[x.id];if(x.col&&a&&a.b===x.col)x.ai=x.col});   // цвет поставил ИИ (не вручную)
- let aiBusy=false;
+ let aiBusy=false,foAuto=!(old&&old.colorsSet);   // список «Цвета» берётся с фото, пока его не правили руками
  const baseDesc=old?String(old.desc||""):"",baseImg=old?Object.fromEntries((old.imgs||[]).map(i=>[i,(old.imgColors||{})[i]||""])):{},baseColors=old?(old.colors||[]).slice():[];
  const origCols=(p.colors&&p.colors.length?p.colors:(p.color?[p.color]:[])).join("|");
  const sh=document.createElement("div");sh.className="sheet";document.body.appendChild(sh);
- sh.addEventListener("input",e=>{const i=e.target;if(!i.matches||!i.matches(".pcol"))return;const d=sh.querySelector(`[data-psw="${i.dataset.pc}"]`);if(!d)return;const b=swBg(i.value);d.style.background=b||"";d.style.display=b?"":"none"});
+ sh.addEventListener("input",e=>{const i=e.target;if(!i.matches||!i.matches(".pcol"))return;if(i.parentNode&&i.parentNode.classList)i.parentNode.classList.toggle("e",!i.value.trim());const d=sh.querySelector(`[data-psw="${i.dataset.pc}"]`);if(!d)return;const b=swBg(i.value);d.style.background=b||"";d.style.display=b?"":"none"});
+ sh.addEventListener("input",e=>{if(e.target&&e.target.id==="fo")foAuto=false});
+ // ✕ у цвета фото: стереть одним нажатием
+ const cN=t=>String(t||"").trim().toLowerCase().replace(/ё/g,"е");
+ const phCols=()=>ph.map((y,j)=>{const ii=sh.querySelector(`[data-pc="${j}"]`);return(ii?ii.value:y.col||"").trim()});
+ const clrCol=idx=>{const x=ph[idx],inp=sh.querySelector(`[data-pc="${idx}"]`);if(!x)return"";const was=(inp?inp.value:x.col||"").trim();if(!was)return"";
+  if(inp){inp.value="";inp.dispatchEvent(new Event("input",{bubbles:true}))}x.col="";x.had=1;return was};
+ const syncFo=gone=>{const fo=$("#fo");if(!fo)return"";const R=phCols().filter(Boolean),RN=R.map(cN);fo.placeholder=[...new Set(R)].join(", ")||"Чёрный, Белый";
+  const out=[...new Set(gone)].filter(c=>!RN.includes(cN(c)));if(!out.length)return"";const L=fo.value.split(/[,;]+/).map(t=>t.trim()).filter(Boolean),hit=L.filter(t=>out.some(c=>cN(c)===cN(t)));if(!hit.length)return"";
+  if(foAuto){fo.value=L.filter(t=>!hit.includes(t)).join(", ");return""}
+  return" «"+hit.join("», «")+"» остался в списке «Цвета» — уберите, если его нет"};
+ sh.addEventListener("click",e=>{const t=e.target;if(!t||!t.closest)return;
+  const b=t.closest("[data-pcx]");if(b){e.preventDefault();e.stopPropagation();const was=clrCol(+b.dataset.pcx);if(was){const w=syncFo([was]);toast("Цвет «"+was+"» стёрт."+(w||" Не забудьте сохранить"))}return}
+  if(t.closest("#pcxall")){e.preventDefault();const n=phCols().filter(Boolean).length;if(!n)return toast("Цвета у фото уже пустые");if(!confirm("Стереть цвет у всех фото ("+n+")?"))return;
+   const gone=ph.map((x,j)=>clrCol(j)).filter(Boolean);const w=syncFo(gone);toast("Цвета стёрты у "+gone.length+" фото."+(w||" Впишите правильные или нажмите «Определить цвета» и сохраните"))}});
  qtyHTML=()=>{if(!p.fast)return"";const cols=(p.colors&&p.colors.length?p.colors:[]),qc=p.qtyC||{};
   return`<div class="card" id="qbox" style="margin-top:8px"><b>Сколько в наличии</b><p class="mu" style="margin:4px 0 10px;line-height:1.45">${cols.length?"Укажите штуки по каждому цвету. Когда цвет закончится, его нельзя будет заказать; когда закончатся все — товар станет «Нет в наличии».":"Укажите количество. Добавьте цвета выше, чтобы считать штуки по цветам. Пусто — не считать (1 заказ = товар уходит из наличия)."}</p>${cols.length?cols.map(c=>`<div class="r" style="margin-bottom:8px"><span>${SW(c)}${esc(c)}</span><span style="display:flex;align-items:center;gap:6px"><input data-qc="${esc(c)}" type="number" inputmode="numeric" min="0" value="${qc[c]??0}" style="width:90px;margin:0;text-align:center"> шт</span></div>`).join("")+`<div class="r mu"><span>Всего</span><b id="qtot">${cols.reduce((a,c)=>a+(+qc[c]||0),0)}</b></div>`:`<div class="r"><span>Количество</span><span style="display:flex;align-items:center;gap:6px"><input id="qn" type="number" inputmode="numeric" min="0" value="${p.qty??""}" placeholder="—" style="width:90px;margin:0;text-align:center"> шт</span></div>`}</div>`};
  // ИИ определяет цвета всех фото (новых и уже сохранённых). Ручные цвета не трогает, результат можно поправить до сохранения.
@@ -466,8 +484,8 @@ function editP(id){
  const render=()=>{
   REND=true;   // пока форма перерисовывается, «change» от уходящего поля не должен перезаписать данные старыми значениями
   sh.innerHTML=`<div class="in"><div class="r"><h2>${old?"Изменить товар":"Новый товар"}</h2><button class="g" id="cl">Закрыть</button></div>
-  <span class="lb">Фото — первое станет обложкой. Зажмите фото и перетащите, чтобы поменять порядок</span><div class="ph-l">${ph.map((x,i)=>`<div class="ph-i" data-pi="${i}"><img src="${x.url}" alt="" draggable="false">${i===0?`<span class="cov">Обложка</span>`:""}<i class="psw" data-psw="${i}" style="${swBg(x.col)?"background:"+swBg(x.col):"display:none"}"></i><button class="x" data-rm="${i}">✕</button>${i>0?`<button class="mk" data-mk="${i}">Сделать главным</button>`:`<span class="mk" style="visibility:hidden">Сделать главным</span>`}<input class="pcol" data-pc="${i}" value="${esc(x.col||"")}" placeholder="Цвет" list="colist"></div>`).join("")}<label class="ph-add">+ Фото<input type="file" id="pf" accept="image/*" multiple hidden></label></div>
-  ${ph.length?`<button class="b s" id="ai" style="margin-top:8px" ${aiBusy?"disabled":""}>${aiBusy?"🎨 ИИ смотрит на фото…":"🎨 Определить цвета по фото (ИИ)"}</button>`:""}<p class="mu" style="font-size:12px;margin:6px 0 0">Под каждым фото — его цвет. На сайте кнопка цвета листает к этому фото, а в корзине показывается фото выбранного цвета. ИИ смотрит только на сам товар (не на фон и не на другие вещи на фото); одинаковые варианты получают одно название, разные — разные (например «Белый» и «Чёрно-белый»). Цвет, введённый вручную, ИИ не меняет.</p>
+  <span class="lb">Фото — первое станет обложкой. Зажмите фото и перетащите, чтобы поменять порядок</span><div class="ph-l">${ph.map((x,i)=>`<div class="ph-i" data-pi="${i}"><img src="${x.url}" alt="" draggable="false">${i===0?`<span class="cov">Обложка</span>`:""}<i class="psw" data-psw="${i}" style="${swBg(x.col)?"background:"+swBg(x.col):"display:none"}"></i><button class="x" data-rm="${i}">✕</button>${i>0?`<button class="mk" data-mk="${i}">Сделать главным</button>`:`<span class="mk" style="visibility:hidden">Сделать главным</span>`}<span class="pcw${x.col?"":" e"}"><input class="pcol" data-pc="${i}" value="${esc(x.col||"")}" placeholder="Цвет" list="colist"><button type="button" class="pcx" data-pcx="${i}" aria-label="Стереть цвет" title="Стереть цвет">✕</button></span></div>`).join("")}<label class="ph-add">+ Фото<input type="file" id="pf" accept="image/*" multiple hidden></label></div>
+  ${ph.length?`<button class="b s" id="ai" style="margin-top:8px" ${aiBusy?"disabled":""}>${aiBusy?"🎨 ИИ смотрит на фото…":"🎨 Определить цвета по фото (ИИ)"}</button>`:""}${ph.filter(x=>x.col).length>1?`<button type="button" class="g" id="pcxall" style="display:block;margin-top:8px;font-size:13px;color:var(--mu)">✕ Стереть цвета у всех фото</button>`:""}<p class="mu" style="font-size:12px;margin:6px 0 0">Под каждым фото — его цвет. На сайте кнопка цвета листает к этому фото, а в корзине показывается фото выбранного цвета. ИИ смотрит только на сам товар (не на фон и не на другие вещи на фото); одинаковые варианты получают одно название, разные — разные (например «Белый» и «Чёрно-белый»). Цвет, введённый вручную, ИИ не меняет.</p>
   <datalist id="colist">${["Чёрный","Белый","Серый","Синий","Голубой","Красный","Бордовый","Зелёный","Хаки","Бежевый","Коричневый","Розовый","Фиолетовый","Жёлтый","Оранжевый","Чёрный/Белый"].map(c=>`<option value="${c}">`).join("")}</datalist><div class="r" style="margin-top:10px"><span class="lb" style="margin:0">Название</span><button class="g" id="ainm" style="font-weight:700;color:var(--fg)">✨ По фото</button></div><input id="fn" value="${esc(p.name)}" placeholder="Например: Худи Oversize">${badName(p.name)?`<p class="mu" style="color:#e5a50a;font-size:12px;margin:4px 0 0">Похоже, это не название товара — нажмите «✨ По фото»</p>`:""}
   <span class="lb">Цена, сум</span><input id="fp" type="number" inputmode="numeric" value="${esc(p.price)}" placeholder="250000">
   <span class="lb">Скидка — впишите процент или сразу цену со скидкой (пусто — без скидки)</span>
@@ -532,7 +550,7 @@ function editP(id){
   $("#sv").onclick=async()=>{keep();const price=Math.round(+p.price);
    if(!p.name.trim())return toast("Введите название");if(!(price>0))return toast("Введите цену");if(p.cat==="cases"&&!(p.sizes||[]).length)return toast("Выберите хотя бы одну модель iPhone");if(Math.round(+$("#fdc").value)>90)return toast("Скидка — не больше 90%");{const s=Math.round(+$("#fds").value)||0;if(s>0&&s>=price)return toast("Цена со скидкой должна быть меньше обычной цены");if(s>0&&s<price*.1)return toast("Скидка — не больше 90%")}
    const btn=$("#sv");btn.disabled=true;btn.textContent="Сохраняю…";
-   const body={p:{id:old?old.id:undefined,name:p.name,price,cat:p.cat,sizes:p.sizes,szP:p.szP||{},colors:p.colors,colorsSet:p.colors.join("|")===origCols?!!(old&&old.colorsSet):p.colors.length>0,desc:p.desc,trManual:trDirty&&(trE.en.n||trE.uz.n)?trE:undefined,stock:p.stock,isNew:p.isNew,pop:p.pop,fast:p.fast,preorder:p.preorder,noAir:!!p.noAir,disc:p.disc||0,sale:p.sale||0,man:1,qty:p.fast&&!p.colors.length?(p.qty??""):"",qtyC:p.fast&&p.colors.length?(p.qtyC||{}):{},imgs:ph.filter(x=>x.id).map(x=>x.id),ord:(()=>{let k=0;return ph.map(x=>x.id?x.id:"+"+(k++))})(),noCol:(()=>{let k=0;const o=[];for(const x of ph){const t=x.id?x.id:"+"+(k++);if(!x.col&&(x.id||x.noc||x.had||x.tried))o.push(t)}return o})(),imgColors:Object.fromEntries(ph.filter(x=>x.id).map(x=>[x.id,x.col||""])),addColors:ph.filter(x=>x.data).map(x=>x.col||""),
+   const body={p:{id:old?old.id:undefined,name:p.name,price,cat:p.cat,sizes:p.sizes,szP:p.szP||{},colors:p.colors,colorsSet:foAuto?false:(p.colors.join("|")===origCols?!!(old&&old.colorsSet):p.colors.length>0),desc:p.desc,trManual:trDirty&&(trE.en.n||trE.uz.n)?trE:undefined,stock:p.stock,isNew:p.isNew,pop:p.pop,fast:p.fast,preorder:p.preorder,noAir:!!p.noAir,disc:p.disc||0,sale:p.sale||0,man:1,qty:p.fast&&!p.colors.length?(p.qty??""):"",qtyC:p.fast&&p.colors.length?(p.qtyC||{}):{},imgs:ph.filter(x=>x.id).map(x=>x.id),ord:(()=>{let k=0;return ph.map(x=>x.id?x.id:"+"+(k++))})(),noCol:(()=>{let k=0;const o=[];for(const x of ph){const t=x.id?x.id:"+"+(k++);if(!x.col&&(x.id||x.noc||x.had||x.tried))o.push(t)}return o})(),imgColors:Object.fromEntries(ph.filter(x=>x.id).map(x=>[x.id,x.col||""])),addColors:ph.filter(x=>x.data).map(x=>x.col||""),
     aiCols:Object.fromEntries(ph.filter(x=>x.id&&x.ai&&x.ai===x.col).map(x=>[x.id,x.col])),addAI:ph.filter(x=>x.data).map(x=>x.ai&&x.ai===x.col?x.col:""),base:old?{desc:baseDesc,imgColors:baseImg,colors:baseColors}:undefined},add:ph.filter(x=>x.data).map(x=>x.data)};
    const r=await call("/admin/product",body);
    if(r&&r.ok&&r.item){const kept=ph.filter(x=>x.id).map(x=>x.id),nw=(r.item.imgs||[]).filter(i=>!kept.includes(i)),nd=ph.filter(x=>x.data),done=[];
