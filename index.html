@@ -768,46 +768,59 @@ body.kb #ovp .x{top:calc(var(--vvt,0px) + 12px)}body.kb .chatpg{min-height:calc(
 :root[data-theme=dark] .wnote{background:#2b2008;color:#ffcf7a}
 
 #splash{display:none}
-/* Заставка при входе на сайт. Фон сплошной, в цвет темы: раньше под ней в реальном времени размывалась вся страница
-   (backdrop-filter на весь экран) — на телефонах это и давало рывки. Теперь двигаются только transform и opacity. */
-/* Каталог виден сквозь матовое стекло. Стекло — отдельный слой (::before) на своей видеокарте-слое: при уходе сначала
-   поднимается и тает логотип, потом гаснет стекло. Каталог под заставкой успевает отрисоваться заранее и во время ухода
-   не анимируется — поэтому размытие не пересчитывается каждый кадр и не дёргается. */
-html.spl #splash{display:flex;position:fixed;inset:0;z-index:100000;align-items:center;justify-content:center;flex-direction:column;color:#0a0a0a;isolation:isolate}
-html.spl #splash::before{content:"";position:absolute;inset:0;z-index:-2;background:rgba(255,255,255,.55);-webkit-backdrop-filter:blur(14px) saturate(1.4);backdrop-filter:blur(14px) saturate(1.4);transform:translateZ(0);will-change:opacity;transition:opacity .6s cubic-bezier(.4,0,.2,1) .15s}
-html.spl #splash::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(55% 32% at 50% 50%,rgba(255,255,255,.8),rgba(255,255,255,0) 72%);transition:opacity .45s ease}
-:root[data-theme=dark] #splash{color:#f1f1f1}
-:root[data-theme=dark] #splash::before{background:rgba(10,10,10,.58)}
-:root[data-theme=dark] #splash::after{background:radial-gradient(55% 32% at 50% 50%,rgba(0,0,0,.7),rgba(0,0,0,0) 72%)}
-:root[data-theme=gray] #splash::before{background:rgba(212,212,212,.6)}
-:root[data-theme=gray] #splash::after{background:radial-gradient(55% 32% at 50% 50%,rgba(222,222,222,.85),rgba(222,222,222,0) 72%)}
-#splash>div{transition:transform .5s cubic-bezier(.4,0,.2,1),opacity .38s ease}
-#splash .spA{display:flex;font:700 clamp(44px,13vw,96px)/1 Oswald,"Arial Narrow","Helvetica Neue",sans-serif;letter-spacing:.02em;transition:transform .6s ease,opacity .4s ease;will-change:transform,opacity}
-html.spnf #splash .spA{font-family:"Arial Narrow","Helvetica Neue",Arial,sans-serif}
-#splash .spA i{font-style:normal;display:inline-block;opacity:0;transform:translate3d(0,55%,0) scale(.9);will-change:transform,opacity}
-html.spgo #splash .spA i{animation:splIn .75s cubic-bezier(.2,.8,.2,1) forwards}
-html.spgo #splash .spA i.one{animation-name:splIn1}
-#splash .spB{margin-top:12px;font:600 13px/1 Inter,system-ui,-apple-system,sans-serif;letter-spacing:.6em;padding-left:.6em;opacity:0;transform:translate3d(0,8px,0);will-change:transform,opacity}
-html.spnf #splash .spB{font-family:system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif}
-html.spgo #splash .spB{animation:splSub .7s ease .55s forwards}
-/* приветствие под логотипом: «Доброе утро, ник» — появляется после букв */
-#splash .spG{margin-top:22px;min-height:20px;max-width:86vw;font:500 16px/1.25 Inter,system-ui,-apple-system,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:0;transform:translate3d(0,10px,0);will-change:transform,opacity}
-html.spnf #splash .spG{font-family:system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif}
-html.spgo #splash .spG.on{animation:splG .6s cubic-bezier(.2,.8,.2,1) .7s forwards}
-#splash .spC{margin-top:28px;width:120px;height:2px;border-radius:2px;background:rgba(127,127,127,.28);overflow:hidden;position:relative}
-#splash .spC:after{content:"";position:absolute;top:0;bottom:0;left:0;width:40%;background:currentColor;border-radius:2px;animation:splBar 1.1s ease-in-out infinite;will-change:transform}
-html.spl.splout #splash{pointer-events:none}
-html.spl.splout #splash::before,html.spl.splout #splash::after{opacity:0}
-html.spl.splout #splash>div{opacity:0;transform:translate3d(0,-16px,0)}
-html.spl.splout #splash .spA{transform:translate3d(0,-16px,0) scale(1.04)}
+/* Заставка «Обсидиан»: сплошной фон с градиентом в цвет темы (никакого размытия страницы под ней),
+   векторные буквы логотипа (не ждут шрифтов), двигаются только transform и opacity — это считает видеокарта,
+   поэтому анимация плавная, даже пока телефон загружает сайт. */
+#splash{--sbg:#F5F5F3;--sfg:#0B0B0D;--smut:#6A6C72;--sa:47,91,255;--sa2:126,92,255;--oa:.26;--oa2:.16;--sT:#121318;--sB:#203596;--s1a:#7C97FF;--s1b:#2F5BFF}
+:root[data-theme=dark] #splash{--sbg:#060708;--sfg:#EDEEF0;--smut:#8E939A;--sa:49,229,143;--sa2:22,170,255;--oa:.30;--oa2:.17;--sT:#FFFFFF;--sB:#A9F5CF;--s1a:#C4FFE2;--s1b:#31E58F}
+:root[data-theme=gray] #splash{--sbg:#D7D7D4;--sfg:#0E0E10;--smut:#4C4E54;--sa:106,76,255;--sa2:255,96,176;--oa:.30;--oa2:.15;--sT:#111114;--sB:#3A2B95;--s1a:#A08DFF;--s1b:#6A4CFF}
+html.spl #splash{display:flex;position:fixed;inset:0;z-index:100000;align-items:center;justify-content:center;overflow:hidden;isolation:isolate;
+ background:radial-gradient(120% 75% at 50% 112%,rgba(var(--sa),calc(var(--oa)*.55)),transparent 62%),var(--sbg);color:var(--sfg);
+ transform:translateZ(0);transition:opacity .5s cubic-bezier(.4,0,.2,1) .08s,transform .6s cubic-bezier(.4,0,.2,1)}
+#splash .spDefs{position:absolute;width:0;height:0;overflow:hidden}
+#splash .spO{position:absolute;left:50%;top:50%;width:120vmax;height:120vmax;margin:-60vmax 0 0 -60vmax;border-radius:50%;pointer-events:none;opacity:0;will-change:transform,opacity}
+#splash .spO1{background:radial-gradient(closest-side,rgba(var(--sa),var(--oa)),rgba(var(--sa),calc(var(--oa)*.35)) 46%,rgba(var(--sa),0) 74%);transform:translate3d(-16vmax,-34vmax,0) scale(.6)}
+#splash .spO2{background:radial-gradient(closest-side,rgba(var(--sa2),var(--oa2)),rgba(var(--sa2),0) 72%);transform:translate3d(24vmax,36vmax,0) scale(.6)}
+#splash .spRing{--rs:calc(clamp(34px,10.4vw,74px)*6.9 + 70px);position:absolute;left:50%;top:50%;width:var(--rs);height:var(--rs);margin:calc(var(--rs)/-2) 0 0 calc(var(--rs)/-2);border-radius:50%;transform:scale(.6);opacity:0;pointer-events:none;
+ background:conic-gradient(from 210deg,rgba(var(--sa),0),rgba(var(--sa),.55) 18%,rgba(var(--sa),0) 36%,rgba(var(--sa2),0) 60%,rgba(var(--sa2),.35) 74%,rgba(var(--sa2),0) 90%);
+ -webkit-mask:radial-gradient(closest-side,transparent calc(100% - 1.5px),#000 calc(100% - 1px));mask:radial-gradient(closest-side,transparent calc(100% - 1.5px),#000 calc(100% - 1px));will-change:transform,opacity}
+#splash .spIn{position:relative;display:flex;flex-direction:column;align-items:center;transition:transform .42s cubic-bezier(.4,0,.2,1),opacity .3s ease;will-change:transform,opacity}
+#splash .spIn::before{content:"";position:absolute;left:50%;top:38%;width:150%;height:200%;transform:translate3d(-50%,-50%,0) scale(.5);border-radius:50%;opacity:0;z-index:-1;
+ background:radial-gradient(closest-side,rgba(var(--sa),calc(var(--oa)*.9)),rgba(var(--sa),0));will-change:transform,opacity}
+#splash .spL{display:flex;align-items:flex-end;font-size:clamp(34px,10.4vw,74px);line-height:1}
+#splash .spL .l{display:block;flex:none;opacity:0;transform:translate3d(0,.55em,0) scale(.82);will-change:transform,opacity}
+#splash .spL svg{display:block;width:100%;height:.8em;overflow:visible}
+#splash .spB{display:flex;align-items:center;gap:.75em;margin-top:15px;padding-left:.55em;font:800 11px/1 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;letter-spacing:.55em;color:var(--smut);opacity:0;transform:translate3d(0,8px,0);will-change:transform,opacity}
+#splash .spB i{width:4px;height:4px;border-radius:50%;background:rgb(var(--sa));box-shadow:0 0 10px rgba(var(--sa),.9)}
+#splash .spB b{color:rgb(var(--sa));font-weight:800}
+:root:not([data-theme=dark]) #splash .spB b{color:var(--s1b)}
+#splash .spG{margin-top:24px;min-height:19px;max-width:86vw;font:500 15px/1.25 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:0;transform:translate3d(0,8px,0);will-change:transform,opacity}
+#splash .spC{margin-top:22px;width:124px;height:2px;border-radius:2px;background:rgba(var(--sa),.16);overflow:hidden;opacity:0}
+#splash .spC i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,rgba(var(--sa),.35),rgb(var(--sa)) 72%,#fff);transform-origin:0 50%;transform:scaleX(0);will-change:transform}
+/* вход */
+html.spgo #splash .spO1{animation:spO1 2.4s cubic-bezier(.16,1,.3,1) forwards}
+html.spgo #splash .spO2{animation:spO2 2.4s cubic-bezier(.16,1,.3,1) .1s forwards}
+html.spgo #splash .spRing{animation:spRing 1.5s cubic-bezier(.16,1,.3,1) .12s forwards,spSpin 9s linear .12s infinite}
+html.spgo #splash .spIn::before{animation:spGlow 1.2s cubic-bezier(.16,1,.3,1) .15s forwards}
+html.spgo #splash .spL .l{animation:spLi .72s cubic-bezier(.16,1,.3,1) forwards;animation-delay:calc(var(--i)*42ms + 40ms)}
+html.spgo #splash .spB{animation:spUp .6s cubic-bezier(.16,1,.3,1) .4s forwards}
+html.spgo #splash .spG.on{animation:spUp .6s cubic-bezier(.16,1,.3,1) .5s forwards}
+html.spgo #splash .spC{animation:spFade .4s ease .32s forwards}
+html.spgo #splash .spC i{animation:spBar 1.15s cubic-bezier(.3,.7,.25,1) .32s forwards}
+@keyframes spO1{from{opacity:0;transform:translate3d(-16vmax,-34vmax,0) scale(.6)}40%{opacity:1}to{opacity:1;transform:translate3d(-9vmax,-24vmax,0) scale(1)}}
+@keyframes spO2{from{opacity:0;transform:translate3d(24vmax,36vmax,0) scale(.6)}40%{opacity:1}to{opacity:1;transform:translate3d(15vmax,27vmax,0) scale(1)}}
+@keyframes spRing{to{opacity:.9;transform:scale(1)}}
+@keyframes spSpin{to{rotate:360deg}}
+@keyframes spGlow{to{opacity:1;transform:translate3d(-50%,-50%,0) scale(1)}}
+@keyframes spLi{to{opacity:1;transform:none}}
+@keyframes spUp{to{opacity:1;transform:none}}
+@keyframes spFade{to{opacity:1}}
+@keyframes spBar{to{transform:scaleX(1)}}
+/* уход: надпись уезжает вверх и тает, фон плавно раскрывается в сайт */
+html.spl.splout #splash{opacity:0;transform:scale(1.06);pointer-events:none}
+html.spl.splout #splash .spIn{opacity:0;transform:translate3d(0,-14px,0) scale(.97)}
 html.spl:not(.splrun) body{overflow:hidden}
-
-@keyframes splIn{to{opacity:1;transform:none}}
-@keyframes splIn1{60%{opacity:1;transform:none}to{opacity:.45;transform:none}}
-@keyframes splSub{to{opacity:.7;transform:none}}
-@keyframes splG{to{opacity:1;transform:none}}
-@keyframes splBar{0%{transform:translateX(-110%)}100%{transform:translateX(280%)}}
-@media(prefers-reduced-motion:reduce){#splash .spA i,#splash .spB,#splash .spG{animation-duration:.01s!important}}
+@media(prefers-reduced-motion:reduce){#splash *,#splash .spIn::before{animation-duration:.01s!important;animation-delay:0s!important;animation-iteration-count:1!important}}
 
 /* выбор языка — флаг в правом верхнем углу */
 .lgsw{position:absolute;right:16px;top:50%;transform:translateY(-50%);z-index:60}
@@ -1423,8 +1436,8 @@ html.thx body,html.thx header,html.thx .hero,html.thx .sl h1,html.thx .sl p,html
 </style>
 </head>
 <body>
-<div id="splash" data-noi18n aria-hidden="true"><div class="spA"><i style="animation-delay:0ms">A</i><i style="animation-delay:55ms">B</i><i style="animation-delay:110ms">S</i><i style="animation-delay:165ms">O</i><i class="one" style="animation-delay:220ms">1</i><i style="animation-delay:275ms">U</i><i style="animation-delay:330ms">T</i><i style="animation-delay:385ms">E</i></div><div class="spB">SHOP</div><div class="spG" id="spG"></div><div class="spC"></div></div>
-<script>(function(){var H=document.documentElement;if(!H.classList.contains("spl"))return;var st=0,fo=null;function start(){if(st)return;st=1;if(fo!==true)H.classList.add("spnf");requestAnimationFrame(function(){requestAnimationFrame(function(){window.__spgoT=Date.now();H.classList.add("spgo")})})}function chk(){if(!st&&window.__main&&fo!==null)start()}function wf(){try{Promise.all([document.fonts.load("700 64px Oswald"),document.fonts.load("600 13px Inter")]).then(function(){fo=document.fonts.check("700 64px Oswald");chk()},function(){fo=false;chk()})}catch(e){fo=false;chk()}}if(window.__gf)wf();else document.addEventListener("gfload",wf,{once:true});document.addEventListener("mainready",chk);setTimeout(function(){if(fo===null)fo=false;chk()},700);setTimeout(start,1800)})();</script>
+<div id="splash" data-noi18n aria-hidden="true"><svg class="spDefs" width="0" height="0" aria-hidden="true" focusable="false"><defs><linearGradient id="spgL" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--sT)"/><stop offset="1" style="stop-color:var(--sB)"/></linearGradient><linearGradient id="spg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--s1a)"/><stop offset="1" style="stop-color:var(--s1b)"/></linearGradient></defs></svg><i class="spO spO1"></i><i class="spO spO2"></i><i class="spRing"></i><div class="spIn"><div class="spL"><span class="l" style="--i:0;width:0.957em;margin-right:0.035em"><svg viewBox="0 -775 957 800"><path fill="url(#spgL)" d="M216 -144V-311H733V-144ZM615 -750 956 0H735L449 -662H509L222 0H1L342 -750Z"/></svg></span><span class="l" style="--i:1;width:0.883em;margin-right:0.035em"><svg viewBox="0 -775 883 800"><path fill="url(#spgL)" d="M578 -367 595 -406Q682 -404 738 -380Q795 -355 823 -312Q851 -268 851 -211Q851 -150 823 -102Q795 -55 740 -28Q684 0 601 0H47L105 -385L47 -750H581Q685 -750 743 -702Q801 -653 801 -567Q801 -520 779 -477Q757 -434 708 -404Q660 -375 578 -367ZM252 -48 172 -145H545Q590 -145 615 -167Q640 -189 640 -228Q640 -267 613 -290Q586 -314 533 -314H225V-456H505Q541 -456 566 -478Q590 -499 590 -536Q590 -566 569 -586Q548 -605 509 -605H173L252 -702L303 -385Z"/></svg></span><span class="l" style="--i:2;width:0.843em;margin-right:0.035em"><svg viewBox="0 -775 843 800"><path fill="url(#spgL)" d="M36 -246H247Q252 -215 276 -192Q300 -169 340 -156Q381 -144 436 -144Q512 -144 556 -164Q600 -183 600 -221Q600 -250 575 -266Q550 -282 479 -289L339 -302Q184 -316 114 -372Q44 -429 44 -525Q44 -603 90 -657Q135 -711 218 -738Q300 -766 410 -766Q518 -766 602 -736Q686 -705 736 -649Q785 -593 789 -519H579Q575 -546 554 -566Q532 -585 495 -596Q458 -606 406 -606Q336 -606 295 -588Q254 -569 254 -533Q254 -507 278 -491Q303 -475 367 -469L516 -454Q623 -444 687 -420Q751 -395 780 -352Q809 -309 809 -245Q809 -166 762 -108Q715 -49 630 -16Q545 16 432 16Q316 16 228 -16Q139 -49 89 -108Q39 -168 36 -246Z"/></svg></span><span class="l" style="--i:3;width:0.965em;margin-right:0.029em"><svg viewBox="0 -775 965 800"><path fill="url(#spgL)" d="M482 16Q349 16 248 -33Q148 -82 92 -170Q37 -258 37 -375Q37 -492 92 -580Q148 -668 248 -717Q349 -766 482 -766Q616 -766 716 -717Q816 -668 872 -580Q928 -492 928 -375Q928 -258 872 -170Q816 -82 716 -33Q616 16 482 16ZM482 -169Q555 -169 608 -194Q661 -219 690 -265Q718 -311 718 -375Q718 -439 690 -485Q661 -531 608 -556Q555 -581 482 -581Q410 -581 357 -556Q304 -531 275 -485Q246 -439 246 -375Q246 -311 275 -265Q304 -219 357 -194Q410 -169 482 -169Z"/></svg></span><span class="l one" style="--i:4;width:0.520em;margin-right:0.035em"><svg viewBox="0 -775 520 800"><path fill="url(#spg1)" d="M446 -750V0H241V-678L337 -589L14 -532V-692L294 -750Z"/></svg></span><span class="l" style="--i:5;width:0.878em;margin-right:0.035em"><svg viewBox="0 -775 878 800"><path fill="url(#spgL)" d="M267 -335Q267 -284 286 -246Q306 -209 344 -189Q383 -169 439 -169Q496 -169 534 -189Q572 -209 591 -246Q610 -284 610 -335V-750H818V-325Q818 -222 770 -146Q723 -69 638 -26Q553 16 439 16Q326 16 240 -26Q155 -69 108 -146Q60 -222 60 -325V-750H267Z"/></svg></span><span class="l" style="--i:6;width:0.818em;margin-right:0.035em"><svg viewBox="0 -775 818 800"><path fill="url(#spgL)" d="M305 -659H513V0H305ZM19 -750H799V-566H19Z"/></svg></span><span class="l" style="--i:7;width:0.794em;margin-right:0.000em"><svg viewBox="0 -775 794 800"><path fill="url(#spgL)" d="M711 -450V-300H162V-450ZM303 -375 254 -74 170 -168H744V0H47L104 -375L47 -750H739V-582H170L254 -676Z"/></svg></span></div><div class="spB">SHOP<i></i><b>UZ</b></div><div class="spG" id="spG"></div><div class="spC"><i></i></div></div></div>
+<script>(function(){var H=document.documentElement;if(!H.classList.contains("spl"))return;function go(){if(window.__spgoT)return;window.__spgoT=Date.now();H.classList.add("spgo")}requestAnimationFrame(go);setTimeout(go,900)})();</script>
 <header>
  <button class="ib burger" id="burger" aria-label="Меню"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
  <a href="#home" class="logo" aria-label="ABSO1UTE SHOP UZ"><span class="lgw">ABSO1UTE</span><small>SHOP<i></i><b>UZ</b></small></a>
@@ -2612,7 +2625,7 @@ drawR();renderAll();drawCart();const LP0=loadProducts();setTab(0);updBadges();
  {const g=$("#spG");if(g){g.textContent=greet();g.classList.add("on")}}   // «Доброе утро, ник» на заставке
  const hide=()=>{if(gone)return;gone=true;try{sessionStorage.setItem("spl","1")}catch(e){}
   // уход заставки в два шага: сначала «оживает» страница под ней (её ещё не видно), через пару кадров заставка плавно гаснет — без рывка в начале
-  const out=()=>{if(!window.__spgoT)return setTimeout(out,60);setTimeout(()=>{H.classList.add("splrun");setTimeout(()=>{H.classList.add("splout");setTimeout(()=>{H.classList.remove("spl","splout","splrun","spgo","spnf");const sp=document.getElementById("splash");if(sp)sp.remove()},800)},80)},Math.max(0,window.__spgoT+2100-Date.now()))};out()};
+  const out=()=>{if(!window.__spgoT)return setTimeout(out,60);setTimeout(()=>{H.classList.add("splrun");setTimeout(()=>{H.classList.add("splout");setTimeout(()=>{H.classList.remove("spl","splout","splrun","spgo","spnf");const sp=document.getElementById("splash");if(sp)sp.remove()},640)},80)},Math.max(0,window.__spgoT+1150-Date.now()))};out()};
  if(cached)hide();else Promise.resolve(LP0).finally(hide);setTimeout(hide,5000)}
  window.__main=1;try{document.dispatchEvent(new Event("mainready"))}catch(e){}}
 
