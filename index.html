@@ -937,6 +937,13 @@ html body .trk-s:last-child span{margin:0 -12px 0 -6px}
 @media(prefers-reduced-motion:reduce){.fxc,.fxk.deal .fxc{transition:opacity .3s!important}.fxk,.fxc small i::after,.pls::before,.pls::after,.chip.pls,.fxh svg,.fxh.on span,#cg.fxin>*{animation:none!important}.pls{box-shadow:0 0 0 3px var(--bg),0 0 0 5px var(--fg)}}
 /* без «потяни — обновится»: страница не перезагружается от свайпа вниз */
 html,body{overscroll-behavior-y:none}
+/* полоса прокрутки скрыта */
+html{scrollbar-width:none}html::-webkit-scrollbar,body::-webkit-scrollbar{display:none!important;width:0!important;height:0!important;background:transparent}
+/* кружок подгрузки ленты */
+.cgl{display:flex;justify-content:center;align-items:center;height:76px}.cgl[hidden]{display:none!important}
+.cgl i{width:26px;height:26px;border-radius:50%;border:2.6px solid rgba(127,127,127,.22);border-top-color:var(--fg);animation:cglSp .75s linear infinite}
+@keyframes cglSp{to{transform:rotate(360deg)}}
+@supports not (animation-timeline:view()){.grid .pc.fdin{animation:fup .45s cubic-bezier(.22,1,.36,1) both!important;animation-delay:calc(var(--k,0)*35ms)!important}}
 /* Избранное, корзина, профиль — отдельные экраны: каталог под ними убран совсем (display:none) — прокрутка его не задевает, и он не занимает память телефона */
 html.pgx body>header,html.pgx body>main{display:none!important}
 #ovp,#ovf2,#dr,#dr .items{overscroll-behavior:contain}
@@ -1501,6 +1508,9 @@ html body .crtf{border-top:1px solid var(--line)!important;padding-top:14px!impo
 #ob .cotot s{color:var(--mut);font-size:.92em;font-weight:500}
 #ob .cotot b{font:700 20px/1.1 var(--fh)}
 
+/* кружок подгрузки ленты — в цвет темы */
+.cgl i{border-color:rgba(var(--acc-rgb),.18)!important;border-top-color:var(--acc)!important}
+
 </style>
 </head>
 <body>
@@ -1782,7 +1792,7 @@ function csStep(box,k){const l=(box.dataset.cs||"").split("|").filter(Boolean);i
   setTimeout(()=>{img.src=l[i];setTimeout(()=>{o.remove();box._busy=false},60)},520);box._i=i;box.querySelectorAll(".csd i").forEach((d,j)=>d.classList.toggle("on",j===i))};
  if(nx.complete)go();else{nx.onload=go;nx.onerror=()=>{box._busy=false}}}
 const CSV=new Set(),CSO="IntersectionObserver" in window?new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting?CSV.add(e.target):CSV.delete(e.target)),{threshold:.6}):null;
-const CSW=new WeakSet();function csWatch(){if(!CSO)return;$$("[data-cs][data-auto]").forEach(b=>{if(!CSW.has(b)){CSW.add(b);CSO.observe(b)}})}
+const CSW=new WeakSet();function csWatch(){imgWatch();if(!CSO)return;$$("[data-cs][data-auto]").forEach(b=>{if(!CSW.has(b)){CSW.add(b);CSO.observe(b)}})}
 // Фото в каталоге сами переключаются по цветам: человек 1,5 с не листает — первое переключение, дальше каждые ~2,6 с, пока смотрит. Начал листать — пауза.
 let LSCR=Date.now(),LCS=0,CST=0;const csMove=()=>{LSCR=Date.now()};["scroll","touchstart","touchmove","wheel"].forEach(k=>addEventListener(k,csMove,{passive:true}));
 setInterval(()=>{const now=Date.now();if(++CST%4===0)csWatch();if(document.hidden||dg&&dg.mode===1||now-LSCR<1500||(LCS>LSCR&&now-LCS<2600)||document.querySelector("#ovx.on,#dr.on,#ovp.on,#ovs.on"))return;LCS=now;csWatch();let n=0;CSV.forEach(b=>{if(!b.isConnected){CSV.delete(b);return}setTimeout(()=>{if(Date.now()-LSCR>=1500)csStep(b)},n++*160)})},250);
@@ -1805,7 +1815,7 @@ function bindPull(){const h=$("#hng");if(!h||pullBound)return;pullBound=true;let
 let NETFAIL=false,PLOAD=true;
 const emptyT=()=>!PRODUCTS.length&&PLOAD?`<div class="skg">${'<div class="skc"><i></i><b></b><s></s></div>'.repeat(4)}</div>`:!PRODUCTS.length&&NETFAIL?`<div class="netx"><svg viewBox="0 0 24 24"><path d="M2 8.5a15 15 0 0 1 20 0M5 12a10 10 0 0 1 14 0M8.5 15.5a5 5 0 0 1 7 0"/><path d="M12 19h.01M3 3l18 18"/></svg><b>Нет подключения к интернету</b><span>Проверьте соединение и попробуйте снова</span><button class="btn d" onclick="retryLoad(this)">Повторить</button></div>`:'<div class="empty">Товары скоро появятся</div>';
 var renderCat;
-function renderAll(){drawCats();const hn=PRODUCTS.filter(p=>p.isNew);const hb=$("#hnew");if(hb){hb.style.display=hn.length?"":"none";const top=hn.slice(0,7),rest=hn.length-top.length;$("#hng").innerHTML=top.map(mini).join("")+`<button class="mc more" data-c="new"><span class="mm"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span><b>${rest>0?"Ещё "+rest:"Все новинки"}</b><small>в каталоге</small></button>`;bindPull()}const n=PRODUCTS.filter(p=>p.isNew),pp=PRODUCTS.filter(p=>p.pop);$("#pop").style.display=pp.length?"":"none";$("#popg").innerHTML=pp.map(card).join("");$("#newg").innerHTML=n.length?n.map(card).join(""):emptyT();renderCat();drawFx();rvNames()}
+function renderAll(){drawCats();const hn=PRODUCTS.filter(p=>p.isNew);const hb=$("#hnew");if(hb){hb.style.display=hn.length?"":"none";const top=hn.slice(0,7),rest=hn.length-top.length;$("#hng").innerHTML=top.map(mini).join("")+`<button class="mc more" data-c="new"><span class="mm"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span><b>${rest>0?"Ещё "+rest:"Все новинки"}</b><small>в каталоге</small></button>`;bindPull()}const n=PRODUCTS.filter(p=>p.isNew),pp=PRODUCTS.filter(p=>p.pop);$("#pop").style.display=pp.length?"":"none";$("#popg").innerHTML=pp.map(card).join("");$("#newg").innerHTML=n.length?n.slice(0,20).map(card).join(""):emptyT();renderCat();drawFx();rvNames()}
 document.addEventListener("click",e=>{const a=e.target.closest("[data-add]"),c=e.target.closest("[data-p]");const f=e.target.closest("[data-fav]");if(f){e.stopPropagation();toggleFav(+f.dataset.fav);return}if(a){e.stopPropagation();openP(+a.dataset.add)}else if(c)openP(+c.dataset.p)});
 const qCls=n=>n<=0?"q0":n<5?"q1":"q5";
 const stockBadge=p=>{const n=qLeft(p);if(n===null)return`<span class="sb q5"><i></i>В наличии</span>`;return`<span class="sb ${qCls(n)}"><i></i>${n>0?"В наличии: "+n+" шт":"Нет в наличии"}</span>`};
@@ -2097,7 +2107,7 @@ $("#co").onclick=(e,KEEP)=>{const sel=cSel();if(!sel.length)return toast(cart.le
 /* поиск */
 const openS=()=>{closeAll();$("#ovs").classList.add("on");setTimeout(()=>$("#si").focus(),250)};
 $("#bs").onclick=openS;
-function doS(){const q=$("#si").value.trim().toLowerCase(),l=PRODUCTS.filter(p=>(p.name+" "+(p.ruName||"")).toLowerCase().includes(q));$("#sres").innerHTML=q?(l.length?l.map(card).join(""):'<div class="empty">Ничего не найдено</div>'):""}
+function doS(){const q=$("#si").value.trim().toLowerCase(),l=PRODUCTS.filter(p=>(p.name+" "+(p.ruName||"")).toLowerCase().includes(q));feedSet($("#sres"),q?l:[],q?'<div class="empty">Ничего не найдено</div>':"")}
 $("#sgo").onclick=doS;$("#si").oninput=doS;$("#si").onkeydown=e=>e.key==="Enter"&&doS();
 /* аккаунты (хранятся в браузере; для общей базы нужен сервер) */
 const esc=x=>String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -2564,7 +2574,7 @@ if(v==="sup"){const who=me||"guest",key="chat:"+who,fkey="chatf:"+who,td=t=>new 
 }
 /* избранное и «1 день» */
 function toggleFav(id,col){fav=fav.includes(id)?fav.filter(x=>x!==id):[...fav,id];if(fav.includes(id)&&col)favC[id]=col;else if(!fav.includes(id))delete favC[id];ls.s("favc",favC);ls.s("fav",fav);renderAll();if($("#ovf2").classList.contains("on"))renderFavPage();else toast(fav.includes(id)?"Добавлено в избранное":"Убрано из избранного")}
-function openList(t,l,e){closeAll();$("#lt").textContent=t;$("#lg").innerHTML=l.length?l.map(card).join(""):'<div class="empty">'+e+'</div>';$("#ovl").classList.add("on")}
+function openList(t,l,e){closeAll();$("#lt").textContent=t;feedSet($("#lg"),l,'<div class="empty">'+e+'</div>');$("#ovl").classList.add("on")}
 const openFav=()=>openFavPage();
 function plural(n,a,b,c){n=Math.abs(n)%100;const k=n%10;return n>10&&n<20?c:k>1&&k<5?b:k===1?a:c}
 function renderFavPage(){const l=PRODUCTS.filter(p=>fav.includes(p.id));$("#fpage").innerHTML=`<div class="fph"><h2 class="pt">Избранное</h2>${l.length?`<span class="fpc">${l.length} ${plural(l.length,"товар","товара","товаров")}</span>`:""}</div>${l.length?`<div class="grid">${l.map(p=>card(favC[p.id]?{...p,img:colImg(p,favC[p.id])||p.img}:p)).join("").replace(/ loading="lazy"/g,"")}</div>`:'<div class="empty">Здесь пока пусто.<br>Нажмите на сердечко у товара, чтобы сохранить его.</div>'}`}
@@ -2673,7 +2683,30 @@ const GROUPS={top:["tshirts","hoodies","top"],bottom:["pants","shorts","bottom"]
 const inCat=(p,c)=>c==="all"||(c==="fast"?p.fast:c==="new"?p.isNew:c==="sale"?HASD(p):(GROUPS[c]||[c]).includes(p.cat));
 const F0=()=>({min:"",max:"",sort:"",sizes:[],colors:[],stock:false,fast:false});let F=F0(),Q="";
 const passF=p=>(!F.min||pMax(p)>=+F.min)&&(!F.max||pMin(p)<=+F.max)&&(!F.sizes.length||p.sizes?.some(s=>F.sizes.includes(s)))&&(!F.colors.length||pcolors(p).some(fHit))&&(!F.stock||p.stock!==false)&&(!F.fast||p.fast);
-renderCat=function(){$$("#chips .chip").forEach(c=>c.classList.toggle("on",c.dataset.c===cat));const l=PRODUCTS.filter(p=>inCat(p,cat)&&passF(p)&&(!Q||((p.name||"")+" "+(p.ruName||"")).toLowerCase().includes(Q)));if(F.sort==="asc")l.sort((a,b)=>pMin(a)-pMin(b));if(F.sort==="desc")l.sort((a,b)=>pMin(b)-pMin(a));const fn=(F.min||F.max?1:0)+(F.sort?1:0)+F.sizes.length+F.colors.length+(F.stock?1:0)+(F.fast?1:0);{const fb=$("#fb");if(fb){fb.textContent=fn?"Фильтр · "+fn:"Фильтр";fb.classList.toggle("on",!!fn)}}$("#cg").innerHTML=l.length?l.map(p=>card(p,0,0,fIdx(p))).join(""):(fn||Q)&&PRODUCTS.some(p=>inCat(p,cat))?'<div class="empty">Ничего не найдено</div>':emptyT()};
+/* ===== Лента как в маркетплейсах: по 20 карточек + подгрузка, фото далеко за экраном выгружаются ===== */
+var FPG=20,FEED=new Map(),IMW=new WeakSet(),IMO=null;
+// фото карточки ушло дальше ~2 экранов — выгружаем из памяти; подлистали обратно — возвращаем (из кэша, мгновенно)
+if("IntersectionObserver" in window)IMO=new IntersectionObserver(es=>{for(const e of es){const im=e.target.querySelector(".pi img:not(.csx)");if(!im)continue;
+ if(e.isIntersecting){const u=im.dataset.u;if(u){delete im.dataset.u;im.src=u}}
+ else if(e.boundingClientRect.width>0){const u=im.getAttribute("src");if(u&&!u.startsWith("data:")){im.dataset.u=u;im.removeAttribute("src")}}}},{rootMargin:"1600px 0px 1600px 0px"});
+function imgWatch(root){if(!IMO)return;(root||document).querySelectorAll(".pc").forEach(b=>{if(!IMW.has(b)){IMW.add(b);IMO.observe(b)}})}   // следим за карточкой целиком: у далёких карточек содержимое не раскладывается (content-visibility)
+function imgForget(root){if(!root)return;root.querySelectorAll(".pc").forEach(b=>{if(IMO)IMO.unobserve(b);IMW.delete(b)});if(typeof CSO!=="undefined"&&CSO)root.querySelectorAll("[data-cs]").forEach(b=>CSO.unobserve(b))}
+const FLDO="IntersectionObserver" in window?new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting&&e.target.previousElementSibling)feedMore(e.target.previousElementSibling)}),{rootMargin:"0px 0px 120px 0px"}):null;
+function feedLd(el,f){let ld=el.nextElementSibling;if(!ld||!ld.classList.contains("cgl")){ld=document.createElement("div");ld.className="cgl";ld.setAttribute("aria-hidden","true");ld.innerHTML="<i></i>";el.after(ld);if(FLDO)FLDO.observe(ld)}ld.hidden=!(f&&f.n<f.l.length);return ld}
+// показать список в сетке: первые 20 (keep — сохранить, сколько уже было подгружено: при обновлении каталога в фоне)
+function feedSet(el,list,empty,keep,map){if(!el)return;const f=FEED.get(el)||{},n=keep?Math.max(FPG,f.n||0):FPG;
+ f.l=list;f.n=Math.min(list.length,n);f.busy=0;f.tok=(f.tok||0)+1;f.map=map||(p=>card(p));FEED.set(el,f);
+ imgForget(el);el.innerHTML=list.length?list.slice(0,f.n).map(f.map).join(""):(empty||"");feedLd(el,f);imgWatch(el);requestAnimationFrame(()=>feedChk(el))}
+function feedMore(el){const f=FEED.get(el);if(!f||f.busy||f.n>=f.l.length)return;f.busy=1;const tok=f.tok,ld=feedLd(el,f),t0=Date.now(),nx=f.l.slice(f.n,f.n+FPG),need=Math.min(4,nx.length);ld.classList.add("on");
+ let fired=0,got=0;
+ const fin=()=>{if(fired)return;fired=1;setTimeout(()=>{if(f.tok!==tok){f.busy=0;return}
+  const m=Math.min(f.l.length,f.n+FPG),box=document.createElement("div");box.innerHTML=f.l.slice(f.n,m).map(f.map).join("");
+  [...box.children].forEach((c,k)=>{c.classList.add("fdin");c.style.setProperty("--k",Math.min(k,9));el.appendChild(c)});
+  f.n=m;f.busy=0;ld.classList.remove("on");feedLd(el,f);imgWatch(el);requestAnimationFrame(()=>feedChk(el))},Math.max(0,450-(Date.now()-t0)))};
+ for(const p of nx.slice(0,need)){const im=new Image();im.decoding="async";im.onload=im.onerror=()=>{if(++got>=need)fin()};if(p.img)im.src=p.img;else im.onload()}
+ if(!need)fin();setTimeout(fin,1500)}
+function feedChk(el){const ld=el.nextElementSibling;if(!ld||!ld.classList.contains("cgl")||ld.hidden)return;const r=ld.getBoundingClientRect();if(r.width&&r.top<innerHeight+120&&r.bottom>0)feedMore(el)}
+renderCat=function(){$$("#chips .chip").forEach(c=>c.classList.toggle("on",c.dataset.c===cat));const l=PRODUCTS.filter(p=>inCat(p,cat)&&passF(p)&&(!Q||((p.name||"")+" "+(p.ruName||"")).toLowerCase().includes(Q)));if(F.sort==="asc")l.sort((a,b)=>pMin(a)-pMin(b));if(F.sort==="desc")l.sort((a,b)=>pMin(b)-pMin(a));const fn=(F.min||F.max?1:0)+(F.sort?1:0)+F.sizes.length+F.colors.length+(F.stock?1:0)+(F.fast?1:0);{const fb=$("#fb");if(fb){fb.textContent=fn?"Фильтр · "+fn:"Фильтр";fb.classList.toggle("on",!!fn)}}{const g=$("#cg"),sig=cat+"|"+Q+"|"+JSON.stringify(F);feedSet(g,l,(fn||Q)&&PRODUCTS.some(p=>inCat(p,cat))?'<div class="empty">Ничего не найдено</div>':emptyT(),!!g&&g.dataset.sig===sig,p=>card(p,0,0,fIdx(p)));if(g)g.dataset.sig=sig}};
 function drawF(){const CS=cat==="cases",sizes=[...new Set(PRODUCTS.filter(p=>CS?p.cat==="cases":p.cat!=="cases").flatMap(p=>p.sizes||[]))],cols=(()=>{const h=new Set(F.colors);PRODUCTS.forEach(p=>{if(inCat(p,cat))pcolors(p).forEach(c=>bcols(c).forEach(b=>h.add(b)))});return BCOL.filter(c=>h.has(c))})();
  const ch=(k,arr)=>arr.map(x=>`<button class="chip${F[k].includes(x)?" on":""}" data-fk="${k}" data-fv="${esc(x)}">${k==="colors"?SW(x):""}${esc(x)}</button>`).join("");
  $("#fbody").innerHTML=`<h3>Фильтры</h3>${cols.length?`<p class="fl">Цвет</p><div class="chips">${ch("colors",cols)}</div>`:""}<p class="fl">Цена, сум</p><div class="sr"><input class="inp" id="fmin" type="number" inputmode="numeric" placeholder="От" value="${F.min}"><input class="inp" id="fmax" type="number" inputmode="numeric" placeholder="До" value="${F.max}"></div><div class="sr" style="margin-top:14px"><button class="btn" id="frs" style="margin:0;background:var(--card);color:var(--fg)">Сбросить</button><button class="btn d" id="fok" style="margin:0;flex:1;text-align:center">Показать</button></div>`;
