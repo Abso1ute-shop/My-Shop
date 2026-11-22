@@ -1411,6 +1411,15 @@ html.thx body,html.thx header,html.thx .hero,html.thx .sl h1,html.thx .sl p,html
  .pc{padding:8px 8px 12px!important}
 }
 
+/* каталог на телефоне: карточки шире, фото квадратное — почти все фото товаров квадратные, так они видны целиком, без «зума» */
+@media (max-width:860px){
+ .grid{gap:10px 8px!important;padding:0!important;margin-left:-8px!important;margin-right:-8px!important}
+ .pc{padding:6px 6px 10px!important}
+ .pi{aspect-ratio:1/1!important}
+ .skc i{aspect-ratio:1/1!important}
+ #cg .pc{contain-intrinsic-size:auto 318px}
+}
+
 </style>
 </head>
 <body>
