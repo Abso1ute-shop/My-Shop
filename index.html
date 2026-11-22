@@ -937,6 +937,10 @@ html body .trk-s:last-child span{margin:0 -12px 0 -6px}
 @media(prefers-reduced-motion:reduce){.fxc,.fxk.deal .fxc{transition:opacity .3s!important}.fxk,.fxc small i::after,.pls::before,.pls::after,.chip.pls,.fxh svg,.fxh.on span,#cg.fxin>*{animation:none!important}.pls{box-shadow:0 0 0 3px var(--bg),0 0 0 5px var(--fg)}}
 /* без «потяни — обновится»: страница не перезагружается от свайпа вниз */
 html,body{overscroll-behavior-y:none}
+/* Избранное, корзина, профиль — отдельные экраны: каталог под ними спрятан и заморожен, прокрутка его не задевает */
+html.pgx body{position:fixed;left:0;right:0;width:100%;overflow:hidden}
+html.pgx body>header,html.pgx body>main{visibility:hidden}
+#ovp,#ovf2,#dr,#dr .items{overscroll-behavior:contain}
 
 /* бонусы */
 .bonst{display:flex;align-items:center;gap:12px;width:100%;margin-top:16px;padding:11px 12px 11px 11px;border-radius:16px;background:#ffffff17;color:#fff;text-align:left}
@@ -1589,7 +1593,7 @@ function toast(t){t=trErr(t);const e=$("#toast"),k=toastKind(t);e.className="toa
 document.addEventListener("click",e=>{const b=e.target.closest("button,.btn,.tile,.chip");if(!b)return;const r=b.getBoundingClientRect(),d=Math.max(r.width,r.height),s=document.createElement("span");s.className="rip";s.style.cssText=`width:${d}px;height:${d}px;left:${e.clientX-r.left-d/2}px;top:${e.clientY-r.top-d/2}px`;if(getComputedStyle(b).position==="static")b.style.position="relative";b.style.overflow="hidden";b.appendChild(s);setTimeout(()=>s.remove(),600)});
 const go=id=>{closeAll();$("#"+id).scrollIntoView({behavior:"smooth"})};
 $$("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go));
-let PGT=0;const closeAll=()=>{PGT++;["#ovf2","#dr","#ovp"].forEach(k=>{const el=document.querySelector(k);if(el){el.style.transition="";el.style.transform="";el.style.willChange="";el.style.boxShadow=""}});document.body.classList.remove("cart-open");$$(".ov").forEach(o=>o.classList.remove("on"));$("#dr").classList.remove("on");$("#nav").classList.remove("m");$("#dd").classList.remove("open");setTab(0)};
+let PGT=0;const closeAll=()=>{catShow();PGT++;["#ovf2","#dr","#ovp"].forEach(k=>{const el=document.querySelector(k);if(el){el.style.transition="";el.style.transform="";el.style.willChange="";el.style.boxShadow=""}});document.body.classList.remove("cart-open");$$(".ov").forEach(o=>o.classList.remove("on"));$("#dr").classList.remove("on");$("#nav").classList.remove("m");$("#dd").classList.remove("open");setTab(0)};
 document.addEventListener("click",e=>{const cb=e.target.closest("[data-close]");if(cb||(e.target.classList.contains("ov")&&e.target.id!=="ovx")){const ov=(cb&&cb.closest(".ov"))||(e.target.classList.contains("ov")?e.target:null);if(ov&&ov.id!=="ovp"&&ov.id!=="ovf2"&&($("#ovp").classList.contains("on")||$("#ovf2").classList.contains("on")))ov.classList.remove("on");else closeAll()}if(!e.target.closest("#dd"))$("#dd").classList.remove("open")});
 /* меню */
 $("#burger").onclick=()=>$("#nav").classList.toggle("m");
@@ -2529,7 +2533,7 @@ document.addEventListener("touchmove",e=>{
  if(!dg)return;const x=e.touches[0].clientX-dg.x,y=e.touches[0].clientY-dg.y;
  if(dg.mode===0){
   if(Math.abs(x)<14&&Math.abs(y)<14)return;
-  if(Math.abs(x)>18&&Math.abs(x)>Math.abs(y)*2){const b=curTab+(x<0?1:-1);if(b<0||b>3){dg=null;return}dg.mode=1;dg.b=b;pgPrep(b);[...pgEls(curTab),...pgEls(b)].forEach(el=>{el.style.transition="none";el.style.willChange="transform";el.style.boxShadow="0 0 40px rgba(0,0,0,.25)"})}
+  if(Math.abs(x)>18&&Math.abs(x)>Math.abs(y)*2){const b=curTab+(x<0?1:-1);if(b<0||b>3){dg=null;return}dg.mode=1;dg.b=b;if(b===0)catShow();pgPrep(b);[...pgEls(curTab),...pgEls(b)].forEach(el=>{el.style.transition="none";el.style.willChange="transform";el.style.boxShadow="0 0 40px rgba(0,0,0,.25)"})}
   else{dg=null;return}
  }
  e.preventDefault();
@@ -2548,22 +2552,31 @@ function endDrag(cancel){
  nb.forEach(el=>el.style.transform=`translateX(${commit?0:-dir*W}px)`);
  setTimeout(()=>{try{all.forEach(el=>{el.style.transition="";el.style.transform="";el.style.willChange="";el.style.boxShadow=""});if(tok!==PGT){}else if(commit)goTabInstant(d.b);else{resetPages();pgEls(d.b).forEach(el=>el.classList.remove("noanim"))}}finally{PGANIM=false;
   // страховка: на экране всегда только текущая вкладка
-  const want=curTab===1?$("#ovf2"):curTab===2?$("#dr"):curTab===3?$("#ovp"):null;PAGES().forEach(el=>{if(el!==want&&el.classList.contains("on")&&!(el.id==="dr"&&document.body.classList.contains("cart-open")&&curTab===2))el.classList.remove("on")})}},360);
+  const want=curTab===1?$("#ovf2"):curTab===2?$("#dr"):curTab===3?$("#ovp"):null;PAGES().forEach(el=>{if(el!==want&&el.classList.contains("on")&&!(el.id==="dr"&&document.body.classList.contains("cart-open")&&curTab===2))el.classList.remove("on")});catHideSoon()}},360);
 }
 document.addEventListener("touchend",()=>endDrag(false),{passive:true});
 /* нажатие на вкладку внизу — тоже плавное перелистывание */
-function animTab(b){
+function animTab(b){if(b===0)catShow();
  if(b===curTab||PGANIM||$$(".ov.on").some(x=>x.id!=="ovp"&&x.id!=="ovf2")||window.innerWidth>860){goTab(b);return}
  const W=window.innerWidth,dir=b>curTab?-1:1,cur=pgEls(curTab),nb=pgEls(b),all=[...cur,...nb],tok=PGT;PGANIM=true;
  pgPrep(b);nb.forEach(el=>{el.style.transition="none";el.style.transform=`translateX(${-dir*W}px)`;el.style.willChange="transform";el.style.boxShadow="0 0 40px rgba(0,0,0,.25)"});
  cur.forEach(el=>{el.style.transition="none";el.style.willChange="transform"});
  void document.body.offsetWidth;bindTo(b,true);
  requestAnimationFrame(()=>{all.forEach(el=>el.style.transition="transform .38s cubic-bezier(.22,1,.36,1)");cur.forEach(el=>el.style.transform=`translateX(${dir*W}px)`);nb.forEach(el=>el.style.transform="translateX(0)")});
- setTimeout(()=>{try{all.forEach(el=>{el.style.transition="";el.style.transform="";el.style.willChange="";el.style.boxShadow=""});if(tok===PGT)goTabInstant(b)}finally{PGANIM=false}},400);
+ setTimeout(()=>{try{all.forEach(el=>{el.style.transition="";el.style.transform="";el.style.willChange="";el.style.boxShadow=""});if(tok===PGT)goTabInstant(b)}finally{PGANIM=false;catHideSoon()}},400);
 }
 $(".bar").addEventListener("click",e=>{const btn=e.target.closest(".bb");if(!btn)return;const i=[...$(".bar").querySelectorAll(".bb")].indexOf(btn);if(i<0)return;
  if(i===0&&curTab===0){return}e.stopPropagation();e.preventDefault();animTab(i)},true);
 document.addEventListener("touchcancel",()=>endDrag(true),{passive:true});
+/* Избранное, корзина и профиль — отдельные экраны. Когда экран открылся, каталог под ним спрятан и заморожен:
+   его нельзя прокрутить или задеть пальцем. Вернулся на «Каталог» — он на том же месте, где был. */
+function pgFull(){return PAGES().some(el=>el.classList.contains("on")&&(el.id!=="dr"||window.innerWidth<=860))}
+function catShow(){clearTimeout(window.__pgH);const H=document.documentElement;if(!H.classList.contains("pgx"))return;const y=window.__pgY||0;H.classList.remove("pgx");document.body.style.top="";const sb=H.style.scrollBehavior;H.style.scrollBehavior="auto";window.scrollTo(0,y);H.style.scrollBehavior=sb}   // мгновенно, без плавной прокрутки
+function catHideSoon(ms){clearTimeout(window.__pgH);window.__pgH=setTimeout(()=>{const H=document.documentElement;
+ if(H.classList.contains("pgx")||!pgFull()||PGANIM||(dg&&dg.mode===1)||PAGES().some(el=>el.style.transform))return;
+ const y=window.scrollY||0;window.__pgY=y;document.body.style.top=-y+"px";H.classList.add("pgx")},ms==null?480:ms)}
+PAGES().forEach(el=>new MutationObserver(()=>{if(pgFull())catHideSoon(document.body.classList.contains("notr")?20:480);else catShow()}).observe(el,{attributes:true,attributeFilter:["class"]}));
+window.addEventListener("resize",()=>{if(document.documentElement.classList.contains("pgx")&&!pgFull())catShow()});
 /* фильтры */
 const pcolors=p=>p.colors&&p.colors.length?p.colors:(p.color?[p.color]:[]);
 const GROUPS={top:["tshirts","hoodies","top"],bottom:["pants","shorts","bottom"],shoes:["sneakers","shoes"],acc:["accessories","acc"],cases:["cases"],tech:["tech"]};
