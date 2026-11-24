@@ -1797,7 +1797,7 @@ const CSV=new Set(),CSO="IntersectionObserver" in window?new IntersectionObserve
 const CSW=new WeakSet();function csWatch(){imgWatch();if(!CSO)return;$$("[data-cs][data-auto]").forEach(b=>{if(!CSW.has(b)){CSW.add(b);CSO.observe(b)}})}
 // Фото в каталоге сами переключаются по цветам: человек 1,5 с не листает — первое переключение, дальше каждые ~2,6 с, пока смотрит. Начал листать — пауза.
 let LSCR=Date.now(),LCS=0,CST=0;const csMove=()=>{LSCR=Date.now()};["scroll","touchstart","touchmove","wheel"].forEach(k=>addEventListener(k,csMove,{passive:true}));
-setInterval(()=>{const now=Date.now();if(++CST%4===0)csWatch();if(document.hidden||dg&&dg.mode===1||now-LSCR<1500||(LCS>LSCR&&now-LCS<2600)||document.querySelector("#ovx.on,#dr.on,#ovp.on,#ovs.on"))return;LCS=now;csWatch();let n=0;CSV.forEach(b=>{if(!b.isConnected){CSV.delete(b);return}setTimeout(()=>{if(Date.now()-LSCR>=1500)csStep(b)},n++*160)})},250);
+setInterval(()=>{const now=Date.now();if(++CST%4===0)csWatch();if(window.LITE||document.hidden||dg&&dg.mode===1||now-LSCR<1500||(LCS>LSCR&&now-LCS<2600)||document.querySelector("#ovx.on,#dr.on,#ovp.on,#ovs.on"))return;LCS=now;csWatch();let n=0;CSV.forEach(b=>{if(!b.isConnected){CSV.delete(b);return}setTimeout(()=>{if(Date.now()-LSCR>=1500)csStep(b)},n++*160)})},250);
 {let lp=null,held=null,sup=0;
  document.addEventListener("touchstart",e=>{const b=e.target.closest&&e.target.closest("[data-cs]");if(!b||e.touches.length>1)return;const t=e.touches[0];lp={b,x:t.clientX,y:t.clientY,tm:setTimeout(()=>{held=b;b.classList.add("csh");csStep(b);held._iv=setInterval(()=>csStep(b),950);if(navigator.vibrate)navigator.vibrate(8)},320)}},{passive:true});
  const stop=()=>{if(lp){clearTimeout(lp.tm);lp=null}if(held){clearInterval(held._iv);held.classList.remove("csh");held=null;sup=Date.now()}};
@@ -2686,11 +2686,15 @@ const inCat=(p,c)=>c==="all"||(c==="fast"?p.fast:c==="new"?p.isNew:c==="sale"?HA
 const F0=()=>({min:"",max:"",sort:"",sizes:[],colors:[],stock:false,fast:false});let F=F0(),Q="";
 const passF=p=>(!F.min||pMax(p)>=+F.min)&&(!F.max||pMin(p)<=+F.max)&&(!F.sizes.length||p.sizes?.some(s=>F.sizes.includes(s)))&&(!F.colors.length||pcolors(p).some(fHit))&&(!F.stock||p.stock!==false)&&(!F.fast||p.fast);
 /* ===== Лента как в маркетплейсах: по 20 карточек + подгрузка, фото далеко за экраном выгружаются ===== */
-var FPG=20,FEED=new Map(),IMW=new WeakSet(),IMO=null;
+var LITE=(()=>{try{const S=sessionStorage,was=S.getItem("alive");
+ const on=()=>{try{S.setItem("alive","1")}catch(e){}},off=()=>{try{S.removeItem("alive")}catch(e){}};
+ on();addEventListener("pagehide",off);addEventListener("pageshow",on);document.addEventListener("visibilitychange",()=>document.hidden?off():on());
+ if(was)S.setItem("lite","1");return S.getItem("lite")==="1"}catch(e){return false}})();   // прошлый раз вкладка упала — облегчённый режим
+var FPG=LITE?12:20,FEED=new Map(),IMW=new WeakSet(),IMO=null;
 // фото карточки ушло дальше ~2 экранов — выгружаем из памяти; подлистали обратно — возвращаем (из кэша, мгновенно)
 if("IntersectionObserver" in window)IMO=new IntersectionObserver(es=>{for(const e of es){const im=e.target.querySelector(".pi img:not(.csx)");if(!im)continue;
  if(e.isIntersecting){const u=im.dataset.u;if(u){delete im.dataset.u;im.src=u}}
- else if(e.boundingClientRect.width>0){const u=im.getAttribute("src");if(u&&!u.startsWith("data:")){im.dataset.u=u;im.removeAttribute("src")}}}},{rootMargin:"1200px 0px 1200px 0px"});
+ else if(e.boundingClientRect.width>0){const u=im.getAttribute("src");if(u&&!u.startsWith("data:")){im.dataset.u=u;im.removeAttribute("src")}}}},{rootMargin:LITE?"700px 0px 700px 0px":"1200px 0px 1200px 0px"});
 function imgWatch(root){if(!IMO)return;(root||document).querySelectorAll(".pc").forEach(b=>{if(!IMW.has(b)){IMW.add(b);IMO.observe(b)}})}   // следим за карточкой целиком: у далёких карточек содержимое не раскладывается (content-visibility)
 function imgForget(root){if(!root)return;root.querySelectorAll(".pc").forEach(b=>{if(IMO)IMO.unobserve(b);IMW.delete(b)});if(typeof CSO!=="undefined"&&CSO)root.querySelectorAll("[data-cs]").forEach(b=>CSO.unobserve(b))}
 const FLDO="IntersectionObserver" in window?new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting&&e.target.previousElementSibling)feedMore(e.target.previousElementSibling)}),{rootMargin:"0px 0px 120px 0px"}):null;
