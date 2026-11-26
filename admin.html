@@ -179,7 +179,12 @@ async function copyTxt(t){
  i.select();i.setSelectionRange(0,t.length);let ok=false;try{ok=document.execCommand("copy")}catch(e){}i.remove();return ok}
 document.addEventListener("click",async e=>{const b=e.target.closest("[data-cp]");if(!b)return;e.preventDefault();e.stopPropagation();
  const ok=await copyTxt(b.dataset.cp);toast(ok?b.dataset.cpm:"Не получилось скопировать");if(ok){b.classList.add("ok");setTimeout(()=>b.classList.remove("ok"),1200)}},true);
-const toast=t=>{const e=$("#toast");e.textContent=t;e.classList.add("on");clearTimeout(tm);tm=setTimeout(()=>e.classList.remove("on"),2600)};
+const toast=(t,ms)=>{const e=$("#toast");e.textContent=t;e.classList.add("on");clearTimeout(tm);tm=setTimeout(()=>e.classList.remove("on"),ms||2600)};
+/* лёгкие превью: мини-фото с сервера, иначе — уменьшенная копия через wsrv.nl (как на сайте); при ошибке — оригинал */
+const WSA=(i,w,sq)=>"https://wsrv.nl/?url="+API.replace(/^https?:\/\//,"")+"/img/"+i+"&w="+w+(sq?"&h="+w+"&fit=cover":"")+"&output=webp&q=74";
+const WSO=u=>{const m=/^https:\/\/wsrv\.nl\/\?url=([^&]+)/.exec(String(u||""));return m?"https://"+decodeURIComponent(m[1]):""};
+const AIM=(p,i)=>(p.th||[]).includes(i)?API+"/img/"+i+"?t=1":WSA(i,160,1);
+const IMGFB='onerror="if(this.dataset.o&&this.src!==this.dataset.o)this.src=this.dataset.o"';
 
 async function call(path,body){
  try{const r=await fetch(API+path,{method:body===undefined?"GET":"POST",cache:"no-store",headers:{"Content-Type":"application/json",Authorization:"Bearer "+tok},body:body===undefined?undefined:JSON.stringify(body)});
@@ -231,9 +236,9 @@ async function show(t){
  draw();
 }
 // обновить список товаров, оставаясь на том же месте (и с тем же поиском/фильтром)
-async function reProd(id){
+async function reProd(id,local){
  const keepQ=q,y=window.scrollY,el=id!=null?document.querySelector(`[data-ed="${id}"]`):null,top=el?el.getBoundingClientRect().top:null;
- const r=await call("/admin/products");
+ const r=local?{ok:true,items:P}:await call("/admin/products");   // local: товар уже обновлён на месте — список заново не качаем
  if(!r||!r.ok||tab!=="prod")return show("prod");
  P=r.items;q=keepQ;draw();
  const e2=id!=null?document.querySelector(`[data-ed="${id}"]`):null;
@@ -241,7 +246,7 @@ async function reProd(id){
 }
 let ordT=0;
 async function pollOrd(){
- if(!tok)return;const r=await call("/admin/orders");if(!r||!r.ok)return;
+ if(!tok||document.querySelector(".sheet"))return;   /* открыта карточка — не занимаем интернет (сохранение быстрее) */const r=await call("/admin/orders");if(!r||!r.ok)return;
  const known=new Set(O.map(o=>o.id)),nw=r.items.filter(o=>!known.has(o.id));
  const ch=nw.length||r.items.some(o=>{const x=O.find(y=>y.id===o.id);return x&&(x.st!==o.st||JSON.stringify(x.cargo||{})!==JSON.stringify(o.cargo||{}))});
  if(O.length&&nw.length)toast("Новый заказ №"+nw.map(o=>o.id).join(", №"));
@@ -355,7 +360,7 @@ function dProd(){
 (для чехлов — «Размеры: 13 Pro, 14, 15 Pro Max» или «все»)
 Размеры: S-XL (по желанию)
 Цвет: чёрный (по желанию)
-#популярное #1день</pre><p>Размеры по умолчанию: обувь 36–44, одежда XS–5XL. Бот должен быть администратором канала. Для нескольких фото отправьте альбом, подпись — на первом фото.</p></details>${l.length?l.map(p=>`<div class="it">${p.imgs&&p.imgs[0]?`<img src="${API}/img/${p.imgs[0]}${(p.th||[]).includes(p.imgs[0])?"?t=1":""}" alt="" loading="lazy" decoding="async">`:'<div class="ph"></div>'}<div class="m"><b>${esc(p.name)}</b><span class="mu">${fmt(p.price)}${p.szP&&Object.keys(p.szP).length?" (разные по размерам)":""} · ${CATN[p.cat]||""}${needTr(p)?" · <span style=\"color:#e5a50a\">нет перевода</span>":" · EN/UZ ✓"}${p.sizes&&p.sizes.length?" · "+esc(szTxt(p)):""}${p.colors&&p.colors.length?" · "+esc(p.colors.join("/")):""}</span><div class="tg">${p.isNew?"<span>Новинка</span>":""}${p.pop?"<span>Популярное</span>":""}${p.fast?"<span>1 день</span>":""}${NOAIR(p)?"<span>Без авиа</span>":""}${p.disc>0?`<span>−${p.disc}% · ${fmt(DSC(p,p.price))}</span>`:""}${p.fast&&(p.qtyC&&Object.keys(p.qtyC).length||typeof p.qty==="number")?`<span>В наличии: ${p.qtyC&&Object.keys(p.qtyC).length?Object.entries(p.qtyC).map(([c,n])=>esc(c)+" "+n).join(", "):p.qty} шт</span>`:""}${p.preorder?"<span>Под заказ</span>":""}${isMan(p)?"<span>Вручную · ИИ не трогает</span>":""}</div></div><div class="ac"><label class="sw"><input type="checkbox" data-st="${p.id}" ${p.stock!==false?"checked":""}><i></i></label><button data-ed="${p.id}">Редактировать</button><button class="d" data-dl="${p.id}">Удалить</button></div></div>`).join(""):'<div class="empty">Товаров пока нет. Нажмите «+ Товар».</div>'}`;
+#популярное #1день</pre><p>Размеры по умолчанию: обувь 36–44, одежда XS–5XL. Бот должен быть администратором канала. Для нескольких фото отправьте альбом, подпись — на первом фото.</p></details>${l.length?l.map(p=>`<div class="it">${p.imgs&&p.imgs[0]?`<img src="${AIM(p,p.imgs[0])}" data-o="${API}/img/${p.imgs[0]}" ${IMGFB} alt="" loading="lazy" decoding="async">`:'<div class="ph"></div>'}<div class="m"><b>${esc(p.name)}</b><span class="mu">${fmt(p.price)}${p.szP&&Object.keys(p.szP).length?" (разные по размерам)":""} · ${CATN[p.cat]||""}${needTr(p)?" · <span style=\"color:#e5a50a\">нет перевода</span>":" · EN/UZ ✓"}${p.sizes&&p.sizes.length?" · "+esc(szTxt(p)):""}${p.colors&&p.colors.length?" · "+esc(p.colors.join("/")):""}</span><div class="tg">${p.isNew?"<span>Новинка</span>":""}${p.pop?"<span>Популярное</span>":""}${p.fast?"<span>1 день</span>":""}${NOAIR(p)?"<span>Без авиа</span>":""}${p.disc>0?`<span>−${p.disc}% · ${fmt(DSC(p,p.price))}</span>`:""}${p.fast&&(p.qtyC&&Object.keys(p.qtyC).length||typeof p.qty==="number")?`<span>В наличии: ${p.qtyC&&Object.keys(p.qtyC).length?Object.entries(p.qtyC).map(([c,n])=>esc(c)+" "+n).join(", "):p.qty} шт</span>`:""}${p.preorder?"<span>Под заказ</span>":""}${isMan(p)?"<span>Вручную · ИИ не трогает</span>":""}</div></div><div class="ac"><label class="sw"><input type="checkbox" data-st="${p.id}" ${p.stock!==false?"checked":""}><i></i></label><button data-ed="${p.id}">Редактировать</button><button class="d" data-dl="${p.id}">Удалить</button></div></div>`).join(""):'<div class="empty">Товаров пока нет. Нажмите «+ Товар».</div>'}`;
  $("#sq").oninput=e=>{q=e.target.value.trim().toLowerCase();const pos=e.target.selectionStart;dProd();const s=$("#sq");s.focus();s.setSelectionRange(pos,pos)};
  $("#add").onclick=()=>editP();
  if($("#thall"))$("#thall").onclick=async()=>{const l=P.filter(needTh),b=$("#thall"),tot=l.reduce((a,x)=>a+thMissing(x).length,0);b.disabled=true;let k=0,map={},er="";
@@ -394,7 +399,8 @@ function shrink(f,cb){
   cb(out)};im.onerror=()=>cb(null);im.src=URL.createObjectURL(f);
 }
 async function smallOf(url,mx=320){
- const bl=await (await fetch(url)).blob(),u=URL.createObjectURL(bl);
+ let bl;try{const r=await fetch(url);if(!r.ok)throw new Error("фото не загрузилось");bl=await r.blob()}catch(e){const o=WSO(url);if(!o)throw e;bl=await (await fetch(o)).blob()}
+ const u=URL.createObjectURL(bl);
  try{const im=await new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=()=>no(new Error("фото не загрузилось"));i.src=u});
   const k=Math.min(1,mx/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);
   c.getContext("2d").drawImage(im,0,0,c.width,c.height);return c.toDataURL("image/jpeg",.85)}finally{URL.revokeObjectURL(u)}
@@ -439,7 +445,7 @@ function editP(id){
  const old=id?P.find(x=>x.id===id):null,p=old?JSON.parse(JSON.stringify(old)):{name:"",price:"",cat:"top",sizes:CLS.slice(),colors:[],desc:"",stock:true,isNew:true,pop:false,fast:false,imgs:[]};
  let trDirty=false,trOpen=false,szOpen=false,REND=false;const trE={en:{n:(p.tr&&p.tr.en&&p.tr.en.n)||"",d:(p.tr&&p.tr.en&&p.tr.en.d)||""},uz:{n:(p.tr&&p.tr.uz&&p.tr.uz.n)||"",d:(p.tr&&p.tr.uz&&p.tr.uz.d)||""}};
  const origRu=trHash(p.name,p.desc||"");
- let ph=(p.imgs||[]).map(i=>({id:i,url:API+"/img/"+i,col:(p.imgColors||{})[i]||"",noc:(p.noCol||[]).includes(i)}));
+ let ph=(p.imgs||[]).map(i=>({id:i,url:WSA(i,640),o:API+"/img/"+i,col:(p.imgColors||{})[i]||"",noc:(p.noCol||[]).includes(i)}));
  ph.forEach(x=>{const a=(p.imgAI||{})[x.id];if(x.col&&a&&a.b===x.col)x.ai=x.col});   // цвет поставил ИИ (не вручную)
  let aiBusy=false,foAuto=!(old&&old.colorsSet);   // список «Цвета» берётся с фото, пока его не правили руками
  const baseDesc=old?String(old.desc||""):"",baseImg=old?Object.fromEntries((old.imgs||[]).map(i=>[i,(old.imgColors||{})[i]||""])):{},baseColors=old?(old.colors||[]).slice():[];
@@ -484,7 +490,7 @@ function editP(id){
  const render=()=>{
   REND=true;   // пока форма перерисовывается, «change» от уходящего поля не должен перезаписать данные старыми значениями
   sh.innerHTML=`<div class="in"><div class="r"><h2>${old?"Изменить товар":"Новый товар"}</h2><button class="g" id="cl">Закрыть</button></div>
-  <span class="lb">Фото — первое станет обложкой. Зажмите фото и перетащите, чтобы поменять порядок</span><div class="ph-l">${ph.map((x,i)=>`<div class="ph-i" data-pi="${i}"><img src="${x.url}" alt="" draggable="false">${i===0?`<span class="cov">Обложка</span>`:""}<i class="psw" data-psw="${i}" style="${swBg(x.col)?"background:"+swBg(x.col):"display:none"}"></i><button class="x" data-rm="${i}">✕</button>${i>0?`<button class="mk" data-mk="${i}">Сделать главным</button>`:`<span class="mk" style="visibility:hidden">Сделать главным</span>`}<span class="pcw${x.col?"":" e"}"><input class="pcol" data-pc="${i}" value="${esc(x.col||"")}" placeholder="Цвет" list="colist"><button type="button" class="pcx" data-pcx="${i}" aria-label="Стереть цвет" title="Стереть цвет">✕</button></span></div>`).join("")}<label class="ph-add">+ Фото<input type="file" id="pf" accept="image/*" multiple hidden></label></div>
+  <span class="lb">Фото — первое станет обложкой. Зажмите фото и перетащите, чтобы поменять порядок</span><div class="ph-l">${ph.map((x,i)=>`<div class="ph-i" data-pi="${i}"><img src="${x.url}"${x.o?` data-o="${x.o}" ${IMGFB}`:""} alt="" draggable="false">${i===0?`<span class="cov">Обложка</span>`:""}<i class="psw" data-psw="${i}" style="${swBg(x.col)?"background:"+swBg(x.col):"display:none"}"></i><button class="x" data-rm="${i}">✕</button>${i>0?`<button class="mk" data-mk="${i}">Сделать главным</button>`:`<span class="mk" style="visibility:hidden">Сделать главным</span>`}<span class="pcw${x.col?"":" e"}"><input class="pcol" data-pc="${i}" value="${esc(x.col||"")}" placeholder="Цвет" list="colist"><button type="button" class="pcx" data-pcx="${i}" aria-label="Стереть цвет" title="Стереть цвет">✕</button></span></div>`).join("")}<label class="ph-add">+ Фото<input type="file" id="pf" accept="image/*" multiple hidden></label></div>
   ${ph.length?`<button class="b s" id="ai" style="margin-top:8px" ${aiBusy?"disabled":""}>${aiBusy?"🎨 ИИ смотрит на фото…":"🎨 Определить цвета по фото (ИИ)"}</button>`:""}${ph.filter(x=>x.col).length>1?`<button type="button" class="g" id="pcxall" style="display:block;margin-top:8px;font-size:13px;color:var(--mu)">✕ Стереть цвета у всех фото</button>`:""}<p class="mu" style="font-size:12px;margin:6px 0 0">Под каждым фото — его цвет. На сайте кнопка цвета листает к этому фото, а в корзине показывается фото выбранного цвета. ИИ смотрит только на сам товар (не на фон и не на другие вещи на фото); одинаковые варианты получают одно название, разные — разные (например «Белый» и «Чёрно-белый»). Цвет, введённый вручную, ИИ не меняет.</p>
   <datalist id="colist">${["Чёрный","Белый","Серый","Синий","Голубой","Красный","Бордовый","Зелёный","Хаки","Бежевый","Коричневый","Розовый","Фиолетовый","Жёлтый","Оранжевый","Чёрный/Белый"].map(c=>`<option value="${c}">`).join("")}</datalist><div class="r" style="margin-top:10px"><span class="lb" style="margin:0">Название</span><button class="g" id="ainm" style="font-weight:700;color:var(--fg)">✨ По фото</button></div><input id="fn" value="${esc(p.name)}" placeholder="Например: Худи Oversize">${badName(p.name)?`<p class="mu" style="color:#e5a50a;font-size:12px;margin:4px 0 0">Похоже, это не название товара — нажмите «✨ По фото»</p>`:""}
   <span class="lb">Цена, сум</span><input id="fp" type="number" inputmode="numeric" value="${esc(p.price)}" placeholder="250000">
@@ -549,17 +555,20 @@ function editP(id){
   $("#pf").onchange=e=>{keep();const fs=[...e.target.files].slice(0,10-ph.length);let n=fs.length;if(!n)return;const slots=[];fs.forEach((f,i)=>shrink(f,d=>{slots[i]=d?{data:d,url:d}:null;if(--n===0){ph.push(...slots.filter(Boolean));if(document.body.contains(sh)&&$("#fn"))soft();else render();if(ph.some(x=>!x.col))setTimeout(()=>detectCols(true),600)}}))};
   $("#sv").onclick=async()=>{keep();const price=Math.round(+p.price);
    if(!p.name.trim())return toast("Введите название");if(!(price>0))return toast("Введите цену");if(p.cat==="cases"&&!(p.sizes||[]).length)return toast("Выберите хотя бы одну модель iPhone");if(Math.round(+$("#fdc").value)>90)return toast("Скидка — не больше 90%");{const s=Math.round(+$("#fds").value)||0;if(s>0&&s>=price)return toast("Цена со скидкой должна быть меньше обычной цены");if(s>0&&s<price*.1)return toast("Скидка — не больше 90%")}
-   const btn=$("#sv");btn.disabled=true;btn.textContent="Сохраняю…";
+   const btn=$("#sv");btn.disabled=true;const T0=Date.now(),tick=()=>{btn.textContent="Сохраняю…"+(Date.now()-T0>=3000?" "+Math.round((Date.now()-T0)/1000)+" с":"")};tick();const TI=setInterval(tick,1000);
+   const addTh=[];for(const x of ph.filter(x=>x.data)){try{addTh.push(await smallOf(x.data,480))}catch(e){addTh.push("")}}   // мини-фото — в том же запросе
    const body={p:{id:old?old.id:undefined,name:p.name,price,cat:p.cat,sizes:p.sizes,szP:p.szP||{},colors:p.colors,colorsSet:foAuto?false:(p.colors.join("|")===origCols?!!(old&&old.colorsSet):p.colors.length>0),desc:p.desc,trManual:trDirty&&(trE.en.n||trE.uz.n)?trE:undefined,stock:p.stock,isNew:p.isNew,pop:p.pop,fast:p.fast,preorder:p.preorder,noAir:!!p.noAir,disc:p.disc||0,sale:p.sale||0,man:1,qty:p.fast&&!p.colors.length?(p.qty??""):"",qtyC:p.fast&&p.colors.length?(p.qtyC||{}):{},imgs:ph.filter(x=>x.id).map(x=>x.id),ord:(()=>{let k=0;return ph.map(x=>x.id?x.id:"+"+(k++))})(),noCol:(()=>{let k=0;const o=[];for(const x of ph){const t=x.id?x.id:"+"+(k++);if(!x.col&&(x.id||x.noc||x.had||x.tried))o.push(t)}return o})(),imgColors:Object.fromEntries(ph.filter(x=>x.id).map(x=>[x.id,x.col||""])),addColors:ph.filter(x=>x.data).map(x=>x.col||""),
-    aiCols:Object.fromEntries(ph.filter(x=>x.id&&x.ai&&x.ai===x.col).map(x=>[x.id,x.col])),addAI:ph.filter(x=>x.data).map(x=>x.ai&&x.ai===x.col?x.col:""),base:old?{desc:baseDesc,imgColors:baseImg,colors:baseColors}:undefined},add:ph.filter(x=>x.data).map(x=>x.data)};
+    aiCols:Object.fromEntries(ph.filter(x=>x.id&&x.ai&&x.ai===x.col).map(x=>[x.id,x.col])),addAI:ph.filter(x=>x.data).map(x=>x.ai&&x.ai===x.col?x.col:""),base:old?{desc:baseDesc,imgColors:baseImg,colors:baseColors}:undefined},add:ph.filter(x=>x.data).map(x=>x.data),addTh};
    const r=await call("/admin/product",body);
    if(r&&r.ok&&r.item){const kept=ph.filter(x=>x.id).map(x=>x.id),nw=(r.item.imgs||[]).filter(i=>!kept.includes(i)),nd=ph.filter(x=>x.data),done=[];
-    for(let i=0;i<nw.length&&i<nd.length;i++){btn.textContent="Готовлю мини-фото…";try{const t=await smallOf(nd[i].data,480);const q=await call("/admin/thumb",{iid:nw[i],data:t,save:false});if(q&&q.ok)done.push(nw[i])}catch(e){}}
-    if(done.length)await call("/admin/thumbs/save",{map:{[r.item.id]:done}})}
-   btn.disabled=false;btn.textContent="Сохранить";
+    for(let i=0;i<nw.length&&i<nd.length;i++){if((r.item.th||[]).includes(nw[i]))continue;btn.textContent="Готовлю мини-фото…";try{const t=await smallOf(nd[i].data,480);const q=await call("/admin/thumb",{iid:nw[i],data:t,save:false});if(q&&q.ok)done.push(nw[i])}catch(e){}}
+    if(done.length){await call("/admin/thumbs/save",{map:{[r.item.id]:done}});r.item.th=[...new Set([...(r.item.th||[]),...done])]}}
+   clearInterval(TI);btn.disabled=false;btn.textContent="Сохранить";
    if(!r)return toast("Нет связи с сервером");if(!r.ok)return toast(r.err||"Ошибка");
    const ai=r.ai||{},w=[ai.c&&"цвета",ai.d&&"описание",ai.t&&"перевод"].filter(Boolean);
-   toast(w.length?(ai.p?"Сохранено. Лимит ИИ на сегодня закончился — "+w.join(", ")+" ИИ сделает в "+ai.p:"Сохранено. ИИ сделает "+w.join(", ")+" за 1–5 минут"+(ai.c||ai.d?" — пришлю в Telegram":"")):"Сохранено");sh.remove();reProd(old?old.id:null)};
+   const sec=(Date.now()-T0)/1000,sv=r.ms!=null?r.ms/1000:null,tms=sec>=5?" за "+Math.round(sec)+" с"+(sv!=null?" (сервер "+sv.toFixed(1).replace(".",",")+" с"+(sec-sv>5?", остальное — интернет":"")+")":""):"";
+   toast((w.length?(ai.p?"Сохранено. Лимит ИИ на сегодня закончился — "+w.join(", ")+" ИИ сделает в "+ai.p:"Сохранено. ИИ сделает "+w.join(", ")+" за 1–5 минут"+(ai.c||ai.d?" — пришлю в Telegram":"")):"Сохранено").replace(/^Сохранено/,"Сохранено"+tms),tms?7000:w.length?4500:2600);
+   {const i=P.findIndex(x=>x.id===r.item.id);if(i>=0)P[i]=r.item;else P.unshift(r.item)}sh.remove();reProd(r.item.id,true)};
  };
  render();
 }
